@@ -5,6 +5,7 @@ logs
 .idea
 node_module
 package.config.js
+package-lock.json
 
 # Runtime data
 pids
