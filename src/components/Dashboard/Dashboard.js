@@ -8,7 +8,13 @@ import Add from 'material-ui/svg-icons/action/add-shopping-cart';
 import Done from 'material-ui/svg-icons/maps/beenhere';
 import Process from 'material-ui/svg-icons/maps/local-shipping';
 import Partners from 'material-ui/svg-icons/communication/business';
-import {Link} from 'react-router-dom';
+import {
+  BrowserRouter,
+  Switch,
+  Route,
+  Link
+} from 'react-router-dom';
+
 const style = {
   paper: {
     backgroundColor: '#eee',
@@ -20,6 +26,16 @@ const style = {
     lineHeight: '24px',
   },
 };
+const MainMenuR = () => (
+  <main>
+    <Switch>
+      <Route exact path="/" component={<h2>Hello</h2>}/>
+      <Route exact path="/clients" component={<h2>clients</h2>}/>
+      <Route path="/partners" component={<h2>partners</h2>}/>
+    </Switch>
+  </main>
+
+);
 
 class MainMenu extends React.Component {
   constructor() {
@@ -28,61 +44,62 @@ class MainMenu extends React.Component {
       isClients: false,
       isPartners: false,
       isInProcess: false,
-      isDone:false,
+      isDone: false,
       isNewIntervention: false
     }
   }
-  onClickMenu(qw){
-    if(qw == "Clients"){
+
+  onClickMenu(qw) {
+    if (qw == "Clients") {
       console.log(qw);
       this.setState({
         isClients: true,
         isPartners: false,
         isInProcess: false,
-        isDone:false,
+        isDone: false,
         isNewIntervention: false
       })
     }
-    if(qw == "Partners"){
+    if (qw == "Partners") {
       console.log(qw);
       this.setState({
         isClients: false,
         isPartners: true,
         isInProcess: false,
-        isDone:false,
+        isDone: false,
         isNewIntervention: false
       })
     }
-    if(qw == "InProcess"){
+    if (qw == "InProcess") {
       console.log(qw);
 
       this.setState({
         isClients: false,
         isPartners: false,
         isInProcess: true,
-        isDone:false,
+        isDone: false,
         isNewIntervention: false
       })
     }
-    if(qw == "Done"){
+    if (qw == "Done") {
       console.log(qw);
 
       this.setState({
         isClients: false,
         isPartners: false,
         isInProcess: false,
-        isDone:true,
+        isDone: true,
         isNewIntervention: false
       })
     }
-    if(qw == "NewIntervention"){
+    if (qw == "NewIntervention") {
       console.log(qw);
 
       this.setState({
         isClients: false,
         isPartners: false,
         isInProcess: false,
-        isDone:false,
+        isDone: false,
         isNewIntervention: true
       })
     }
@@ -93,17 +110,19 @@ class MainMenu extends React.Component {
       <div>
         <Paper style={style.paper}>
           <Menu>
-            <MenuItem primaryText="Clients"  rightIcon={<Assistant/>} onClick={this.onClickMenu.bind(this,"Clients")}></MenuItem>
-            <Divider />
-            <MenuItem primaryText="Partners" rightIcon={<Partners/>} onClick={this.onClickMenu.bind(this,"Partners")} ></MenuItem>
-            <Divider />
+            <MenuItem primaryText="Clients" rightIcon={<Assistant/>} onClick={this.onClickMenu.bind(this, "Clients")}><Link to="/Clients">Clients</Link></MenuItem>
+            <Divider/>
+            <MenuItem primaryText="Partners" rightIcon={<Partners/>} onClick={this.onClickMenu.bind(this, "Partners")}><Link to="/partners">Partners</Link></MenuItem>
+            <Divider/>
             {/*<MenuItem primaryText="In Process" to="/in_process" rightIcon={<Process/>} onClick={this.onClickMenu.bind(this,"InProcess")}/>*/}
-            <Divider />
+            <Divider/>
             {/*<MenuItem primaryText="Done" to="/done" rightIcon={<Done/>} onClick={this.onClickMenu.bind(this,"Done")}/>*/}
-            <Divider />
+            <Divider/>
             {/*<MenuItem primaryText="New Intervention" to="/new_intervention" rightIcon={<Add />} onClick={this.onClickMenu.bind(this,"NewIntervention")}/>*/}
           </Menu>
         </Paper>
+
+        {this.state.isClients ? <h1>Hello Client</h1>: <h1>Hello WTF</h1>}
       </div>
     )
   }
