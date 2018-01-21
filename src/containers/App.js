@@ -12,12 +12,6 @@ import {
 } from 'react-router-dom';
 
 
-const Schedule = () => (
-  <div>
-    <h2>Login</h2>
-  </div>
-);
-
 const Main = () => (
     <Switch>
       <Route exact path="/" component={MainMenu}/>

@@ -8,6 +8,7 @@ import Add from 'material-ui/svg-icons/action/add-shopping-cart';
 import Done from 'material-ui/svg-icons/maps/beenhere';
 import Process from 'material-ui/svg-icons/maps/local-shipping';
 import Partners from 'material-ui/svg-icons/communication/business';
+import ClientComponent from './../ClientComponent/ClientComponent'
 import {
   BrowserRouter,
   Switch,
@@ -53,7 +54,7 @@ class MainMenu extends React.Component {
   switcher() {
     switch (this.state.curentState) {
       case "Clients":
-        return(<h2>Hello Clients</h2>);
+        return(<ClientComponent/>);
       case "Partners":
         return(<h2>Hello Partners</h2>);
       case "InProcess":
