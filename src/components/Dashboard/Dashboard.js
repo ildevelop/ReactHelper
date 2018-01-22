@@ -14,6 +14,7 @@ import {
   Route,
   Link
 } from 'react-router-dom';
+import ClientComponent from "../ClientComponent/ClientComponent";
 
 const style = {
   paper: {
@@ -53,7 +54,7 @@ class MainMenu extends React.Component {
   switcher() {
     switch (this.state.curentState) {
       case "Clients":
-        return(<h2>Hello Clients</h2>);
+        return( <ClientComponent/>);
       case "Partners":
         return(<h2>Hello Partners</h2>);
       case "InProcess":
