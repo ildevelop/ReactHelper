@@ -1,5 +1,22 @@
 {
   "users": [
-    {"name" : "ilya"}
+     {
+      "fname" : "ilya",
+      "sname" : "radu",
+      "address": "mozes ehyda 13 ",
+      "zip" : "250512330",
+      "city": "Ramat Gan",
+      "country" :"Istael",
+      "phone_number" : "0529876543"
+    },
+    {
+      "fname" : "lior",
+      "sname" : "radu",
+      "address": "mozes ehyda 13 ",
+      "zip" : "258412330",
+      "city": "Ramat Gan",
+      "country" :"Istael",
+      "phone_number" : "0529876543"
+    }
   ]
 }

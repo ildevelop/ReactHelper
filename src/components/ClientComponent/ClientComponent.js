@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
+import {TextField} from 'material-ui';
+import './ClientComponent.scss'
 
 class ClientComponent extends Component {
   constructor() {
@@ -9,7 +11,8 @@ class ClientComponent extends Component {
     }
 
   }
-  componentWillMount(){
+
+  componentWillMount() {
     this.setUsers();
   }
 
@@ -17,9 +20,13 @@ class ClientComponent extends Component {
     const users = this.state.users;
     const usersView = this.getUsersView(users);
     return (
-      <div>
+      <div className="clients">
+        <TextField
+          hintText="Clients"
+          floatingLabelText="find clients:"
+        /><br />
         {usersView}
-        </div>
+      </div>
     )
   }
 
@@ -32,15 +39,25 @@ class ClientComponent extends Component {
       .catch(function (error) {
         console.log(error);
       });
+    console.log(this.state.users);
   }
 
   getUsersView(users) {
     const usersView = users.map(user =>
-      <div key={user.name}><h1>
-        {user.name}
-    </h1>
-  </div>
-    )
+      <div key={user.name}>
+        <ul>
+          <li>First name: {user.fname}</li>
+          <li>Second name:{user.sname}</li>
+          <li>Street: {user.address}</li>
+          <li>PC: {user.PC}</li>
+          <li>City: {user.city}</li>
+          <li>Country: {user.country}</li>
+          <li>Phone: {user.phone_number}</li>
+          <li>Commission: {user.commission}</li>
+        </ul>
+
+      </div>
+    );
     return usersView;
   }
 }
