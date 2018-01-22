@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": " REACT_APP_TEST='true' node server.js",
+    "startWin": "set  REACT_APP_TEST=true&& node server.js",
+    "startUb": " REACT_APP_TEST='true' node server.js",
     "build": "cross-env BABEL_ENV=production ./node_modules/.bin/webpack --config webpack.config.production.js"
   },
   "repository": {

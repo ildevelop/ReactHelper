@@ -12,8 +12,7 @@ new WebpackDevServer(webpack(config), {
   historyApiFallback: true,
   setup: function(app) {
     app.get('/get_users', function(req, res) {
-      console.log(process.env.REACT_APP_TEST);
-      if(process.env.REACT_APP_TEST === "true") {
+          if(process.env.REACT_APP_TEST === 'true') {
         fs.readFile('./users.json', 'utf8', function (err, data) {
           if (err) throw err;
           res.json(JSON.parse(data));
