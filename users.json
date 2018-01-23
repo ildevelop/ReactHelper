@@ -8,7 +8,7 @@
       "zip" : "250512330",
       "city": "Tel Aviv",
       "country" :"Istael",
-      "phone_number" : "0529876543"
+      "phone_number" : "052789456"
     },
     {
       "id": 2002,
@@ -18,7 +18,7 @@
       "zip" : "258412330",
       "city": "Ramat Gan",
       "country" :"Istael",
-      "phone_number" : "0529876543"
+      "phone_number" : "054789159"
     }
   ],
   "clients": [
@@ -40,7 +40,7 @@
       "zip" : "258412330",
       "city": "Ramat Gan",
       "country" :"Istael",
-      "phone_number" : "0529876543"
+      "phone_number" : "054159357"
     }
   ]
 

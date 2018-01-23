@@ -23,7 +23,11 @@ class ClientComponent extends Component {
   }
   filterList(event){
     var updatedList = this.state.users;
-    var username = updatedList.filter(user => user.fname.search(event.target.value) !== -1);
+    var username = updatedList.filter(
+      user => user.fname.search(event.target.value) !== -1 ||
+          user.city.search(event.target.value) !== -1 ||
+          user.phone_number.search(event.target.value) !== -1
+    );
     console.log("Result:",username);
     this.setState({searchUsers: username});
   }
