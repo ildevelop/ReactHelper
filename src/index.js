@@ -10,7 +10,7 @@ import {BrowserRouter} from 'react-router-dom'
 
 // Needed for onTouchTap
 // http://stackoverflow.com/a/34015469/988941
-injectTapEventPlugin();
+// injectTapEventPlugin();
 render(
   <ErrorBoundary>
     <BrowserRouter>

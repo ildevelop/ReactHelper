@@ -1,6 +1,14 @@
 import React, {Component} from 'react';
 import {TextField} from 'material-ui';
 import './ClientComponent.scss'
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableHeaderColumn,
+  TableRow,
+  TableRowColumn,
+} from 'material-ui/Table';
 
 class ClientComponent extends Component {
   constructor() {
@@ -8,9 +16,8 @@ class ClientComponent extends Component {
     this.state = {
       users: [],
       searchUsers:[],
-      searhname: ''
+      displayRowCheckbox: false
     }
-
   }
 
   componentDidMount() {
@@ -22,31 +29,28 @@ class ClientComponent extends Component {
 
   }
   filterList(event){
-    var updatedList = this.state.users;
-    var username = updatedList.filter(
+    let updatedList = this.state.users;
+    let username = updatedList.filter(
       user => user.fname.search(event.target.value) !== -1 ||
           user.city.search(event.target.value) !== -1 ||
           user.phone_number.search(event.target.value) !== -1
     );
-    console.log("Result:",username);
     this.setState({searchUsers: username});
   }
 
   getUsersView(users) {
     const usersView = users.map(user =>
-      <div key={user.id}>
-        <ul>
-          <li>First name: {user.fname}</li>
-          <li>Second name:{user.sname}</li>
-          <li>Street: {user.address}</li>
-          <li>PC: {user.PC}</li>
-          <li>City: {user.city}</li>
-          <li>Country: {user.country}</li>
-          <li>Phone: {user.phone_number}</li>
-          <li>Commission: {user.commission}</li>
-        </ul>
+        <TableRow key={user.id}>
+          <TableRowColumn></TableRowColumn>
+          <TableRowColumn>{user.fname}</TableRowColumn>
+          <TableRowColumn>{user.sname}</TableRowColumn>
+          <TableRowColumn>{user.address}</TableRowColumn>
+          <TableRowColumn>{user.zipp}</TableRowColumn>
+          <TableRowColumn>{user.city}</TableRowColumn>
+          <TableRowColumn>{user.country}</TableRowColumn>
+          <TableRowColumn>{user.phone_number}</TableRowColumn>
+        </TableRow>
 
-      </div>
     );
     return usersView;
   }
@@ -54,12 +58,33 @@ class ClientComponent extends Component {
     const usersView = this.getUsersView(this.state.searchUsers);
     return (
       <div className="clients">
-        <TextField
-          hintText="Clients"
-          floatingLabelText="find clients:"
-          onChange={this.filterList.bind(this)}
-        /><br />
-        {usersView}
+
+        <Table >
+          <TableHeader adjustForCheckbox= {this.state.displayRowCheckbox} displaySelectAll ={this.state.displayRowCheckbox}>
+            <TableRow >
+              <TableHeaderColumn><TextField
+                hintText="Clients"
+                className="textField"
+                floatingLabelText="find clients:"
+                onChange={this.filterList.bind(this)
+
+                }
+              /></TableHeaderColumn>
+              <TableHeaderColumn>First name</TableHeaderColumn>
+              <TableHeaderColumn>Second name</TableHeaderColumn>
+              <TableHeaderColumn>Street</TableHeaderColumn>
+              <TableHeaderColumn>City</TableHeaderColumn>
+              <TableHeaderColumn>Country</TableHeaderColumn>
+              <TableHeaderColumn>Zip</TableHeaderColumn>
+              <TableHeaderColumn>Phone</TableHeaderColumn>
+            </TableRow>
+          </TableHeader>
+          <TableBody displayRowCheckbox= {this.state.displayRowCheckbox}>
+            {usersView}
+          </TableBody>
+
+        </Table>
+
       </div>
     )
   }

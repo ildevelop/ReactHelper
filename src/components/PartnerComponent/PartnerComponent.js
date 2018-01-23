@@ -7,9 +7,7 @@ class PartnerComponent extends Component {
     this.state = {
       partners: [],
       searchUsers:[],
-      searhname: ''
     }
-
   }
 
   componentDidMount() {
@@ -21,9 +19,11 @@ class PartnerComponent extends Component {
 
   }
   filterList(event){
-    var updatedList = this.state.partners;
-    var username = updatedList.filter(user => user.fname.search(event.target.value) !== -1);
-    console.log("Result:",username);
+    let updatedList = this.state.partners;
+    let username = updatedList.filter(
+      user => user.fname.search(event.target.value) !== -1 ||
+        user.city.search(event.target.value) !== -1 ||
+        user.phone_number.search(event.target.value) !== -1);
     this.setState({searchUsers: username});
   }
 
