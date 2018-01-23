@@ -8,6 +8,8 @@ import Add from 'material-ui/svg-icons/action/add-shopping-cart';
 import Done from 'material-ui/svg-icons/maps/beenhere';
 import Process from 'material-ui/svg-icons/maps/local-shipping';
 import Partners from 'material-ui/svg-icons/communication/business';
+import axios from 'axios';
+
 import {
   BrowserRouter,
   Switch,
@@ -28,36 +30,31 @@ const style = {
     lineHeight: '24px',
   },
 };
-const MainMenuR = () => (
-  <main>
-    <Switch>
-      <Route exact path="/" component={<h2>Hello</h2>}/>
-      <Route exact path="/clients" component={<h2>clients</h2>}/>
-      <Route path="/partners" component={<h2>partners</h2>}/>
-    </Switch>
-  </main>
 
-);
-
-class MainMenu extends React.Component {
+class Dashboard extends React.Component {
   constructor() {
     super();
     this.state = {
+      clients : [],
+      partners : [],
       curentState: '',
       isClients: false,
       isPartners: false,
       isInProcess: false,
       isDone: false,
       isNewIntervention: false
-    }
+    };
+
+    this.setUsers('clients');
+    this.setUsers('partners');
   }
 
   switcher() {
     switch (this.state.curentState) {
-      case "Clients":
-        return( <ClientComponent/>);
+      case "clients":
+        return( <ClientComponent users={this.state.clients}/>);
       case "Partners":
-        return(<PartnerComponent/>);
+        return(<PartnerComponent partners={this.state.partners}/>);
       case "InProcess":
         return(<h2>Hello InProcess</h2>);
       case "Done":
@@ -66,10 +63,22 @@ class MainMenu extends React.Component {
         return(<h2>Hello NewIntervention</h2>);
     }
   }
+  setUsers(par) {
+    let self = this;
+    axios.get('/get_users')
+      .then(function (response) {
+        self.setState({ [par] : response.data[par]})
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+
 
   onClickMenu(qw) {
     this.setState({curentState: qw});
-    if (qw == "Clients") {
+    if (qw == "clients") {
+      this.setUsers('clients');
       this.setState({
         isClients: true,
         isPartners: false,
@@ -79,6 +88,7 @@ class MainMenu extends React.Component {
       })
     }
     if (qw == "Partners") {
+      this.setUsers('partners');
       this.setState({
         isClients: false,
         isPartners: true,
@@ -121,8 +131,8 @@ class MainMenu extends React.Component {
       <div>
         <Paper style={style.paper}>
           <Menu>
-            <MenuItem primaryText="Clients" rightIcon={<Assistant/>}
-                      onClick={this.onClickMenu.bind(this, "Clients")}/>
+            <MenuItem primaryText="clients" rightIcon={<Assistant/>}
+                      onClick={this.onClickMenu.bind(this, "clients")}/>
             <Divider/>
             <MenuItem primaryText="Partners" rightIcon={<Partners/>}
                       onClick={this.onClickMenu.bind(this, "Partners")}/>
@@ -145,4 +155,4 @@ class MainMenu extends React.Component {
   }
 }
 
-export default MainMenu
+export default Dashboard

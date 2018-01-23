@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import AppBar from 'material-ui/AppBar';
 import Loading from '../components/Loading';
-import MainMenu from '../components/Dashboard/Dashboard';
+import Dashboard from '../components/Dashboard/Dashboard';
 import FlatButton from 'material-ui/FlatButton';
 import Login from './../components/Login/Login'
 import {
@@ -14,7 +14,7 @@ import {
 
 const Main = () => (
     <Switch>
-      <Route exact path="/" component={MainMenu}/>
+      <Route exact path="/" component={Dashboard}/>
       <Route path="/login" component={() => (<Login/>)}/>
     </Switch>
 );

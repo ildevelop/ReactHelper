@@ -1,37 +1,41 @@
 {
   "partners": [
      {
+       "id": 2001,
       "fname" : "nik",
       "sname" : "nik",
       "address": "mozes ehyda 13 ",
       "zip" : "250512330",
-      "city": "Ramat Gan",
+      "city": "Tel Aviv",
       "country" :"Istael",
       "phone_number" : "0529876543"
     },
     {
+      "id": 2002,
       "fname" : "ron",
       "sname" : "ron",
-      "address": "mozes ehyda 13 ",
+      "address": "mozes 13 ",
       "zip" : "258412330",
       "city": "Ramat Gan",
       "country" :"Istael",
       "phone_number" : "0529876543"
     }
   ],
-  "users": [
+  "clients": [
     {
+      "id": 1001,
       "fname" : "ilya",
       "sname" : "radu",
       "address": "mozes ehyda 13 ",
       "zip" : "250512330",
-      "city": "Ramat Gan",
+      "city": "Ashdod",
       "country" :"Istael",
       "phone_number" : "0529876543"
     },
     {
+      "id": 1002,
       "fname" : "lior",
-      "sname" : "radu",
+      "sname" : "amar",
       "address": "mozes ehyda 13 ",
       "zip" : "258412330",
       "city": "Ramat Gan",

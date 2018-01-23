@@ -1,49 +1,35 @@
 import React, {Component} from 'react';
-import axios from 'axios';
 import {TextField} from 'material-ui';
 
 class PartnerComponent extends Component {
   constructor() {
     super();
     this.state = {
-      users: []
+      partners: [],
+      searchUsers:[],
+      searhname: ''
     }
 
   }
 
+  componentDidMount() {
+    this.setState({searchUsers:this.state.partners});
+
+  }
   componentWillMount() {
-    this.setUsers();
-  }
+    this.setState({partners:this.props.partners});
 
-  render() {
-    const users = this.state.users;
-    const usersView = this.getUsersView(users);
-    return (
-      <div className="clients">
-        <TextField
-          hintText="Partners"
-          floatingLabelText="find partners:"
-        /><br />
-        {usersView}
-      </div>
-    )
   }
-
-  setUsers() {
-    let self = this;
-    axios.get('/get_users')
-      .then(function (response) {
-        self.setState({users: response.data['partners']})
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-    console.log(this.state.users);
+  filterList(event){
+    var updatedList = this.state.partners;
+    var username = updatedList.filter(user => user.fname.search(event.target.value) !== -1);
+    console.log("Result:",username);
+    this.setState({searchUsers: username});
   }
 
   getUsersView(users) {
     const usersView = users.map(user =>
-      <div key={user.name}>
+      <div key={user.id}>
         <ul>
           <li>First name: {user.fname}</li>
           <li>Second name:{user.sname}</li>
@@ -58,6 +44,19 @@ class PartnerComponent extends Component {
       </div>
     );
     return usersView;
+  }
+  render() {
+    const usersView = this.getUsersView(this.state.searchUsers);
+    return (
+      <div className="clients">
+        <TextField
+          hintText="Clients"
+          floatingLabelText="find clients:"
+          onChange={this.filterList.bind(this)}
+        /><br />
+        {usersView}
+      </div>
+    )
   }
 }
 
