@@ -15,6 +15,7 @@ import {
   Link
 } from 'react-router-dom';
 import ClientComponent from "../ClientComponent/ClientComponent";
+import PartnerComponent from "../PartnerComponent/PartnerComponent";
 
 const style = {
   paper: {
@@ -56,7 +57,7 @@ class MainMenu extends React.Component {
       case "Clients":
         return( <ClientComponent/>);
       case "Partners":
-        return(<h2>Hello Partners</h2>);
+        return(<PartnerComponent/>);
       case "InProcess":
         return(<h2>Hello InProcess</h2>);
       case "Done":
@@ -69,7 +70,6 @@ class MainMenu extends React.Component {
   onClickMenu(qw) {
     this.setState({curentState: qw});
     if (qw == "Clients") {
-      console.log(qw);
       this.setState({
         isClients: true,
         isPartners: false,
@@ -79,7 +79,6 @@ class MainMenu extends React.Component {
       })
     }
     if (qw == "Partners") {
-      console.log(qw);
       this.setState({
         isClients: false,
         isPartners: true,
@@ -89,8 +88,6 @@ class MainMenu extends React.Component {
       })
     }
     if (qw == "InProcess") {
-      console.log(qw);
-
       this.setState({
         isClients: false,
         isPartners: false,
@@ -100,8 +97,6 @@ class MainMenu extends React.Component {
       })
     }
     if (qw == "Done") {
-      console.log(qw);
-
       this.setState({
         isClients: false,
         isPartners: false,
@@ -111,8 +106,6 @@ class MainMenu extends React.Component {
       })
     }
     if (qw == "NewIntervention") {
-      console.log(qw);
-
       this.setState({
         isClients: false,
         isPartners: false,
