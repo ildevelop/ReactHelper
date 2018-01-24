@@ -1,5 +1,14 @@
 import React, {Component} from 'react';
 import {TextField} from 'material-ui';
+import './PartnerComponent.scss';
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableHeaderColumn,
+  TableRow,
+  TableRowColumn,
+} from 'material-ui/Table';
 
 class PartnerComponent extends Component {
   constructor() {
@@ -7,6 +16,7 @@ class PartnerComponent extends Component {
     this.state = {
       partners: [],
       searchUsers:[],
+      displayRowCheckbox: false
     }
   }
 
@@ -29,19 +39,17 @@ class PartnerComponent extends Component {
 
   getUsersView(users) {
     const usersView = users.map(user =>
-      <div key={user.id}>
-        <ul>
-          <li>First name: {user.fname}</li>
-          <li>Second name:{user.sname}</li>
-          <li>Street: {user.address}</li>
-          <li>PC: {user.PC}</li>
-          <li>City: {user.city}</li>
-          <li>Country: {user.country}</li>
-          <li>Phone: {user.phone_number}</li>
-          <li>Commission: {user.commission}</li>
-        </ul>
-
-      </div>
+      <TableRow key={user.id}>
+        <TableRowColumn></TableRowColumn>
+        <TableRowColumn>{user.fname}</TableRowColumn>
+        <TableRowColumn>{user.sname}</TableRowColumn>
+        <TableRowColumn>{user.address}</TableRowColumn>
+        <TableRowColumn>{user.zipp}</TableRowColumn>
+        <TableRowColumn>{user.city}</TableRowColumn>
+        <TableRowColumn>{user.country}</TableRowColumn>
+        <TableRowColumn>{user.phone_number}</TableRowColumn>
+        <TableRowColumn>{user.commission}</TableRowColumn>
+      </TableRow>
     );
     return usersView;
   }
@@ -49,12 +57,32 @@ class PartnerComponent extends Component {
     const usersView = this.getUsersView(this.state.searchUsers);
     return (
       <div className="clients">
-        <TextField
-          hintText="Clients"
-          floatingLabelText="find clients:"
-          onChange={this.filterList.bind(this)}
-        /><br />
-        {usersView}
+        <Table >
+          <TableHeader adjustForCheckbox= {this.state.displayRowCheckbox} displaySelectAll ={this.state.displayRowCheckbox}>
+            <TableRow >
+              <TableHeaderColumn><TextField
+                hintText="Clients"
+                className="textField"
+                floatingLabelText="find clients:"
+                onChange={this.filterList.bind(this)
+
+                }
+              /></TableHeaderColumn>
+              <TableHeaderColumn>First name</TableHeaderColumn>
+              <TableHeaderColumn>Second name</TableHeaderColumn>
+              <TableHeaderColumn>Street</TableHeaderColumn>
+              <TableHeaderColumn>City</TableHeaderColumn>
+              <TableHeaderColumn>Country</TableHeaderColumn>
+              <TableHeaderColumn>Zip</TableHeaderColumn>
+              <TableHeaderColumn>Phone</TableHeaderColumn>
+              <TableHeaderColumn>Commission</TableHeaderColumn>
+            </TableRow>
+          </TableHeader>
+          <TableBody displayRowCheckbox= {this.state.displayRowCheckbox}>
+            {usersView}
+          </TableBody>
+
+        </Table>
       </div>
     )
   }

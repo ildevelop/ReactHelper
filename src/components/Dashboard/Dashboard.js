@@ -10,12 +10,6 @@ import Process from 'material-ui/svg-icons/maps/local-shipping';
 import Partners from 'material-ui/svg-icons/communication/business';
 import axios from 'axios';
 
-import {
-  BrowserRouter,
-  Switch,
-  Route,
-  Link
-} from 'react-router-dom';
 import ClientComponent from "../ClientComponent/ClientComponent";
 import PartnerComponent from "../PartnerComponent/PartnerComponent";
 
