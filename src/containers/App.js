@@ -4,8 +4,6 @@ import Loading from '../components/Loading';
 import Dashboard from '../components/Dashboard/Dashboard';
 import FlatButton from 'material-ui/FlatButton';
 import Login from './../components/Login/Login'
-import AuthService from './../AuthService'
-import withAuth from './../withAuth'
 import {
   BrowserRouter as Router,
   Switch,
@@ -13,7 +11,6 @@ import {
   Link
 } from 'react-router-dom';
 
-const Auth = new AuthService();
 const Main = () => (
     <Switch>
       <Route exact path="/" component={Dashboard}/>
@@ -28,12 +25,8 @@ class App extends Component {
     this.state = {
       loading:false
     };
-    this.handleLogout = this.handleLogout.bind(this);
   }
-  handleLogout(){
-    Auth.logout();
-    this.props.history.replace('/login')
-  }
+
   render() {
     return (
       <div>
@@ -66,4 +59,4 @@ class App extends Component {
   }
 }
 
-export default withAuth(App);
+export default App;
