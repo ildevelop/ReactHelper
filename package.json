@@ -5,6 +5,7 @@
   "scripts": {
     "startWin": "set  REACT_APP_TEST=true&& node server.js",
     "startUb": " REACT_APP_TEST='true' node server.js",
+    "start": "node server.js",
     "build": "cross-env BABEL_ENV=production ./node_modules/.bin/webpack --config webpack.config.production.js"
   },
   "repository": {
@@ -23,8 +24,9 @@
   "dependencies": {
     "axios": "^0.17.1",
     "babel-runtime": "^6.20.0",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
     "jsonwebtoken": "^8.1.1",
-    "jwt-decode": "^2.2.0",
     "material-design-icons": "^3.0.1",
     "material-ui": "^0.19.4",
     "prop-types": "^15.6.0",

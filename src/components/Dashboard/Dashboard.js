@@ -29,6 +29,7 @@ class Dashboard extends React.Component {
   constructor() {
     super();
     this.state = {
+      display: false,
       clients : [],
       partners : [],
       curentState: '',
@@ -121,6 +122,12 @@ class Dashboard extends React.Component {
   }
 
   render() {
+    const todisplay = this.state.display;
+    if (!todisplay){
+      return (
+        <div><h1>Sorry</h1></div>
+      )
+    }
     return (
       <div>
         <Paper style={style.paper}>
