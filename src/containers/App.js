@@ -4,18 +4,65 @@ import Loading from '../components/Loading';
 import Dashboard from '../components/Dashboard/Dashboard';
 import FlatButton from 'material-ui/FlatButton';
 import Login from './../components/Login/Login'
+import axios from 'axios';
+
 import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link
+  Link,
+  Redirect,
+  withRouter
 } from 'react-router-dom';
+
+export const getAuthentication = {
+  isAuthenticated: false,
+  authenticate(cb) {
+    let token = localStorage.getItem('token');
+    let self = this;
+        axios.post('/authenticate',  {
+        token: token
+      })
+      .then(function (response) {
+        let body = response.data['status']
+        if (body === 'approved'){
+        self.isAuthenticated = true;
+        setTimeout(cb, 1);
+      }
+      else{
+        localStorage.removeItem('token');
+        self.isAuthenticated = false;
+      }
+      })
+      .catch(function (error) {
+        console.log(error);
+        self.isAuthenticated = false;
+      });
+  },
+  signout(cb) {
+    this.isAuthenticated = false
+    localStorage.removeItem('token');
+    setTimeout(cb, 1);
+  }
+}
+
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route {...rest} render={props => (
+    getAuthentication.isAuthenticated ? (
+      <Component {...props}/>
+    ) : (
+      <Redirect to={{
+        pathname: '/login',
+        state: { from: '/dashboard' }
+      }}/>
+    )
+  )}/>
+)
 
 const Main = () => (
     <Switch>
-      <Route exact path="/" component={Dashboard}/>
+      <PrivateRoute path="/dashboard" component={Dashboard} />
       <Route path="/login" component={() => <Login/>}/>
-      <Route exact path="/logout" component={() => <h2>logout</h2>}/>
     </Switch>
 );
 
@@ -26,7 +73,12 @@ class App extends Component {
       loading:false
     };
   }
-
+  logout(){
+    this.setState({ loading: true });
+    getAuthentication.signout(() => {
+      this.setState({ loading: false })
+  });
+  }
   render() {
     return (
       <div>
@@ -37,7 +89,7 @@ class App extends Component {
           iconElementRight={<div className="header-menu">
             <Link to="/">  <FlatButton label="HOME" primary={true} /></Link>
             <Link to="/login">  <FlatButton label="LOG IN" primary={true} /></Link>
-            <Link to="/logout">  <FlatButton label="logout" primary={true}  /></Link>
+           <FlatButton onClick={this.logout.bind(this)} label="logout" primary={true}  />
 
           </div>}
           iconStyleRight={{

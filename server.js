@@ -10,17 +10,18 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 
 
-function passAuthentication(username, password){
+const passAuthentication = (username, password) =>{
   let users = JSON.parse(fs.readFileSync('./users.json', 'utf8'))['clients'];
   let user = users.find(function (user) { return user.fname === username
     && user.phone_number === password; });
-    console.log(user);
-    return user !== undefined
+    return user !== undefined;
 }
-function getExpressApplication(application){
+
+const getExpressApplication = (application) =>{
+
   application.use(bodyParser.json());
+
   application.get('/some/path', function(req, res) {
-      console.log('test1');
     res.json({ custom: 'response' });
   });
 
@@ -36,20 +37,31 @@ function getExpressApplication(application){
     }
   });
 
-  application.post('/authenticate', function(req, res){
-    console.log(req.body);
+  application.post('/get_token', function(req, res){
     res.setHeader('Content-Type', 'application/json');
     let username = req.body['username'];
     let password = req.body['password'];
-    console.log(username);
     if (passAuthentication(username, password)){
         let token = jwt.sign({ body: req.body}, 'shhhhh');
         let decoded = jwt.verify(token, 'shhhhh');
-
         res.send(JSON.stringify({ token: token}));
       }
     else {
-    res.send(JSON.stringify({ 'status': 'wrong credentials'}));
+    res.send(401, JSON.stringify({ 'status': 'wrong credentials'}));
+    }
+  });
+
+  application.post('/authenticate', function(req, res){
+    res.setHeader('Content-Type', 'application/json');
+    let token = req.body['token'];
+    let decoded = jwt.verify(token, 'shhhhh')['body'];
+    let username = decoded['username'];
+    let password = decoded['password'];
+    if (passAuthentication(username, password)){
+        res.send(JSON.stringify({ 'status': 'approved'}));
+      }
+    else {
+    res.send(401, JSON.stringify({ 'status': 'not permitted'}));
     }
   });
 
@@ -60,9 +72,6 @@ function getExpressApplication(application){
 new WebpackDevServer(webpack(config), {
   publicPath: config.output.publicPath,
   hot: true,
-  headers: {
-  'Content-Type': 'application/json'
-  },
   historyApiFallback: true,
   setup: function (app){
     getExpressApplication(app);
