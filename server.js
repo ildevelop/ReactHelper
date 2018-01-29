@@ -10,23 +10,33 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 
 
-const passAuthentication = (username, password) =>{
+const passAuthentication = (username, password) => {
   let users = JSON.parse(fs.readFileSync('./users.json', 'utf8'))['clients'];
   let user = users.find(function (user) { return user.fname === username
     && user.phone_number === password; });
     return user !== undefined;
-}
+};
 
-const getExpressApplication = (application) =>{
+const getExpressApplication = (application) => {
 
   application.use(bodyParser.json());
-
   application.get('/some/path', function(req, res) {
     res.json({ custom: 'response' });
   });
 
   application.get('/get_users', function(req, res) {
         if(process.env.REACT_APP_TEST === 'true') {
+      fs.readFile('./users.json', 'utf8', function (err, data) {
+        if (err) throw err;
+        res.json(JSON.parse(data));
+      });
+    }
+    else{
+      res.json({'1':1})
+    }
+  });
+  application.get('/get_users', function(req, res) {
+    if(process.env.REACT_APP_TEST === 'true') {
       fs.readFile('./users.json', 'utf8', function (err, data) {
         if (err) throw err;
         res.json(JSON.parse(data));
@@ -67,7 +77,7 @@ const getExpressApplication = (application) =>{
 
   return application;
 
-}
+};
 
 new WebpackDevServer(webpack(config), {
   publicPath: config.output.publicPath,
