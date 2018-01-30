@@ -8,17 +8,37 @@ const port = 3000;
 const hostname = 'localhost';
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
+var person = require('./person.json');
+var mongo = require('mongodb');
+
+// Incert One to DB
+var MongoClient = mongo.MongoClient;
+var url = 'mongodb://localhost:27017/test12';
+var format = require('util').format;
+
+
+MongoClient.connect(url, function(err, db) {
+  if (err) throw err;
+  console.log('Connected established!');
+  var collection = db.collection('usersIlya');
+  // var user = { name: '8888', lastName: '999' };
+  collection.insertMany(person, function(err, result) {
+    if (err) {console.log('OOPS something wrong',err); return}
+    console.log(result.ops);
+    db.close();
+  });
+});
+
 
 
 const passAuthentication = (username, password) => {
-  let users = JSON.parse(fs.readFileSync('./users.json', 'utf8'))['clients'];
-  let user = users.find(function (user) { return user.fname === username
-    && user.phone_number === password; });
+  let users = JSON.parse(fs.readFileSync('./users.json', 'utf8'))['permission'];
+  let user = users.find(function (user) { return user.email === username
+    && user.password === password; });
     return user !== undefined;
 };
 
 const getExpressApplication = (application) => {
-
   application.use(bodyParser.json());
   application.get('/some/path', function(req, res) {
     res.json({ custom: 'response' });
@@ -57,7 +77,7 @@ const getExpressApplication = (application) => {
         res.send(JSON.stringify({ token: token}));
       }
     else {
-    res.send(401, JSON.stringify({ 'status': 'wrong credentials'}));
+    res.send(401, JSON.stringify({ 'status': 'wrong credentials!!'}));
     }
   });
 

@@ -64,6 +64,16 @@
       "phone_number" : "054789159",
       "commission" : "25%"
     }
+  ],
+  "permission":[
+    {
+      "id": 5001,
+      "authorization": "admin",
+      "name": "ilya",
+      "email": "ilya@gmail.com",
+      "password": "test"
+    }
+
   ]
 
 }
