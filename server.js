@@ -45,18 +45,8 @@ const getExpressApplication = (application) => {
   });
 
   application.get('/get_users', function(req, res) {
-        if(process.env.REACT_APP_TEST === 'true') {
-      fs.readFile('./users.json', 'utf8', function (err, data) {
-        if (err) throw err;
-        res.json(JSON.parse(data));
-      });
-    }
-    else{
-      res.json({'1':1})
-    }
-  });
-  application.get('/get_users', function(req, res) {
     if(process.env.REACT_APP_TEST === 'true') {
+
       fs.readFile('./users.json', 'utf8', function (err, data) {
         if (err) throw err;
         res.json(JSON.parse(data));
