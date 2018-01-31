@@ -10,10 +10,10 @@ import Done from 'material-ui/svg-icons/maps/beenhere';
 import Process from 'material-ui/svg-icons/maps/local-shipping';
 import Partners from 'material-ui/svg-icons/communication/business';
 import axios from 'axios';
-import RaisedButton from 'material-ui/RaisedButton';
 import ClientComponent from '../ClientComponent/ClientComponent';
 import PartnerComponent from '../PartnerComponent/PartnerComponent';
 import Popover from 'material-ui/Popover';
+import NewIntervention from "../NewIntervention/NewIntervention";
 
 const style = {
   paper: {
@@ -69,11 +69,11 @@ class Dashboard extends React.Component {
       case "NewIntervention":
         switch (this.state.curentStateNewIntervention) {
           case "newClients":
-            return ( <div>2 hello clients</div>);
+            return ( <NewIntervention position="Clients" open={true}/>);
           case "newPartner":
-            return (<div>2 hello partner</div>);
+            return (<NewIntervention position="Partner" open={true}/>);
           case "newProcess":
-            return (<div>2 hello process</div>);
+            return (<NewIntervention position="Process" open={true}/>);
         }
     }
   }
@@ -150,6 +150,7 @@ class Dashboard extends React.Component {
     this.setState({curentStateNewIntervention: qw});
     if (qw == "newClients") {
       this.setState({
+        open:false,
         isNewClients: true,
         isNewPartners: false,
         isNewProcess: false,
@@ -157,6 +158,7 @@ class Dashboard extends React.Component {
     }
     if (qw == "newPartner") {
       this.setState({
+        open:false,
         isNewClients: false,
         isNewPartners: true,
         isNewProcess: false,
@@ -164,6 +166,7 @@ class Dashboard extends React.Component {
     }
     if (qw == "newProcess") {
       this.setState({
+        open:false,
         isNewClients: false,
         isNewPartners: false,
         isNewProcess: true,
@@ -189,7 +192,6 @@ class Dashboard extends React.Component {
             <MenuItem
               primaryText="New Intervention" to="/new_intervention" rightIcon={<Add/>}
               onClick={this.handleClick}
-              label="Click me"
             />
             <Popover
               open={this.state.open}
