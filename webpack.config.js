@@ -1,100 +1,59 @@
-/**
- * WEBPACK CONFIG
- *
- * Notes on config properties:
- *
- * 'entry'
- * Entry point for the bundle.
- *
- * 'output'
- * If you pass an array - the modules are loaded on startup. The last one is exported.
- *
- * 'resolve'
- * Array of file extensions used to resolve modules.
- *
- * 'webpack-dev-server'
- * Is a little node.js Express server, which uses the webpack-dev-middleware to
- * serve a webpack bundle. It also has a little runtime which is connected to
- * the server via Socket.IO.
- *
- * 'webpack/hot/dev-server'
- * By adding a script to your index.html file and a special entry point in your
- * configuration you will be able to get live reloads when doing changes to your
- * files.
- *
- * devtool: 'eval-source-map'
- * http://www.cnblogs.com/Answer1215/p/4312265.html
- * The source map file will only be downloaded if you have source maps enabled
- * and your dev tools open.
- *
- * HotModuleReplacementPlugin()
- * Hot Module Replacement (HMR) exchanges, adds or removes modules while an
- * application is running without page reload.
- *
- * NoErrorsPlugin()
- * Hot loader is better when used with NoErrorsPlugin and hot/only-dev-server
- * since it eliminates page reloads altogether and recovers after syntax errors.
- *
- * 'react-hot'
- * React Hot Loader is a plugin for Webpack that allows instantaneous live
- * refresh without losing state while editing React components.
- *
- * 'babel'
- * Babel enables the use of ES6 today by transpiling your ES6 JavaScript into equivalent ES5 source
- * that is actually delivered to the end user browser.
- */
-
 const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const outputPath = path.resolve(__dirname, './dist');
 
-module.exports = {
-  entry: [
-    'webpack-dev-server/client?http://localhost:3000',
-    'webpack/hot/dev-server',
-    './src/index'
-  ],
+const webpackConfig = {
+  entry: {
+    app: [
+      path.resolve(__dirname, './src/index.js')
+    ]
+  },
   output: {
-    path: __dirname,
-    filename: 'bundle.js'
+    path: path.resolve(__dirname, './dist'),
+    filename: '[name].js'
   },
-  resolve: {
-    extensions: ['', '.js']
-  },
-  devtool: 'cheap-module-source-map',
-  plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin(),
-    new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, './index.html'),
-      favicon: path.resolve(__dirname, './favicon.ico')
-    })
-  ],
   module: {
-    loaders: [
+    rules: [
       {
-        test: /\.jsx?$/,
-        loaders: ['babel'],
+        test: /\.js$/,
         exclude: /node_modules/,
-        include: path.join(__dirname, 'src')
+        use: 'babel-loader'
       },
       {
         test: /\.scss$/,
-        loader: 'style!css!sass',
         exclude: /node_modules/,
         use: [
           'style-loader',
           'css-loader',
           'sass-loader'
         ]
-      }
-      ,
+      },
       {
-        test: /\.(jpe?g|png|gif|svg)(\?[a-z0-9=.]+)?$/,
-        loaders: [
-          'url?hash=sha512&digest=hex&name=[hash].[ext]'
-        ]
+        test: /\.(gif|png|jpg|jpeg|svg)$/,
+        exclude: /node_modules/,
+        /*include: path.resolve(__dirname, './src/assets/'),*/
+        use: 'url-loader?limit=1000000&name=assets/[name]-[hash].[ext]'
       }
     ]
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, './index.html'),
+      filename: 'index.html',
+      path: outputPath
+    }),
+    new webpack.NamedModulesPlugin(),
+    new webpack.HotModuleReplacementPlugin()
+  ],
+  devServer: {
+    contentBase: path.resolve(__dirname, './dist'),
+    port: 3000,
+    historyApiFallback: true,
+    inline: true,
+    hot: true,
+    host: 'localhost'
   }
 };
+
+module.exports = webpackConfig;
