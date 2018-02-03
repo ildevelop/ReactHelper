@@ -14,6 +14,9 @@ import ClientComponent from '../ClientComponent/ClientComponent';
 import PartnerComponent from '../PartnerComponent/PartnerComponent';
 import Popover from 'material-ui/Popover';
 import NewIntervention from "../NewIntervention/NewIntervention";
+import Dialog from 'material-ui/Dialog';
+import TextField from 'material-ui/TextField';
+import FlatButton from 'material-ui/FlatButton';
 
 const style = {
   paper: {
@@ -26,6 +29,11 @@ const style = {
     lineHeight: '24px',
   },
 };
+
+const CLIENTS = 'clients';
+const PARTNERS = 'partners';
+const INPROCESS = 'inProcess';
+const DONE ='done';
 
 class Dashboard extends React.Component {
   constructor() {
@@ -40,14 +48,18 @@ class Dashboard extends React.Component {
       isInProcess: false,
       isDone: false,
       isNewIntervention: false,
-      open: false,
+      open : false,
+      popUpLabel : null,
       isNewClients: false,
       isNewPartners: false,
       isNewProcess: false,
+      openIntervention : false
     };
+    // this.handleIntervention = this.handleIntervention.bind(this);
+    this.handleClose = this.handleClose.bind(this);
 
-    this.setUsers('clients');
-    this.setUsers('partners');
+    this.setUsers(CLIENTS);
+    this.setUsers(PARTNERS);
   }
 
   handleRequestClose = () => {
@@ -58,23 +70,23 @@ class Dashboard extends React.Component {
 
   switcher() {
     switch (this.state.curentState) {
-      case "clients":
+      case CLIENTS:
         return ( <ClientComponent users={this.state.clients}/>);
-      case "Partners":
+      case PARTNERS:
         return (<PartnerComponent partners={this.state.partners}/>);
-      case "InProcess":
+      case INPROCESS:
         return (<h2>Hello InProcess</h2>);
-      case "Done":
+      case DONE:
         return (<h2>Hello Done</h2>);
-      case "NewIntervention":
-        switch (this.state.curentStateNewIntervention) {
-          case "newClients":
-            return ( <NewIntervention position="Clients" open={true}/>);
-          case "newPartner":
-            return (<NewIntervention position="Partner" open={true}/>);
-          case "newProcess":
-            return (<NewIntervention position="Process" open={true}/>);
-        }
+      // case "NewIntervention":
+      //   switch (this.state.curentStateNewIntervention) {
+      //     case "newClients":
+      //       return ( <NewIntervention position="Clients" open={true}/>);
+      //     case "newPartner":
+      //       return (<NewIntervention position="Partner" open={true}/>);
+      //     case "newProcess":
+      //       return (<NewIntervention position="Process" open={true}/>);
+      //   }
     }
   }
 
@@ -92,8 +104,8 @@ class Dashboard extends React.Component {
 
   onClickMenu(qw) {
     this.setState({curentState: qw});
-    if (qw == "clients") {
-      this.setUsers('clients');
+    if (qw == CLIENTS) {
+      this.setUsers(CLIENTS);
       this.setState({
         isClients: true,
         isPartners: false,
@@ -102,8 +114,8 @@ class Dashboard extends React.Component {
         isNewIntervention: false
       })
     }
-    if (qw == "Partners") {
-      this.setUsers('partners');
+    if (qw == PARTNERS) {
+      this.setUsers(PARTNERS);
       this.setState({
         isClients: false,
         isPartners: true,
@@ -112,7 +124,7 @@ class Dashboard extends React.Component {
         isNewIntervention: false
       })
     }
-    if (qw == "InProcess") {
+    if (qw == INPROCESS) {
       this.setState({
         isClients: false,
         isPartners: false,
@@ -121,7 +133,7 @@ class Dashboard extends React.Component {
         isNewIntervention: false
       })
     }
-    if (qw == "Done") {
+    if (qw == DONE) {
       this.setState({
         isClients: false,
         isPartners: false,
@@ -131,6 +143,7 @@ class Dashboard extends React.Component {
       })
     }
   }
+
   handleClick = (event) => {
     // This prevents ghost click.
     event.preventDefault();
@@ -146,83 +159,98 @@ class Dashboard extends React.Component {
 
     })
   };
+
   onClickAddNew(qw) {
-    this.setState({curentStateNewIntervention: qw});
-    if (qw == "newClients") {
-      this.setState({
-        open:false,
-        isNewClients: true,
-        isNewPartners: false,
-        isNewProcess: false,
-      })
-    }
-    if (qw == "newPartner") {
-      this.setState({
-        open:false,
-        isNewClients: false,
-        isNewPartners: true,
-        isNewProcess: false,
-      })
-    }
-    if (qw == "newProcess") {
-      this.setState({
-        open:false,
-        isNewClients: false,
-        isNewPartners: false,
-        isNewProcess: true,
-      })
-    }
+    this.setState({openIntervention : true, open : false, popUpLabel : qw});
   }
+
+  handleClose(){
+    this.setState({openIntervention : false});
+  }
+
   render() {
-    return (
-      <div>
-        <Paper style={style.paper}>
-          <Menu>
-            <MenuItem primaryText="clients" rightIcon={<Assistant/>}
-                      onClick={this.onClickMenu.bind(this, "clients")}/>
-            <Divider/>
-            <MenuItem primaryText="Partners" rightIcon={<Partners/>}
-                      onClick={this.onClickMenu.bind(this, "Partners")}/>
-            <Divider/>
-            <MenuItem primaryText="In Process" to="/in_process" rightIcon={<Process/>}
-                      onClick={this.onClickMenu.bind(this, "InProcess")}/>
-            <Divider/>
-            <MenuItem primaryText="Done" to="/done" rightIcon={<Done/>} onClick={this.onClickMenu.bind(this, "Done")}/>
-            <Divider/>
-            <MenuItem
-              primaryText="New Intervention" to="/new_intervention" rightIcon={<Add/>}
-              onClick={this.handleClick}
-            />
-            <Popover
-              open={this.state.open}
-              anchorEl={this.state.anchorEl}
-              anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-              targetOrigin={{horizontal: 'left', vertical: 'top'}}
-              onRequestClose={this.handleRequestClose}
-            >
-              <Menu>
-                <MenuItem
-                  primaryText="Add new Client"
-                  onClick={this.onClickAddNew.bind(this, "newClients")}
-                  rightIcon={<AddNew hoverColor="#23822e" color="#2cde41"/>}/>
-                <MenuItem
-                  primaryText="Add new Partners"
-                  onClick={this.onClickAddNew.bind(this, "newPartner")}
-                  rightIcon={<AddNew hoverColor="#23822e" color="#2cde41"/>}/>
-                <MenuItem
-                  primaryText="Add new Process"
-                  onClick={this.onClickAddNew.bind(this, "newProcess")}
-                  rightIcon={<AddNew hoverColor="#23822e" color="#2cde41"/>}/>
-              </Menu>
-            </Popover>
-          </Menu>
-        </Paper>
+    const actions = [
 
-        {
-          this.switcher()
-        }
+      <FlatButton key ={1000}
+        label="Cancel"
+        primary={true}
+        onClick={this.handleClose}
+      />,
+      <FlatButton key ={2000}
+        label="Submit"
+        primary={true}
+        keyboardFocused={true}
+        onClick={this.handleClose}
+      />
+    ];
 
-      </div>
+    return ([
+        <div key ={3000}>
+          <Paper style={style.paper}>
+            <Menu >
+              <MenuItem primaryText="clients" rightIcon={<Assistant/>}
+                        onClick={this.onClickMenu.bind(this, CLIENTS)}/>
+              <Divider />
+              <MenuItem  primaryText="Partners" rightIcon={<Partners/>}
+                        onClick={this.onClickMenu.bind(this, PARTNERS)}/>
+              <Divider />
+              <MenuItem primaryText="In Process" to="/in_process" rightIcon={<Process/>}
+                        onClick={this.onClickMenu.bind(this, INPROCESS)}/>
+              <Divider />
+              <MenuItem  primaryText="Done" to="/done" rightIcon={<Done/>} onClick={this.onClickMenu.bind(this, DONE)}/>
+              <Divider />
+              <MenuItem
+
+                primaryText="New Intervention" to="/new_intervention" rightIcon={<Add/>}
+                onClick={this.handleClick}
+              />
+              <Popover
+                open={this.state.open}
+                anchorEl={this.state.anchorEl}
+                anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                onRequestClose={this.handleRequestClose}
+              >
+                <Menu >
+                  <MenuItem
+
+                    primaryText="Add new Client"
+                    onClick={this.onClickAddNew.bind(this, CLIENTS)}
+                    rightIcon={<AddNew hoverColor="#23822e" color="#2cde41"/>}/>
+                  <MenuItem
+                    primaryText="Add new Partners"
+                    onClick={this.onClickAddNew.bind(this, PARTNERS)}
+                    rightIcon={<AddNew hoverColor="#23822e" color="#2cde41"/>}/>
+                  <MenuItem
+                    primaryText="Add new Process"
+                    onClick={this.onClickAddNew.bind(this, INPROCESS)}
+                    rightIcon={<AddNew hoverColor="#23822e" color="#2cde41"/>}/>
+                </Menu>
+              </Popover>
+            </Menu>
+          </Paper>
+        </div>,
+        <div key={4000}>{ this.switcher()}</div>,
+        <Dialog key ={5000}
+          actions={actions}
+          modal={false}
+          open={this.state.openIntervention}
+          onRequestClose={this.handleClose}
+          children={
+            <div>
+              <h2 >
+                Add new {this.state.popUpLabel}:
+              </h2>
+              <TextField  hintText="Bob" floatingLabelText="Your name"/>
+              <br />
+              <TextField hintText="Israel Tel Aviv" floatingLabelText="Your Address"/>
+              <br />
+              <TextField hintText="bob@gmail.com" floatingLabelText="Your E-mail "/>
+              <br />
+            </div>
+          }
+        />
+      ]
     )
   }
 }
