@@ -13,27 +13,23 @@ import axios from 'axios';
 import ClientComponent from '../ClientComponent/ClientComponent';
 import PartnerComponent from '../PartnerComponent/PartnerComponent';
 import Popover from 'material-ui/Popover';
-import NewIntervention from "../NewIntervention/NewIntervention";
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
+import './Dashboard.scss'
 
-const style = {
-  paper: {
-    backgroundColor: '#eee',
-    display: 'inline-block',
-    float: 'left'
-  },
-  rightIcon: {
-    textAlign: 'center',
-    lineHeight: '24px',
-  },
-};
-
-const CLIENTS = 'clients';
-const PARTNERS = 'partners';
-const INPROCESS = 'inProcess';
-const DONE ='done';
+const CLIENTS = 'clients',
+  PARTNERS = 'partners',
+  INPROCESS = 'inProcess',
+  DONE = 'done',
+  NEWUSERNAME = 'newUsername',
+  NEWSURNAME = 'newSurname',
+  NEWPHONE = 'newPhone',
+  NEWEMAIL = 'newEmail',
+  NEWCITY = 'newCity',
+  NEWSTREET = 'newStreet',
+  NEWZIP = 'newZIP',
+  NEWCOMMISSION = 'newCommission';
 
 class Dashboard extends React.Component {
   constructor() {
@@ -42,22 +38,22 @@ class Dashboard extends React.Component {
       clients: [],
       partners: [],
       curentState: '',
-      curentStateNewIntervention:'',
+      curentStateNewIntervention: '',
       isClients: false,
       isPartners: false,
       isInProcess: false,
       isDone: false,
       isNewIntervention: false,
-      open : false,
-      popUpLabel : null,
+      open: false,
+      popUpLabel: null,
       isNewClients: false,
       isNewPartners: false,
       isNewProcess: false,
-      openIntervention : false
-    };
-    // this.handleIntervention = this.handleIntervention.bind(this);
-    this.handleClose = this.handleClose.bind(this);
+      openIntervention: false,
+      newInterventionObj: {}
 
+    };
+    this.handleClose = this.handleClose.bind(this);
     this.setUsers(CLIENTS);
     this.setUsers(PARTNERS);
   }
@@ -78,15 +74,6 @@ class Dashboard extends React.Component {
         return (<h2>Hello InProcess</h2>);
       case DONE:
         return (<h2>Hello Done</h2>);
-      // case "NewIntervention":
-      //   switch (this.state.curentStateNewIntervention) {
-      //     case "newClients":
-      //       return ( <NewIntervention position="Clients" open={true}/>);
-      //     case "newPartner":
-      //       return (<NewIntervention position="Partner" open={true}/>);
-      //     case "newProcess":
-      //       return (<NewIntervention position="Process" open={true}/>);
-      //   }
     }
   }
 
@@ -104,7 +91,7 @@ class Dashboard extends React.Component {
 
   onClickMenu(qw) {
     this.setState({curentState: qw});
-    if (qw == CLIENTS) {
+    if (qw === CLIENTS) {
       this.setUsers(CLIENTS);
       this.setState({
         isClients: true,
@@ -114,7 +101,7 @@ class Dashboard extends React.Component {
         isNewIntervention: false
       })
     }
-    if (qw == PARTNERS) {
+    if (qw === PARTNERS) {
       this.setUsers(PARTNERS);
       this.setState({
         isClients: false,
@@ -124,7 +111,7 @@ class Dashboard extends React.Component {
         isNewIntervention: false
       })
     }
-    if (qw == INPROCESS) {
+    if (qw === INPROCESS) {
       this.setState({
         isClients: false,
         isPartners: false,
@@ -133,7 +120,7 @@ class Dashboard extends React.Component {
         isNewIntervention: false
       })
     }
-    if (qw == DONE) {
+    if (qw === DONE) {
       this.setState({
         isClients: false,
         isPartners: false,
@@ -160,45 +147,63 @@ class Dashboard extends React.Component {
     })
   };
 
+
   onClickAddNew(qw) {
-    this.setState({openIntervention : true, open : false, popUpLabel : qw});
+    this.setState({openIntervention: true, open: false, popUpLabel: "Add new " + qw});
   }
 
-  handleClose(){
-    this.setState({openIntervention : false});
+  /**
+   *
+   */
+  handleOnSubmitClose () {
+    let formData = {};
+    Object.keys(this.refs).forEach( (key) => formData[key] = this.refs[key].getValue());
+    this.setState({newInterventionObj:formData});
+    console.log('formData:==>', formData);
+    console.log('formData:==>', this.state);
+    this.setState({openIntervention: false});
+  }
+
+  handleClose() {
+    //console.log('this.dialogRef:==>', React.Children.forEach(this.dialogRef.props.children.props.children, chield => {
+    console.log('SELF', this.state.newUsername, this.state.newSurname, this.state.newPhone);
+    this.setState({openIntervention: false});
+
   }
 
   render() {
     const actions = [
 
-      <FlatButton key ={1000}
-        label="Cancel"
-        primary={true}
-        onClick={this.handleClose}
+      <FlatButton key={1000}
+                  label="Cancel"
+                  primary={true}
+                  onClick={this.handleClose}
       />,
-      <FlatButton key ={2000}
-        label="Submit"
-        primary={true}
-        keyboardFocused={true}
-        onClick={this.handleClose}
+      <FlatButton key={2000}
+                  label="Submit"
+                  type="submit"
+                  primary={true}
+                  keyboardFocused={true}
+                  onClick={this.handleOnSubmitClose.bind(this)}
+        // onSubmit={this.onSubmitDialog.bind(this)}
       />
     ];
 
     return ([
-        <div key ={3000}>
-          <Paper style={style.paper}>
-            <Menu >
+        <div key={3000}>
+          <Paper className="paper">
+            <Menu>
               <MenuItem primaryText="clients" rightIcon={<Assistant/>}
                         onClick={this.onClickMenu.bind(this, CLIENTS)}/>
-              <Divider />
-              <MenuItem  primaryText="Partners" rightIcon={<Partners/>}
+              <Divider/>
+              <MenuItem primaryText="Partners" rightIcon={<Partners/>}
                         onClick={this.onClickMenu.bind(this, PARTNERS)}/>
-              <Divider />
+              <Divider/>
               <MenuItem primaryText="In Process" to="/in_process" rightIcon={<Process/>}
                         onClick={this.onClickMenu.bind(this, INPROCESS)}/>
-              <Divider />
-              <MenuItem  primaryText="Done" to="/done" rightIcon={<Done/>} onClick={this.onClickMenu.bind(this, DONE)}/>
-              <Divider />
+              <Divider/>
+              <MenuItem primaryText="Done" to="/done" rightIcon={<Done/>} onClick={this.onClickMenu.bind(this, DONE)}/>
+              <Divider/>
               <MenuItem
 
                 primaryText="New Intervention" to="/new_intervention" rightIcon={<Add/>}
@@ -211,9 +216,8 @@ class Dashboard extends React.Component {
                 targetOrigin={{horizontal: 'left', vertical: 'top'}}
                 onRequestClose={this.handleRequestClose}
               >
-                <Menu >
+                <Menu>
                   <MenuItem
-
                     primaryText="Add new Client"
                     onClick={this.onClickAddNew.bind(this, CLIENTS)}
                     rightIcon={<AddNew hoverColor="#23822e" color="#2cde41"/>}/>
@@ -230,26 +234,56 @@ class Dashboard extends React.Component {
             </Menu>
           </Paper>
         </div>,
-        <div key={4000}>{ this.switcher()}</div>,
-        <Dialog key ={5000}
+        <div key={4000}>{this.switcher()}</div>,
+
+        <Dialog
+          key={5000}
+          title={this.state.popUpLabel}
           actions={actions}
           modal={false}
           open={this.state.openIntervention}
           onRequestClose={this.handleClose}
+          autoScrollBodyContent={true}
+
           children={
-            <div>
-              <h2 >
-                Add new {this.state.popUpLabel}:
-              </h2>
-              <TextField  hintText="Bob" floatingLabelText="Your name"/>
-              <br />
-              <TextField hintText="Israel Tel Aviv" floatingLabelText="Your Address"/>
-              <br />
-              <TextField hintText="bob@gmail.com" floatingLabelText="Your E-mail "/>
-              <br />
-            </div>
+              <div className="textFieldMain">
+                <div className="textField1" >
+                  <TextField hintText="Bob" ref="firstName" floatingLabelText="Your first name" defaultValue=""
+                  />
+                  <br/>
+                  <TextField hintText="Amar" ref="surName" floatingLabelText="Your surname"
+                  />
+                  <br/>
+                  <TextField hintText="0549876543" ref="phone" floatingLabelText="Phone"
+                  />
+                  <br/>
+                  <TextField hintText="bob@gmail.com" ref="email" floatingLabelText="Your E-mail "
+                  />
+                  <br/>
+                </div>
+                <div className="textField2">
+                  <TextField hintText="Tel Aviv" ref="city" floatingLabelText="City"
+                  />
+                  <br/>
+                  <TextField hintText="Jabotinsky 25" ref="street" floatingLabelText="Street"
+                  />
+                  <br/>
+                  <TextField hintText="7750505" ref="zip" floatingLabelText="ZIP"
+                  />
+                  <br/>
+                  {this.state.popUpLabel === "Add new partners" ?
+                    <TextField hintText="30%" floatingLabelText="Commission"
+                               ref="commission"
+                    /> : <br/>}
+                </div>
+
+
+              </div>
+
+
           }
         />
+
       ]
     )
   }
