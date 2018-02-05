@@ -39,14 +39,14 @@ class PartnerComponent extends Component {
 
   getUsersView(users) {
     const usersView = users.map(user =>
-      <TableRow key={user.id}>
+      <TableRow key={user._id}>
         <TableRowColumn></TableRowColumn>
         <TableRowColumn>{user.fname}</TableRowColumn>
         <TableRowColumn>{user.sname}</TableRowColumn>
         <TableRowColumn>{user.address}</TableRowColumn>
         <TableRowColumn>{user.zipp}</TableRowColumn>
         <TableRowColumn>{user.city}</TableRowColumn>
-        <TableRowColumn>{user.country}</TableRowColumn>
+        <TableRowColumn>{user.email}</TableRowColumn>
         <TableRowColumn>{user.phone_number}</TableRowColumn>
         <TableRowColumn>{user.commission}</TableRowColumn>
       </TableRow>
@@ -72,8 +72,8 @@ class PartnerComponent extends Component {
               <TableHeaderColumn>Second name</TableHeaderColumn>
               <TableHeaderColumn>Street</TableHeaderColumn>
               <TableHeaderColumn>City</TableHeaderColumn>
-              <TableHeaderColumn>Country</TableHeaderColumn>
               <TableHeaderColumn>Zip</TableHeaderColumn>
+              <TableHeaderColumn>Email</TableHeaderColumn>
               <TableHeaderColumn>Phone</TableHeaderColumn>
               <TableHeaderColumn>Commission</TableHeaderColumn>
             </TableRow>

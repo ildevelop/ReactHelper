@@ -52,7 +52,7 @@ const getExpressApplication = (application) => {
       MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         console.log('Connected to DB established!');
-        var collection = db.collection('person');
+        var collection = db.collection('clients');
         collection.find().toArray(function (err, res) {
           if (err) throw err;
           response.json(res);
@@ -65,7 +65,28 @@ const getExpressApplication = (application) => {
     }
   });
 
+  application.post('/add_client', function(req, response) {
+    response.setHeader('Content-Type', 'application/json');
+    let client = req.body['clients'];
+    console.log(client);
+    if (client){
 
+      MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        console.log('Connected to DB established!');
+        var collection = db.collection('clients');
+        collection.insertOne(client,function (err, res) {
+          if (err) throw err;
+          response.send({status: "Success"});
+          db.close();
+        })
+      });
+
+    }
+    else {
+      res.send(401, JSON.stringify({ 'status': 'wrong Clients!!'}));
+    }
+  });
   application.post('/get_token', function(req, res){
     res.setHeader('Content-Type', 'application/json');
     let username = req.body['username'];

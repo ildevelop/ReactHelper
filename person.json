@@ -8,7 +8,7 @@
         "address": "mozes ehyda 13 ",
         "zipp": "250512330",
         "city": "Ashdod",
-        "country": "Israel",
+        "email": "Israel@gmail.com",
         "phone_number": "test"
       },
       {
@@ -18,7 +18,7 @@
         "address": "mozes ehyda 13 ",
         "zipp": "258412330",
         "city": "Ramat Gan",
-        "country": "Israel",
+        "email": "lior@@gmail.com",
         "phone_number": "054"
       },
       {
@@ -28,7 +28,7 @@
         "address": "moz13 ",
         "zipp": "41512330",
         "city": "Bat yam",
-        "country": "Israel",
+        "email": "jon@gmail.com",
         "phone_number": "0539876543"
       },
       {
@@ -38,7 +38,7 @@
         "address": "ehyda 13 ",
         "zipp": "25982523",
         "city": "Rishon",
-        "country": "Israel",
+        "email": "josepf@gmail.com",
         "phone_number": "0541159357"
       }
     ]
@@ -52,7 +52,7 @@
         "address": "mozes ehyda 13 ",
         "zipp": "250512330",
         "city": "Tel Aviv",
-        "country": "Israel",
+        "email": "nik@gmail.com",
         "phone_number": "052789456",
         "commission": "30%"
       },
@@ -63,7 +63,7 @@
         "address": "mozes 13 ",
         "zipp": "258412330",
         "city": "Ramat Gan",
-        "country": "Israel",
+        "email": "ron@gmail.com",
         "phone_number": "054789159",
         "commission": "25%"
       }

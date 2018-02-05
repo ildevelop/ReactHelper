@@ -73,9 +73,8 @@ class Dashboard extends React.Component {
     let self = this;
     axios.get('/get_clients')
       .then(function (response) {
-        console.log('response.data',response);
-        self.setState({clients: response.data[0]['clients']});
-        self.setState({partners: response.data[1]['partners']});
+        self.setState({clients: response.data});
+        // self.setState({partners: response.data[1]['partners']});
       })
       .catch(function (error) {
         console.log(error);
@@ -149,12 +148,18 @@ class Dashboard extends React.Component {
   /**
    *
    */
-  handleOnSubmitClose () {
+  handleOnSubmitClose() {
     let formData = {};
-    Object.keys(this.refs).forEach( (key) => formData[key] = this.refs[key].getValue());
-    this.setState({newInterventionObj:formData});
-    console.log('formData:==>', formData);
-    console.log('formData:==>', this.state);
+    Object.keys(this.refs).forEach((key) => formData[key] = this.refs[key].getValue());
+    this.setState({newInterventionObj: formData});
+    axios.post('/add_client', {clients: formData})
+      .then(function (response) {
+        let body = response.data['status'];
+        console.log('body ===>', body);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     this.setState({openIntervention: false});
   }
 
@@ -240,39 +245,39 @@ class Dashboard extends React.Component {
           autoScrollBodyContent={true}
 
           children={
-              <div className="textFieldMain">
-                <div className="textField1" >
-                  <TextField hintText="Bob" ref="firstName" floatingLabelText="Your first name"
-                  />
-                  <br/>
-                  <TextField hintText="Amar" ref="surName" floatingLabelText="Your surname"
-                  />
-                  <br/>
-                  <TextField hintText="0549876543" ref="phone" floatingLabelText="Phone"
-                  />
-                  <br/>
-                  <TextField hintText="bob@gmail.com" ref="email" floatingLabelText="Your E-mail "
-                  />
-                  <br/>
-                </div>
-                <div className="textField2">
-                  <TextField hintText="Tel Aviv" ref="city" floatingLabelText="City"
-                  />
-                  <br/>
-                  <TextField hintText="Jabotinsky 25" ref="street" floatingLabelText="Street"
-                  />
-                  <br/>
-                  <TextField hintText="7750505" ref="zip" floatingLabelText="ZIP"
-                  />
-                  <br/>
-                  {this.state.popUpLabel === "Add new partners" ?
-                    <TextField hintText="30%" floatingLabelText="Commission"
-                               ref="commission"
-                    /> : <br/>}
-                </div>
-
-
+            <div className="textFieldMain">
+              <div className="textField1">
+                <TextField hintText="Bob" ref="fname" floatingLabelText="Your first name"
+                />
+                <br/>
+                <TextField hintText="Amar" ref="sname" floatingLabelText="Your surname"
+                />
+                <br/>
+                <TextField hintText="0549876543" ref="phone_number" floatingLabelText="Phone"
+                />
+                <br/>
+                <TextField hintText="bob@gmail.com" ref="email" floatingLabelText="Your E-mail "
+                />
+                <br/>
               </div>
+              <div className="textField2">
+                <TextField hintText="Tel Aviv" ref="city" floatingLabelText="City"
+                />
+                <br/>
+                <TextField hintText="Jabotinsky 25" ref="address" floatingLabelText="Street"
+                />
+                <br/>
+                <TextField hintText="7750505" ref="zipp" floatingLabelText="ZIP"
+                />
+                <br/>
+                {this.state.popUpLabel === "Add new partners" ?
+                  <TextField hintText="30%" floatingLabelText="Commission"
+                             ref="commission"
+                  /> : <br/>}
+              </div>
+
+
+            </div>
 
 
           }
