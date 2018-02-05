@@ -1,70 +1,4 @@
 {
-  "clients": [
-    {
-      "id": 1001,
-      "fname" : "ilya",
-      "sname" : "radu",
-      "address": "mozes ehyda 13 ",
-      "zipp" : "250512330",
-      "city": "Ashdod",
-      "country" :"Israel",
-      "phone_number" : "test"
-    },
-    {
-      "id": 1002,
-      "fname" : "lior",
-      "sname" : "amar",
-      "address": "mozes ehyda 13 ",
-      "zipp" : "258412330",
-      "city": "Ramat Gan",
-      "country" :"Israel",
-      "phone_number" : "054"
-    },
-    {
-      "id": 1003,
-      "fname" : "jon",
-      "sname" : "piter",
-      "address": "moz13 ",
-      "zipp" : "41512330",
-      "city": "Bat yam",
-      "country" :"Israel",
-      "phone_number" : "0539876543"
-    },
-    {
-      "id": 1004,
-      "fname" : "josef",
-      "sname" : "selem",
-      "address": "ehyda 13 ",
-      "zipp" : "25982523",
-      "city": "Rishon",
-      "country" :"Israel",
-      "phone_number" : "0541159357"
-    }
-  ],
-  "partners": [
-    {
-      "id": 2001,
-      "fname" : "nik",
-      "sname" : "nik",
-      "address": "mozes ehyda 13 ",
-      "zipp" : "250512330",
-      "city": "Tel Aviv",
-      "country" :"Israel",
-      "phone_number" : "052789456",
-      "commission" : "30%"
-    },
-    {
-      "id": 2002,
-      "fname" : "ron",
-      "sname" : "ron",
-      "address": "mozes 13 ",
-      "zipp" : "258412330",
-      "city": "Ramat Gan",
-      "country" :"Israel",
-      "phone_number" : "054789159",
-      "commission" : "25%"
-    }
-  ],
   "permission":[
     {
       "id": 5001,
@@ -73,7 +7,5 @@
       "email": "ilya@gmail.com",
       "password": "test"
     }
-
   ]
-
 }

@@ -21,15 +21,7 @@ import './Dashboard.scss'
 const CLIENTS = 'clients',
   PARTNERS = 'partners',
   INPROCESS = 'inProcess',
-  DONE = 'done',
-  NEWUSERNAME = 'newUsername',
-  NEWSURNAME = 'newSurname',
-  NEWPHONE = 'newPhone',
-  NEWEMAIL = 'newEmail',
-  NEWCITY = 'newCity',
-  NEWSTREET = 'newStreet',
-  NEWZIP = 'newZIP',
-  NEWCOMMISSION = 'newCommission';
+  DONE = 'done';
 
 class Dashboard extends React.Component {
   constructor() {
@@ -54,8 +46,8 @@ class Dashboard extends React.Component {
 
     };
     this.handleClose = this.handleClose.bind(this);
-    this.setUsers(CLIENTS);
-    this.setUsers(PARTNERS);
+    this.setUsers();
+
   }
 
   handleRequestClose = () => {
@@ -77,11 +69,13 @@ class Dashboard extends React.Component {
     }
   }
 
-  setUsers(par) {
+  setUsers() {
     let self = this;
-    axios.get('/get_users')
+    axios.get('/get_clients')
       .then(function (response) {
-        self.setState({[par]: response.data[par]})
+        console.log('response.data',response);
+        self.setState({clients: response.data[0]['clients']});
+        self.setState({partners: response.data[1]['partners']});
       })
       .catch(function (error) {
         console.log(error);
@@ -248,7 +242,7 @@ class Dashboard extends React.Component {
           children={
               <div className="textFieldMain">
                 <div className="textField1" >
-                  <TextField hintText="Bob" ref="firstName" floatingLabelText="Your first name" defaultValue=""
+                  <TextField hintText="Bob" ref="firstName" floatingLabelText="Your first name"
                   />
                   <br/>
                   <TextField hintText="Amar" ref="surName" floatingLabelText="Your surname"

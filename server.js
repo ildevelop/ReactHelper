@@ -1,5 +1,4 @@
 'use strict';
-const express = require('express');
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
 const config = require('./webpack.config');
@@ -14,20 +13,24 @@ var mongo = require('mongodb');
 // Incert One to DB
 var MongoClient = mongo.MongoClient;
 var url = 'mongodb://localhost:27017/test12';
-var format = require('util').format;
+var users = [];
+var resDB = {'21':21};
 
+// MongoClient.connect(url, function(err, db) {
+//   if (err) throw err;
+//   console.log('Connected established!');
+//   var dbo = db.db("test12");
+//
+//   var collection = dbo.collection('person');
+//   collection.insertMany(person, function(err, result) {
+//     if (err) {console.log('OOPS something wrong',err); return}
+//     users = result.ops;
+//     console.log('Count ===> ',result.insertedCount);
+//     console.log('Count ===> ',result.ops);
+//     db.close();
+//   });
+// });
 
-MongoClient.connect(url, function(err, db) {
-  if (err) throw err;
-  console.log('Connected established!');
-  var collection = db.collection('usersIlya');
-  // var user = { name: '8888', lastName: '999' };
-  collection.insertMany(person, function(err, result) {
-    if (err) {console.log('OOPS something wrong',err); return}
-    console.log(result.ops);
-    db.close();
-  });
-});
 
 
 
@@ -44,18 +47,24 @@ const getExpressApplication = (application) => {
     res.json({ custom: 'response' });
   });
 
-  application.get('/get_users', function(req, res) {
+  application.get('/get_clients', function(req, response) {
     if(process.env.REACT_APP_TEST === 'true') {
-
-      fs.readFile('./users.json', 'utf8', function (err, data) {
+      MongoClient.connect(url, function(err, db) {
         if (err) throw err;
-        res.json(JSON.parse(data));
+        console.log('Connected to DB established!');
+        var collection = db.collection('person');
+        collection.find().toArray(function (err, res) {
+          if (err) throw err;
+          response.json(res);
+          db.close();
+        })
       });
     }
     else{
       res.json({'1':1})
     }
   });
+
 
   application.post('/get_token', function(req, res){
     res.setHeader('Content-Type', 'application/json');
