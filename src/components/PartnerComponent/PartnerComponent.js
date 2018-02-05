@@ -63,7 +63,7 @@ class PartnerComponent extends Component {
               <TableHeaderColumn><TextField
                 hintText="Clients"
                 className="textField"
-                floatingLabelText="find clients:"
+                floatingLabelText="find partners:"
                 onChange={this.filterList.bind(this)
 
                 }

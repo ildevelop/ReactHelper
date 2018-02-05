@@ -64,6 +64,23 @@ const getExpressApplication = (application) => {
       res.json({'1':1})
     }
   });
+  application.get('/get_partners', function(req, response) {
+    if(process.env.REACT_APP_TEST === 'true') {
+      MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        console.log('Connected to DB established!');
+        var collection = db.collection('partners');
+        collection.find().toArray(function (err, res) {
+          if (err) throw err;
+          response.json(res);
+          db.close();
+        })
+      });
+    }
+    else{
+      res.json({'2':2})
+    }
+  });
 
   application.post('/add_client', function(req, response) {
     response.setHeader('Content-Type', 'application/json');
@@ -85,6 +102,28 @@ const getExpressApplication = (application) => {
     }
     else {
       res.send(401, JSON.stringify({ 'status': 'wrong Clients!!'}));
+    }
+  });
+  application.post('/add_partners', function(req, response) {
+    response.setHeader('Content-Type', 'application/json');
+    let partners = req.body['partners'];
+    console.log(partners);
+    if (partners){
+
+      MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        console.log('Connected to DB established!');
+        var collection = db.collection('partners');
+        collection.insertOne(partners,function (err, res) {
+          if (err) throw err;
+          response.send({status: "Success"});
+          db.close();
+        })
+      });
+
+    }
+    else {
+      res.send(401, JSON.stringify({ 'status': 'wrong Partners!!'}));
     }
   });
   application.post('/get_token', function(req, res){

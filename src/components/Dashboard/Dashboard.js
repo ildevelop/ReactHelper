@@ -42,11 +42,10 @@ class Dashboard extends React.Component {
       isNewPartners: false,
       isNewProcess: false,
       openIntervention: false,
-      newInterventionObj: {}
-
     };
     this.handleClose = this.handleClose.bind(this);
-    this.setUsers();
+    this.setClients();
+    this.setPartners();
 
   }
 
@@ -69,7 +68,19 @@ class Dashboard extends React.Component {
     }
   }
 
-  setUsers() {
+  setPartners() {
+    let self = this;
+    axios.get('/get_partners')
+      .then(function (response) {
+        self.setState({partners: response.data});
+        // self.setState({partners: response.data[1]['partners']});
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+
+  setClients() {
     let self = this;
     axios.get('/get_clients')
       .then(function (response) {
@@ -85,7 +96,7 @@ class Dashboard extends React.Component {
   onClickMenu(qw) {
     this.setState({curentState: qw});
     if (qw === CLIENTS) {
-      this.setUsers(CLIENTS);
+      this.setClients();
       this.setState({
         isClients: true,
         isPartners: false,
@@ -95,7 +106,7 @@ class Dashboard extends React.Component {
       })
     }
     if (qw === PARTNERS) {
-      this.setUsers(PARTNERS);
+      this.setPartners();
       this.setState({
         isClients: false,
         isPartners: true,
@@ -151,16 +162,29 @@ class Dashboard extends React.Component {
   handleOnSubmitClose() {
     let formData = {};
     Object.keys(this.refs).forEach((key) => formData[key] = this.refs[key].getValue());
-    this.setState({newInterventionObj: formData});
-    axios.post('/add_client', {clients: formData})
-      .then(function (response) {
-        let body = response.data['status'];
-        console.log('body ===>', body);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-    this.setState({openIntervention: false});
+    if(this.state.popUpLabel === "Add new clients"){
+      axios.post('/add_client', {clients: formData})
+        .then(function (response) {
+          let body = response.data['status'];
+          console.log('body ===>', body);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      this.setState({openIntervention: false});
+    }
+    else {
+      axios.post('/add_partners', {partners: formData})
+        .then(function (response) {
+          let body = response.data['status'];
+          console.log('body ===>', body);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      this.setState({openIntervention: false});
+    }
+
   }
 
   handleClose() {
