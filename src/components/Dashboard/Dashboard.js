@@ -21,7 +21,8 @@ import './Dashboard.scss'
 const CLIENTS = 'clients',
   PARTNERS = 'partners',
   INPROCESS = 'inProcess',
-  DONE = 'done';
+  DONE = 'done',
+  INNEWPROCESS = 'inNewProcess';
 
 class Dashboard extends React.Component {
   constructor() {
@@ -42,6 +43,7 @@ class Dashboard extends React.Component {
       isNewPartners: false,
       isNewProcess: false,
       openIntervention: false,
+      newProccess: false,
     };
     this.handleClose = this.handleClose.bind(this);
     this.setClients();
@@ -65,6 +67,8 @@ class Dashboard extends React.Component {
         return (<h2>Hello InProcess</h2>);
       case DONE:
         return (<h2>Hello Done</h2>);
+      case INNEWPROCESS:
+        return (<h2>Hello {INNEWPROCESS}</h2>);
     }
   }
 
@@ -102,7 +106,8 @@ class Dashboard extends React.Component {
         isPartners: false,
         isInProcess: false,
         isDone: false,
-        isNewIntervention: false
+        isNewIntervention: false,
+        newProccess: false,
       })
     }
     if (qw === PARTNERS) {
@@ -112,7 +117,8 @@ class Dashboard extends React.Component {
         isPartners: true,
         isInProcess: false,
         isDone: false,
-        isNewIntervention: false
+        isNewIntervention: false,
+        newProccess: false,
       })
     }
     if (qw === INPROCESS) {
@@ -130,7 +136,19 @@ class Dashboard extends React.Component {
         isPartners: false,
         isInProcess: false,
         isDone: true,
-        isNewIntervention: false
+        isNewIntervention: false,
+        newProccess: false,
+      })
+    }
+    if (qw === INNEWPROCESS) {
+      this.setState({
+        isClients: false,
+        isPartners: false,
+        isInProcess: false,
+        isDone: false,
+        isNewIntervention: false,
+        newProccess: true,
+        open: false,
       })
     }
   }
@@ -147,6 +165,7 @@ class Dashboard extends React.Component {
       isNewIntervention: true,
       open: true,
       anchorEl: event.currentTarget,
+      newProccess: false,
 
     })
   };
@@ -188,10 +207,7 @@ class Dashboard extends React.Component {
   }
 
   handleClose() {
-    //console.log('this.dialogRef:==>', React.Children.forEach(this.dialogRef.props.children.props.children, chield => {
-    console.log('SELF', this.state.newUsername, this.state.newSurname, this.state.newPhone);
     this.setState({openIntervention: false});
-
   }
 
   render() {
@@ -250,7 +266,7 @@ class Dashboard extends React.Component {
                     rightIcon={<AddNew hoverColor="#23822e" color="#2cde41"/>}/>
                   <MenuItem
                     primaryText="Add new Process"
-                    onClick={this.onClickAddNew.bind(this, INPROCESS)}
+                    onClick={this.onClickMenu.bind(this, INNEWPROCESS)}
                     rightIcon={<AddNew hoverColor="#23822e" color="#2cde41"/>}/>
                 </Menu>
               </Popover>
