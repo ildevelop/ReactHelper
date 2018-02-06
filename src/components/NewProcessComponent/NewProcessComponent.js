@@ -10,6 +10,7 @@ import ExpandTransition from 'material-ui/internal/ExpandTransition';
 import TextField from 'material-ui/TextField';
 import './NewProcessComponent.scss'
 import ClientComponent from './../ClientComponent/ClientComponent'
+import CreateNewClient from "./CreateNewClient";
 class NewProcessComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -50,7 +51,11 @@ class NewProcessComponent extends React.Component {
     switch (stepIndex) {
       case 0:
         return (
-          <ClientComponent users={this.state.clients} check ={true}/>
+          [
+            <CreateNewClient key = {100} />,
+            <ClientComponent key = {101} users={this.state.clients} check ={true}/>
+          ]
+
         );
       case 1:
         return (
