@@ -17,6 +17,7 @@ import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import './Dashboard.scss'
+import NewProcessComponent from "../NewProcessComponent/NewProcessComponent";
 
 const CLIENTS = 'clients',
   PARTNERS = 'partners',
@@ -60,7 +61,7 @@ class Dashboard extends React.Component {
   switcher() {
     switch (this.state.curentState) {
       case CLIENTS:
-        return ( <ClientComponent users={this.state.clients}/>);
+        return ( <ClientComponent users={this.state.clients} check ={false}/>);
       case PARTNERS:
         return (<PartnerComponent partners={this.state.partners}/>);
       case INPROCESS:
@@ -68,7 +69,7 @@ class Dashboard extends React.Component {
       case DONE:
         return (<h2>Hello Done</h2>);
       case INNEWPROCESS:
-        return (<h2>Hello {INNEWPROCESS}</h2>);
+        return (<NewProcessComponent clients = {this.state.clients} partners = {this.state.partners}/>);
     }
   }
 

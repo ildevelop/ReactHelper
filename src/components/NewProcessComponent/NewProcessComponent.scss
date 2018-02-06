@@ -1,0 +1,13 @@
+.mainNewProcess{
+  width: 100%;
+  max-width: 1000px;
+  margin: auto;
+  .finishProcess{
+    margin: 0 16px;
+    overflow: hidden;
+    .flatButton{
+      margin-top: 24px;
+      margin-bottom: 12px;
+    }
+  }
+}
