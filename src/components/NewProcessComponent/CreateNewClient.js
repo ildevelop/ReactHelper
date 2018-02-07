@@ -2,6 +2,8 @@ import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
+import {TextField} from 'material-ui';
+import axios from 'axios';
 
 /**
  * Dialog with action buttons. The actions are passed in as an array of React objects,
@@ -22,6 +24,20 @@ export default class CreateNewClient extends React.Component {
     this.setState({open: false});
   };
 
+  handleOnSubmitClose() {
+    let formData = {};
+    Object.keys(this.refs).forEach((key) => formData[key] = this.refs[key].getValue());
+    axios.post('/add_client', {clients: formData})
+      .then(function (response) {
+        let body = response.data['status'];
+        console.log('body ===>', body);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    this.setState({open: false});
+  }
+
   render() {
     const actions = [
       <FlatButton
@@ -33,22 +49,56 @@ export default class CreateNewClient extends React.Component {
         label="Submit"
         primary={true}
         keyboardFocused={true}
-        onClick={this.handleClose}
+        onClick={this.handleOnSubmitClose.bind(this)}
       />,
     ];
 
     return (
       <div>
-        <RaisedButton label="Add new Client" onClick={this.handleOpen} />
+        <RaisedButton label="Add new Client" onClick={this.handleOpen} style={{marginBottom: 10}}/>
         <Dialog
-          title="Dialog With Actions"
+          key={5000}
+          title="Add new Clients"
           actions={actions}
           modal={false}
           open={this.state.open}
           onRequestClose={this.handleClose}
-        >
-          The actions in this window were passed in as an array of React objects.
-        </Dialog>
+          autoScrollBodyContent={true}
+
+          children={
+            <div className="textFieldMain">
+              <div className="textField1">
+                <TextField hintText="Bob" ref="fname" floatingLabelText="Your first name"
+                />
+                <br/>
+                <TextField hintText="Amar" ref="sname" floatingLabelText="Your surname"
+                />
+                <br/>
+                <TextField hintText="0549876543" ref="phone_number" floatingLabelText="Phone"
+                />
+                <br/>
+                <TextField hintText="bob@gmail.com" ref="email" floatingLabelText="Your E-mail "
+                />
+                <br/>
+              </div>
+              <div className="textField2">
+                <TextField hintText="Tel Aviv" ref="city" floatingLabelText="City"
+                />
+                <br/>
+                <TextField hintText="Jabotinsky 25" ref="address" floatingLabelText="Street"
+                />
+                <br/>
+                <TextField hintText="7750505" ref="zipp" floatingLabelText="ZIP"
+                />
+                <br/>
+              </div>
+
+
+            </div>
+
+
+          }
+        />
       </div>
     );
   }
