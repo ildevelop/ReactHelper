@@ -1,0 +1,2 @@
+export const SET_CLIENTS= 'SET_CLIENTS';
+export const SET_PARTNERS= 'SET_PARTNERS';

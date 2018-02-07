@@ -18,7 +18,7 @@ import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import './Dashboard.scss'
 import NewProcessComponent from "../NewProcessComponent/NewProcessComponent";
-
+import {connect} from 'react-redux'
 const CLIENTS = 'clients',
   PARTNERS = 'partners',
   INPROCESS = 'inProcess',
@@ -328,5 +328,12 @@ class Dashboard extends React.Component {
     )
   }
 }
+const mapStateToProps = (state) => {
+  return {
+    partners : state.partners,
+    clients : state.clients,
+  }
+};
 
-export default Dashboard
+
+export default connect(mapStateToProps)(Dashboard)
