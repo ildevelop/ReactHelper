@@ -16,7 +16,6 @@ const initState = {
 const reducerMain = (state  = initState, action) => {
   switch (action.type) {
     case HANDLE_DIALOG:
-      console.log("change dialog",action.payload);
       state = {...state, openIntervention: action.payload};
       break;
   }

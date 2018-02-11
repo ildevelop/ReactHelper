@@ -165,8 +165,9 @@ class Dashboard extends React.Component {
 
 
   onClickAddNew(qw) {
-    this.props.HandleDialog(true);
     this.setState({open: false, popUpLabel: "Add new " + qw});
+    this.props.HandleDialog(true);
+
   }
 
   render() {
@@ -216,7 +217,7 @@ class Dashboard extends React.Component {
         </div>,
         <div key={4000}>{this.switcher()}</div>,
 
-        <CreateNewClient key={88} pr={this.state.popUpLabel}/>
+        <CreateNewClient key={88} popUpLabel={this.state.popUpLabel}/>
 
 
       ]

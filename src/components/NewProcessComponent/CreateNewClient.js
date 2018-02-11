@@ -8,17 +8,10 @@ import {connect} from 'react-redux'
 import {HANDLE_DIALOG, SET_ONE_CLIENTS, SET_ONE_PARTNER} from "../../Store/constant";
 
 class CreateNewClient extends React.Component {
-  constructor(props) {
-    super(props);
-    console.log("CONSTRUCTOR");
-    this.state = {
-      open: false,
-    };
-  }
-
-
+  
   handleOnSubmitClose() {
     let formData = {};
+    console.log("popUP",this.props.popUpLabel);
     Object.keys(this.refs).forEach((key) => formData[key] = this.refs[key].getValue());
     if (this.props.popUpLabel === "Add new clients") {
       this.props.AddOneClients(formData);
@@ -69,7 +62,7 @@ class CreateNewClient extends React.Component {
       <div>
         {/*<RaisedButton label="Add new Client" onClick={this.handleOpen} style={{marginBottom: 10}}/>*/}
         <Dialog
-          title="Add new Clients"
+          title={this.props.popUpLabel}
           actions={actions}
           modal={false}
           open={this.props.main.openIntervention}
@@ -110,7 +103,6 @@ class CreateNewClient extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log('openIntervention', state.reducerMain);
   return {
     main: state.reducerMain
   }
