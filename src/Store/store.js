@@ -1,34 +1,36 @@
-import {createStore } from 'redux';
+import {createStore , applyMiddleware ,combineReducers } from 'redux';
+import {composeWithDevTools} from 'redux-devtools-extension'
 import { SET_CLIENTS,SET_PARTNERS } from './constant'
+import thunk from 'redux-thunk'
 
 const initState = {
   id: 0,
   names : ['Titanic', 'Fast Furious','X-men'],
   selectedFilm: null,
-  clients: [],
-  partners: [],
   client: {},
+  partners: [],
+  clients: [],
 
 };
 
 
-const reducerF = ( state = initState , action) => {
+const reducerClients = (state = initState ,action ) => {
   switch (action.type) {
     case SET_CLIENTS:
-      state = {...state, clients: action.payload};
-      console.log('clients:',this.state.clients);
+      state = {...state, clients:action.payload};
       break;
-    case SET_PARTNERS:
-      state = {...state, partners: action.payload};
-      console.log('partners:',this.state.partners);
-
-      break;
-
-
   }
   return state;
-
+};
+const reducerPartners = (state = initState ,action ) => {
+  switch (action.type) {
+    case SET_PARTNERS:
+      state = {...state, partners:action.payload};
+      // console.log('add partners to reducer', state);
+      break;
+  }
+  return state;
 };
 
-const store = createStore(reducerF);
+const store = createStore(combineReducers({reducerPartners , reducerClients}), composeWithDevTools(applyMiddleware(thunk)));
 export default store

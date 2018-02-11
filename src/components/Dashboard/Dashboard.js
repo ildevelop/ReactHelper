@@ -17,8 +17,10 @@ import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import './Dashboard.scss'
-import NewProcessComponent from "../NewProcessComponent/NewProcessComponent";
+import NewProcessComponent from '../NewProcessComponent/NewProcessComponent';
 import {connect} from 'react-redux'
+import { SET_CLIENTS,SET_PARTNERS } from './../../Store/constant'
+
 const CLIENTS = 'clients',
   PARTNERS = 'partners',
   INPROCESS = 'inProcess',
@@ -26,11 +28,9 @@ const CLIENTS = 'clients',
   INNEWPROCESS = 'inNewProcess';
 
 class Dashboard extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      clients: [],
-      partners: [],
       curentState: '',
       curentStateNewIntervention: '',
       isClients: false,
@@ -61,15 +61,15 @@ class Dashboard extends React.Component {
   switcher() {
     switch (this.state.curentState) {
       case CLIENTS:
-        return ( <ClientComponent users={this.state.clients} check ={false}/>);
+        return ( <ClientComponent users={this.props.clients} check={false}/>);
       case PARTNERS:
-        return (<PartnerComponent partners={this.state.partners}/>);
+        return (<PartnerComponent partners={this.props.partners}/>);
       case INPROCESS:
         return (<h2>Hello InProcess</h2>);
       case DONE:
         return (<h2>Hello Done</h2>);
       case INNEWPROCESS:
-        return (<NewProcessComponent clients = {this.state.clients} partners = {this.state.partners}/>);
+        return (<NewProcessComponent clients={this.props.clients} partners={this.props.partners}/>);
     }
   }
 
@@ -77,8 +77,7 @@ class Dashboard extends React.Component {
     let self = this;
     axios.get('/get_partners')
       .then(function (response) {
-        self.setState({partners: response.data});
-        // self.setState({partners: response.data[1]['partners']});
+        self.props.AddPartners(response.data);
       })
       .catch(function (error) {
         console.log(error);
@@ -89,8 +88,7 @@ class Dashboard extends React.Component {
     let self = this;
     axios.get('/get_clients')
       .then(function (response) {
-        self.setState({clients: response.data});
-        // self.setState({partners: response.data[1]['partners']});
+        self.props.AddClients(response.data);
       })
       .catch(function (error) {
         console.log(error);
@@ -182,7 +180,7 @@ class Dashboard extends React.Component {
   handleOnSubmitClose() {
     let formData = {};
     Object.keys(this.refs).forEach((key) => formData[key] = this.refs[key].getValue());
-    if(this.state.popUpLabel === "Add new clients"){
+    if (this.state.popUpLabel === "Add new clients") {
       axios.post('/add_client', {clients: formData})
         .then(function (response) {
           let body = response.data['status'];
@@ -225,7 +223,6 @@ class Dashboard extends React.Component {
                   primary={true}
                   keyboardFocused={true}
                   onClick={this.handleOnSubmitClose.bind(this)}
-        // onSubmit={this.onSubmitDialog.bind(this)}
       />
     ];
 
@@ -323,17 +320,29 @@ class Dashboard extends React.Component {
 
           }
         />
-
       ]
     )
   }
 }
 const mapStateToProps = (state) => {
   return {
-    partners : state.partners,
-    clients : state.clients,
+    clients : state.reducerClients.clients,
+    partners: state.reducerPartners.partners
   }
 };
 
 
-export default connect(mapStateToProps)(Dashboard)
+export default connect(mapStateToProps, dispatch => ({
+  AddClients: (clients) => {
+    const asyncGetClients = () => dispatch => {
+      dispatch({type: SET_CLIENTS, payload: clients})
+    };
+    dispatch(asyncGetClients());
+  },
+  AddPartners: (partners) => {
+    const asyncGetClients = () => dispatch => {
+      dispatch({type: SET_PARTNERS, payload: partners})
+    };
+    dispatch(asyncGetClients());
+  }
+}))(Dashboard)

@@ -5,7 +5,7 @@ import Dashboard from '../components/Dashboard/Dashboard';
 import FlatButton from 'material-ui/FlatButton';
 import Login from './../components/Login/Login'
 import axios from 'axios';
-
+import {connect} from 'react-redux'
 import {
   BrowserRouter as Router,
   Switch,
@@ -20,19 +20,19 @@ export const getAuthentication = {
   authenticate(cb) {
     let token = localStorage.getItem('token');
     let self = this;
-        axios.post('/authenticate',  {
-        token: token
-      })
+    axios.post('/authenticate', {
+      token: token
+    })
       .then(function (response) {
         let body = response.data['status']
-        if (body === 'approved'){
-        self.isAuthenticated = true;
-        setTimeout(cb, 1);
-      }
-      else{
-        localStorage.removeItem('token');
-        self.isAuthenticated = false;
-      }
+        if (body === 'approved') {
+          self.isAuthenticated = true;
+          setTimeout(cb, 1);
+        }
+        else {
+          localStorage.removeItem('token');
+          self.isAuthenticated = false;
+        }
       })
       .catch(function (error) {
         console.log(error);
@@ -46,39 +46,44 @@ export const getAuthentication = {
   }
 }
 
-const PrivateRoute = ({ component: Component, ...rest }) => (
+const PrivateRoute = ({component: Component, ...rest}) => (
   <Route {...rest} render={props => (
     getAuthentication.isAuthenticated ? (
       <Component {...props}/>
     ) : (
       <Redirect to={{
         pathname: '/login',
-        state: { from: '/dashboard' }
+        state: {from: '/dashboard'}
       }}/>
     )
   )}/>
 )
 
 const Main = () => (
-    <Switch>
-      <PrivateRoute path="/dashboard" component={Dashboard} />
-      <Route path="/login" component={() => <Login/>}/>
-    </Switch>
+  <Switch>
+    <PrivateRoute path="/dashboard" component={Dashboard}/>
+    <Route path="/login" component={() => <Login/>}/>
+  </Switch>
 );
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
-      loading:false
+      loading: false
     };
+
   }
-  logout(){
-    this.setState({ loading: true });
+
+
+
+  logout() {
+    this.setState({loading: true});
     getAuthentication.signout(() => {
-      this.setState({ loading: false })
-  });
+      this.setState({loading: false})
+    });
   }
+
   render() {
     return (
       <div>
@@ -87,9 +92,9 @@ class App extends Component {
           title="React Helper"
           className="StyleMenu"
           iconElementRight={<div className="header-menu">
-            <Link to="/">  <FlatButton label="HOME" primary={true} /></Link>
-            <Link to="/login">  <FlatButton label="LOG IN" primary={true} /></Link>
-           <FlatButton onClick={this.logout.bind(this)} label="logout" primary={true}  />
+            <Link to="/"> <FlatButton label="HOME" primary={true}/></Link>
+            <Link to="/login"> <FlatButton label="LOG IN" primary={true}/></Link>
+            <FlatButton onClick={this.logout.bind(this)} label="logout" primary={true}/>
 
           </div>}
           iconStyleRight={{
@@ -105,10 +110,34 @@ class App extends Component {
         // || <MainGrid books={books} onSave={saveBook} onDelete={deleteBook} />
         || <Main/>
         }
-
+{/*<button onClick={this.props.loadClients}></button>*/}
       </div>
     );
   }
 }
 
-export default App;
+
+// export default connect(
+//   state => ({}),
+//   dispatch => ({
+//     onAddTrack: (name) => {
+//       const payload = {
+//         id: Date.now().toString(),
+//         name
+//       };
+//       dispatch({ type: 'ADD_TRACK', payload });
+//     },
+//     onFindTrack: (name) => {
+//       console.log('name', name);
+//       dispatch({ type: 'FIND_TRACK', payload: name});
+//     },
+//     loadClients: () => {
+//       const asyncGetClients = () => dispatch => {
+//         console.log("Icgot clients");
+//         dispatch({ type: 'FETCH_CLIENTS_SUCCESS', payload: []})
+//       };
+//       dispatch(asyncGetClients());
+//     }
+//   })
+// )(App);
+export default App
