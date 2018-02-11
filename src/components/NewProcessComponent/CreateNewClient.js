@@ -4,39 +4,52 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import {TextField} from 'material-ui';
 import axios from 'axios';
+import {connect} from 'react-redux'
+import {HANDLE_DIALOG, SET_ONE_CLIENTS, SET_ONE_PARTNER} from "../../Store/constant";
 
-/**
- * Dialog with action buttons. The actions are passed in as an array of React objects,
- * in this example [FlatButtons](/#/components/flat-button).
- *
- * You can also close this dialog by clicking outside the dialog, or with the 'Esc' key.
- */
-export default class CreateNewClient extends React.Component {
-  state = {
-    open: false,
-  };
+class CreateNewClient extends React.Component {
+  constructor(props) {
+    super(props);
+    console.log("CONSTRUCTOR");
+    this.state = {
+      open: false,
+    };
+  }
 
-  handleOpen = () => {
-    this.setState({open: true});
-  };
-
-  handleClose = () => {
-    this.setState({open: false});
-  };
 
   handleOnSubmitClose() {
     let formData = {};
     Object.keys(this.refs).forEach((key) => formData[key] = this.refs[key].getValue());
-    axios.post('/add_client', {clients: formData})
-      .then(function (response) {
-        let body = response.data['status'];
-        console.log('body ===>', body);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-    this.setState({open: false});
+    if (this.props.popUpLabel === "Add new clients") {
+      this.props.AddOneClients(formData);
+      axios.post('/add_client', {clients: formData})
+        .then(function (response) {
+          let body = response.data['status'];
+          console.log('body ===>', body);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      this.props.HandleDialog(false);
+    }
+    else {
+      this.props.AddOnePartner(formData);
+      axios.post('/add_partners', {partners: formData})
+        .then(function (response) {
+          let body = response.data['status'];
+          console.log('body ===>', body);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      this.props.HandleDialog(false);
+    }
   }
+
+
+  handleClose = () => {
+    this.props.HandleDialog(false)
+  };
 
   render() {
     const actions = [
@@ -52,54 +65,71 @@ export default class CreateNewClient extends React.Component {
         onClick={this.handleOnSubmitClose.bind(this)}
       />,
     ];
-
     return (
       <div>
-        <RaisedButton label="Add new Client" onClick={this.handleOpen} style={{marginBottom: 10}}/>
+        {/*<RaisedButton label="Add new Client" onClick={this.handleOpen} style={{marginBottom: 10}}/>*/}
         <Dialog
-          key={5000}
           title="Add new Clients"
           actions={actions}
           modal={false}
-          open={this.state.open}
+          open={this.props.main.openIntervention}
           onRequestClose={this.handleClose}
           autoScrollBodyContent={true}
-
-          children={
-            <div className="textFieldMain">
-              <div className="textField1">
-                <TextField hintText="Bob" ref="fname" floatingLabelText="Your first name"
-                />
-                <br/>
-                <TextField hintText="Amar" ref="sname" floatingLabelText="Your surname"
-                />
-                <br/>
-                <TextField hintText="0549876543" ref="phone_number" floatingLabelText="Phone"
-                />
-                <br/>
-                <TextField hintText="bob@gmail.com" ref="email" floatingLabelText="Your E-mail "
-                />
-                <br/>
-              </div>
-              <div className="textField2">
-                <TextField hintText="Tel Aviv" ref="city" floatingLabelText="City"
-                />
-                <br/>
-                <TextField hintText="Jabotinsky 25" ref="address" floatingLabelText="Street"
-                />
-                <br/>
-                <TextField hintText="7750505" ref="zipp" floatingLabelText="ZIP"
-                />
-                <br/>
-              </div>
-
-
+        >
+          <div className="textFieldMain">
+            <div className="textField1">
+              <TextField hintText="Bob" ref="fname" floatingLabelText="Your first name"
+              />
+              <br/>
+              <TextField hintText="Amar" ref="sname" floatingLabelText="Your surname"
+              />
+              <br/>
+              <TextField hintText="0549876543" ref="phone_number" floatingLabelText="Phone"
+              />
+              <br/>
+              <TextField hintText="bob@gmail.com" ref="email" floatingLabelText="Your E-mail "
+              />
+              <br/>
             </div>
-
-
-          }
-        />
+            <div className="textField2">
+              <TextField hintText="Tel Aviv" ref="city" floatingLabelText="City"
+              />
+              <br/>
+              <TextField hintText="Jabotinsky 25" ref="address" floatingLabelText="Street"
+              />
+              <br/>
+              <TextField hintText="7750505" ref="zipp" floatingLabelText="ZIP"
+              />
+              <br/>
+            </div>
+          </div>
+        </Dialog>
       </div>
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  console.log('openIntervention', state.reducerMain);
+  return {
+    main: state.reducerMain
+  }
+};
+export default connect(mapStateToProps, dispatch => ({
+  HandleDialog: (val) => {
+    dispatch({type: HANDLE_DIALOG, payload: val})
+
+  },
+  AddOnePartner: (partner) => {
+    const asyncGetPartner = () => dispatch => {
+      dispatch({type: SET_ONE_PARTNER, payload: partner})
+    };
+    dispatch(asyncGetPartner());
+  },
+  AddOneClients: (client) => {
+    const asyncGetClient = () => dispatch => {
+      dispatch({type: SET_ONE_CLIENTS, payload: client})
+    };
+    dispatch(asyncGetClient());
+  }
+}))(CreateNewClient)

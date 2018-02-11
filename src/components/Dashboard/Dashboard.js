@@ -13,13 +13,11 @@ import axios from 'axios';
 import ClientComponent from '../ClientComponent/ClientComponent';
 import PartnerComponent from '../PartnerComponent/PartnerComponent';
 import Popover from 'material-ui/Popover';
-import Dialog from 'material-ui/Dialog';
-import TextField from 'material-ui/TextField';
-import FlatButton from 'material-ui/FlatButton';
 import './Dashboard.scss'
 import NewProcessComponent from '../NewProcessComponent/NewProcessComponent';
 import {connect} from 'react-redux'
-import { SET_CLIENTS,SET_PARTNERS } from './../../Store/constant'
+import {SET_CLIENTS, SET_PARTNERS, HANDLE_DIALOG} from './../../Store/constant'
+import CreateNewClient from '../NewProcessComponent/CreateNewClient';
 
 const CLIENTS = 'clients',
   PARTNERS = 'partners',
@@ -43,13 +41,10 @@ class Dashboard extends React.Component {
       isNewClients: false,
       isNewPartners: false,
       isNewProcess: false,
-      openIntervention: false,
       newProccess: false,
     };
-    this.handleClose = this.handleClose.bind(this);
     this.setClients();
     this.setPartners();
-
   }
 
   handleRequestClose = () => {
@@ -165,67 +160,16 @@ class Dashboard extends React.Component {
       open: true,
       anchorEl: event.currentTarget,
       newProccess: false,
-
     })
   };
 
 
   onClickAddNew(qw) {
-    this.setState({openIntervention: true, open: false, popUpLabel: "Add new " + qw});
-  }
-
-  /**
-   *
-   */
-  handleOnSubmitClose() {
-    let formData = {};
-    Object.keys(this.refs).forEach((key) => formData[key] = this.refs[key].getValue());
-    if (this.state.popUpLabel === "Add new clients") {
-      axios.post('/add_client', {clients: formData})
-        .then(function (response) {
-          let body = response.data['status'];
-          console.log('body ===>', body);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      this.setState({openIntervention: false});
-    }
-    else {
-      axios.post('/add_partners', {partners: formData})
-        .then(function (response) {
-          let body = response.data['status'];
-          console.log('body ===>', body);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      this.setState({openIntervention: false});
-    }
-
-  }
-
-  handleClose() {
-    this.setState({openIntervention: false});
+    this.props.HandleDialog(true);
+    this.setState({open: false, popUpLabel: "Add new " + qw});
   }
 
   render() {
-    const actions = [
-
-      <FlatButton key={1000}
-                  label="Cancel"
-                  primary={true}
-                  onClick={this.handleClose}
-      />,
-      <FlatButton key={2000}
-                  label="Submit"
-                  type="submit"
-                  primary={true}
-                  keyboardFocused={true}
-                  onClick={this.handleOnSubmitClose.bind(this)}
-      />
-    ];
-
     return ([
         <div key={3000}>
           <Paper className="paper">
@@ -242,7 +186,6 @@ class Dashboard extends React.Component {
               <MenuItem primaryText="Done" to="/done" rightIcon={<Done/>} onClick={this.onClickMenu.bind(this, DONE)}/>
               <Divider/>
               <MenuItem
-
                 primaryText="New Intervention" to="/new_intervention" rightIcon={<Add/>}
                 onClick={this.handleClick}
               />
@@ -273,61 +216,18 @@ class Dashboard extends React.Component {
         </div>,
         <div key={4000}>{this.switcher()}</div>,
 
-        <Dialog
-          key={5000}
-          title={this.state.popUpLabel}
-          actions={actions}
-          modal={false}
-          open={this.state.openIntervention}
-          onRequestClose={this.handleClose}
-          autoScrollBodyContent={true}
-
-          children={
-            <div className="textFieldMain">
-              <div className="textField1">
-                <TextField hintText="Bob" ref="fname" floatingLabelText="Your first name"
-                />
-                <br/>
-                <TextField hintText="Amar" ref="sname" floatingLabelText="Your surname"
-                />
-                <br/>
-                <TextField hintText="0549876543" ref="phone_number" floatingLabelText="Phone"
-                />
-                <br/>
-                <TextField hintText="bob@gmail.com" ref="email" floatingLabelText="Your E-mail "
-                />
-                <br/>
-              </div>
-              <div className="textField2">
-                <TextField hintText="Tel Aviv" ref="city" floatingLabelText="City"
-                />
-                <br/>
-                <TextField hintText="Jabotinsky 25" ref="address" floatingLabelText="Street"
-                />
-                <br/>
-                <TextField hintText="7750505" ref="zipp" floatingLabelText="ZIP"
-                />
-                <br/>
-                {this.state.popUpLabel === "Add new partners" ?
-                  <TextField hintText="30%" floatingLabelText="Commission"
-                             ref="commission"
-                  /> : <br/>}
-              </div>
+        <CreateNewClient key={88} pr={this.state.popUpLabel}/>
 
 
-            </div>
-
-
-          }
-        />
       ]
     )
   }
 }
 const mapStateToProps = (state) => {
   return {
-    clients : state.reducerClients.clients,
-    partners: state.reducerPartners.partners
+    clients: state.reducerClients.clients,
+    partners: state.reducerPartners.partners,
+    main: state.reducerMain
   }
 };
 
@@ -340,9 +240,14 @@ export default connect(mapStateToProps, dispatch => ({
     dispatch(asyncGetClients());
   },
   AddPartners: (partners) => {
-    const asyncGetClients = () => dispatch => {
+    const asyncGetPartners = () => dispatch => {
       dispatch({type: SET_PARTNERS, payload: partners})
     };
-    dispatch(asyncGetClients());
+    dispatch(asyncGetPartners());
+  },
+
+  HandleDialog: (val) => {
+    dispatch({type: HANDLE_DIALOG , payload: val})
+
   }
 }))(Dashboard)
