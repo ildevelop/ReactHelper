@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {TextField} from 'material-ui';
+import {connect} from 'react-redux'
 import './ClientComponent.scss'
 import {
   Table,
@@ -9,6 +10,7 @@ import {
   TableRow,
   TableRowColumn,
 } from 'material-ui/Table';
+import {SET_ONE_CLIENTS} from '../../Store/constant';
 
 class ClientComponent extends Component {
   constructor(props) {
@@ -57,6 +59,7 @@ class ClientComponent extends Component {
   handleCellClick(row) {
     console.log('row',row);
     this.state.selectedClient= this.state.searchUsers[row];
+    // this.props.AddOneClients(this.state.searchUsers[row]);
     console.log(this.state.selectedClient);
   }
 
@@ -94,4 +97,13 @@ class ClientComponent extends Component {
   }
 }
 
-export default ClientComponent;
+const mapStateToProps = (state) => {
+  return {
+    clients: state.reducerClients
+  }
+};
+export default connect(mapStateToProps, dispatch => ({
+  AddOneClients: (client) => {
+    dispatch({type:SET_ONE_CLIENTS, payload:client})
+  }
+}))(ClientComponent);

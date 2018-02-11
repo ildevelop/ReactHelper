@@ -64,7 +64,9 @@ class Dashboard extends React.Component {
       case DONE:
         return (<h2>Hello Done</h2>);
       case INNEWPROCESS:
-        return (<NewProcessComponent clients={this.props.clients} partners={this.props.partners}/>);
+        return (<NewProcessComponent
+          clients={this.props.clients}
+          partners={this.props.partners} />);
     }
   }
 
@@ -171,59 +173,55 @@ class Dashboard extends React.Component {
   }
 
   render() {
-    return ([
-        <div key={3000}>
-          <Paper className="paper">
+    return [<div key={3000}>
+      <Paper className="paper">
+        <Menu>
+          <MenuItem primaryText="clients" rightIcon={<Assistant/>}
+                    onClick={this.onClickMenu.bind(this, CLIENTS)}/>
+          <Divider/>
+          <MenuItem primaryText="Partners" rightIcon={<Partners/>}
+                    onClick={this.onClickMenu.bind(this, PARTNERS)}/>
+          <Divider/>
+          <MenuItem primaryText="In Process" to="/in_process" rightIcon={<Process/>}
+                    onClick={this.onClickMenu.bind(this, INPROCESS)}/>
+          <Divider/>
+          <MenuItem primaryText="Done" to="/done" rightIcon={<Done/>} onClick={this.onClickMenu.bind(this, DONE)}/>
+          <Divider/>
+          <MenuItem
+            primaryText="New Intervention" to="/new_intervention" rightIcon={<Add/>}
+            onClick={this.handleClick}
+          />
+          <Popover
+            open={this.state.open}
+            anchorEl={this.state.anchorEl}
+            anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+            targetOrigin={{horizontal: 'left', vertical: 'top'}}
+            onRequestClose={this.handleRequestClose}
+          >
             <Menu>
-              <MenuItem primaryText="clients" rightIcon={<Assistant/>}
-                        onClick={this.onClickMenu.bind(this, CLIENTS)}/>
-              <Divider/>
-              <MenuItem primaryText="Partners" rightIcon={<Partners/>}
-                        onClick={this.onClickMenu.bind(this, PARTNERS)}/>
-              <Divider/>
-              <MenuItem primaryText="In Process" to="/in_process" rightIcon={<Process/>}
-                        onClick={this.onClickMenu.bind(this, INPROCESS)}/>
-              <Divider/>
-              <MenuItem primaryText="Done" to="/done" rightIcon={<Done/>} onClick={this.onClickMenu.bind(this, DONE)}/>
-              <Divider/>
               <MenuItem
-                primaryText="New Intervention" to="/new_intervention" rightIcon={<Add/>}
-                onClick={this.handleClick}
-              />
-              <Popover
-                open={this.state.open}
-                anchorEl={this.state.anchorEl}
-                anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                targetOrigin={{horizontal: 'left', vertical: 'top'}}
-                onRequestClose={this.handleRequestClose}
-              >
-                <Menu>
-                  <MenuItem
-                    primaryText="Add new Client"
-                    onClick={this.onClickAddNew.bind(this, CLIENTS)}
-                    rightIcon={<AddNew hoverColor="#23822e" color="#2cde41"/>}/>
-                  <MenuItem
-                    primaryText="Add new Partners"
-                    onClick={this.onClickAddNew.bind(this, PARTNERS)}
-                    rightIcon={<AddNew hoverColor="#23822e" color="#2cde41"/>}/>
-                  <MenuItem
-                    primaryText="Add new Process"
-                    onClick={this.onClickMenu.bind(this, INNEWPROCESS)}
-                    rightIcon={<AddNew hoverColor="#23822e" color="#2cde41"/>}/>
-                </Menu>
-              </Popover>
+                primaryText="Add new Client"
+                onClick={this.onClickAddNew.bind(this, CLIENTS)}
+                rightIcon={<AddNew hoverColor="#23822e" color="#2cde41"/>}/>
+              <MenuItem
+                primaryText="Add new Partners"
+                onClick={this.onClickAddNew.bind(this, PARTNERS)}
+                rightIcon={<AddNew hoverColor="#23822e" color="#2cde41"/>}/>
+              <MenuItem
+                primaryText="Add new Process"
+                onClick={this.onClickMenu.bind(this, INNEWPROCESS)}
+                rightIcon={<AddNew hoverColor="#23822e" color="#2cde41"/>}/>
             </Menu>
-          </Paper>
-        </div>,
-        <div key={4000}>{this.switcher()}</div>,
-
-        <CreateNewClient key={88} popUpLabel={this.state.popUpLabel}/>
-
-
-      ]
-    )
+          </Popover>
+        </Menu>
+      </Paper>
+    </div>,
+      <div key={4000}>{this.switcher()}</div>,
+      <CreateNewClient key={88} popUpLabel={this.state.popUpLabel}/>
+    ]
   }
 }
+
 const mapStateToProps = (state) => {
   return {
     clients: state.reducerClients.clients,
@@ -248,7 +246,7 @@ export default connect(mapStateToProps, dispatch => ({
   },
 
   HandleDialog: (val) => {
-    dispatch({type: HANDLE_DIALOG , payload: val})
+    dispatch({type: HANDLE_DIALOG, payload: val})
 
   }
 }))(Dashboard)

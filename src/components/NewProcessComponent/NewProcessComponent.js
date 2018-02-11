@@ -21,6 +21,7 @@ class NewProcessComponent extends React.Component {
     this.state = {
       clients: this.props.clients,
       partners: this.props.partners,
+      client: this.props.client,
       loading: false,
       finished: false,
       stepIndex: 0,
@@ -129,8 +130,6 @@ class NewProcessComponent extends React.Component {
     );
   }
   render() {
-    const a = this.props.clients;
-    console.log("CLIENT",a.client);
     const {loading, stepIndex} = this.state;
     return (
       <div className="mainNewProcess">
