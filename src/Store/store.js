@@ -9,8 +9,7 @@ const initState = {
   clients: [],
   partners: [],
   partner: {},
-  openIntervention: false
-
+  openIntervention: false,
 
 };
 const reducerMain = (state  = initState, action) => {
@@ -27,8 +26,6 @@ const reducerClients = (state = initState ,action ) => {
     case SET_CLIENTS:
       state = {...state, clients:action.payload};
       break;
-  }
-  switch (action.type) {
     case SET_ONE_CLIENTS:
       state = {...state, client:action.payload};
       break;
@@ -41,8 +38,6 @@ const reducerPartners = (state = initState ,action ) => {
       state = {...state, partners:action.payload};
       // console.log('add partners to reducer', state);
       break;
-  }
-  switch (action.type) {
     case SET_ONE_PARTNER:
       state = {...state, partner:action.payload};
       break;

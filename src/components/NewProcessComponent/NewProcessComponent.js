@@ -11,6 +11,10 @@ import TextField from 'material-ui/TextField';
 import './NewProcessComponent.scss'
 import ClientComponent from './../ClientComponent/ClientComponent'
 import CreateNewClient from "./CreateNewClient";
+import {connect} from 'react-redux'
+import {NEXT_STEP} from "../../Store/constant";
+
+
 class NewProcessComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -20,6 +24,7 @@ class NewProcessComponent extends React.Component {
       loading: false,
       finished: false,
       stepIndex: 0,
+      nextButton: true,
     }
   }
 
@@ -52,7 +57,7 @@ class NewProcessComponent extends React.Component {
       case 0:
         return (
           [
-            <CreateNewClient key = {100} />,
+            <CreateNewClient key = {100} buttonAdd ={true} />,
             <ClientComponent key = {101} users={this.state.clients} check ={true}/>
           ]
 
@@ -116,6 +121,7 @@ class NewProcessComponent extends React.Component {
           <RaisedButton
             label={stepIndex === 2 ? 'Finish' : 'Next'}
             primary={true}
+            disabled={!!!this.props.client }
             onClick={this.handleNext}
           />
         </div>
@@ -123,18 +129,20 @@ class NewProcessComponent extends React.Component {
     );
   }
   render() {
+    const a = this.props.clients;
+    console.log("CLIENT",a.client);
     const {loading, stepIndex} = this.state;
     return (
       <div className="mainNewProcess">
         <Stepper activeStep={stepIndex}>
           <Step>
-            <StepLabel>Find client or create new</StepLabel>
+            <StepLabel style={{color:"#fff"}}>Find client or create new</StepLabel>
           </Step>
           <Step>
-            <StepLabel>Write problem</StepLabel>
+            <StepLabel style={{color:"#fff"}}>Write problem</StepLabel>
           </Step>
           <Step>
-            <StepLabel>Find partners</StepLabel>
+            <StepLabel style={{color:"#fff"}}>Find partners</StepLabel>
           </Step>
         </Stepper>
         <ExpandTransition loading={loading} open={true}>
@@ -145,4 +153,9 @@ class NewProcessComponent extends React.Component {
   }
 }
 
-export default NewProcessComponent
+const mapStateToProps = (state) => {
+  return {
+    clients: state.reducerClients.clients
+  }
+};
+export default connect(mapStateToProps)(NewProcessComponent)

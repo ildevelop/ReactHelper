@@ -8,10 +8,8 @@ import {connect} from 'react-redux'
 import {HANDLE_DIALOG, SET_ONE_CLIENTS, SET_ONE_PARTNER} from "../../Store/constant";
 
 class CreateNewClient extends React.Component {
-  
   handleOnSubmitClose() {
     let formData = {};
-    console.log("popUP",this.props.popUpLabel);
     Object.keys(this.refs).forEach((key) => formData[key] = this.refs[key].getValue());
     if (this.props.popUpLabel === "Add new clients") {
       this.props.AddOneClients(formData);
@@ -60,7 +58,8 @@ class CreateNewClient extends React.Component {
     ];
     return (
       <div>
-        {/*<RaisedButton label="Add new Client" onClick={this.handleOpen} style={{marginBottom: 10}}/>*/}
+        {this.props.buttonAdd ?<RaisedButton label="Add new Client" onClick={() => {this.props.HandleDialog(true)}} style={{marginBottom: 10}}/> : <div/>}
+
         <Dialog
           title={this.props.popUpLabel}
           actions={actions}
