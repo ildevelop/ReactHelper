@@ -11,7 +11,6 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 import {SET_ONE_CLIENTS} from '../../Store/constant';
-import ClientItem from "./ClientItem/ClientItem";
 
 class ClientComponent extends Component {
   constructor(props) {
@@ -38,30 +37,6 @@ class ClientComponent extends Component {
     );
     this.setState({searchUsers: username});
   }
-
-
-  // getUsersView(users) {
-  //   const usersView = users.map((user) =>
-  //     <TableRow key={user._id} ref="tableRow">
-  //       <TableRowColumn></TableRowColumn>
-  //       <TableRowColumn>{user.fname}</TableRowColumn>
-  //       <TableRowColumn>{user.sname}</TableRowColumn>
-  //       <TableRowColumn>{user.address}</TableRowColumn>
-  //       <TableRowColumn>{user.zipp}</TableRowColumn>
-  //       <TableRowColumn>{user.city}</TableRowColumn>
-  //       <TableRowColumn>{user.email}</TableRowColumn>
-  //       <TableRowColumn>{user.phone_number}</TableRowColumn>
-  //     </TableRow>
-  //   );
-  //   return usersView;
-  // }
-
-  // handleCellClick(row) {
-  //   console.log('row',row);
-  //   this.setState({selectedClient:this.state.searchUsers[row]});
-  //   this.props.AddOneClients(this.state.selectedClient);
-  //   console.log(this.state.selectedClient);
-  // }
 
   handleSelect = (user) => {
     const checkedUser = this.state.searchUsers[user];
@@ -97,7 +72,6 @@ class ClientComponent extends Component {
             </TableRow>
           </TableHeader>
           <TableBody displayRowCheckbox={false}>
-            {/*{usersView}*/}
             {searchUsers && searchUsers.map(user => <TableRow
               key={user._id}
               >
