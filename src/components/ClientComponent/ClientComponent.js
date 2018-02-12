@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {TextField} from 'material-ui';
+import {RadioButton, RadioButtonGroup, TextField} from 'material-ui';
 import {connect} from 'react-redux'
 import './ClientComponent.scss'
 import {
@@ -11,6 +11,7 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 import {SET_ONE_CLIENTS} from '../../Store/constant';
+import ClientItem from "./ClientItem/ClientItem";
 
 class ClientComponent extends Component {
   constructor(props) {
@@ -19,13 +20,12 @@ class ClientComponent extends Component {
       users: this.props.users || [],
       searchUsers: [],
       displayRowCheckbox: this.props.check || false,
-
+      checked: null
     }
   }
 
   componentDidMount() {
     this.setState({searchUsers: this.state.users});
-
   }
 
   filterList(event) {
@@ -40,44 +40,52 @@ class ClientComponent extends Component {
   }
 
 
-  getUsersView(users) {
-    const usersView = users.map((user) =>
-      <TableRow key={user._id} ref="tableRow">
-        <TableRowColumn></TableRowColumn>
-        <TableRowColumn>{user.fname}</TableRowColumn>
-        <TableRowColumn>{user.sname}</TableRowColumn>
-        <TableRowColumn>{user.address}</TableRowColumn>
-        <TableRowColumn>{user.zipp}</TableRowColumn>
-        <TableRowColumn>{user.city}</TableRowColumn>
-        <TableRowColumn>{user.email}</TableRowColumn>
-        <TableRowColumn>{user.phone_number}</TableRowColumn>
-      </TableRow>
-    );
-    return usersView;
-  }
+  // getUsersView(users) {
+  //   const usersView = users.map((user) =>
+  //     <TableRow key={user._id} ref="tableRow">
+  //       <TableRowColumn></TableRowColumn>
+  //       <TableRowColumn>{user.fname}</TableRowColumn>
+  //       <TableRowColumn>{user.sname}</TableRowColumn>
+  //       <TableRowColumn>{user.address}</TableRowColumn>
+  //       <TableRowColumn>{user.zipp}</TableRowColumn>
+  //       <TableRowColumn>{user.city}</TableRowColumn>
+  //       <TableRowColumn>{user.email}</TableRowColumn>
+  //       <TableRowColumn>{user.phone_number}</TableRowColumn>
+  //     </TableRow>
+  //   );
+  //   return usersView;
+  // }
 
-  handleCellClick(row) {
-    console.log('row',row);
-    this.state.selectedClient= this.state.searchUsers[row];
-    // this.props.AddOneClients(this.state.searchUsers[row]);
-    console.log(this.state.selectedClient);
-  }
+  // handleCellClick(row) {
+  //   console.log('row',row);
+  //   this.setState({selectedClient:this.state.searchUsers[row]});
+  //   this.props.AddOneClients(this.state.selectedClient);
+  //   console.log(this.state.selectedClient);
+  // }
+
+  handleSelect = (user) => {
+    const checkedUser = this.state.searchUsers[user];
+    this.setState({
+      checked: checkedUser._id
+    });
+    this.props.AddOneClients(checkedUser);
+  };
 
   render() {
-    const usersView = this.getUsersView(this.state.searchUsers);
+    // const usersView = this.getUsersView(this.state.searchUsers);
+    const {searchUsers, checked} = this.state;
     return (
       <div className="clients">
-
-        <Table onCellClick={this.handleCellClick.bind(this)}>
-          <TableHeader adjustForCheckbox={this.state.displayRowCheckbox}
-                       displaySelectAll={this.state.displayRowCheckbox}>
+        <Table
+          onCellClick={this.handleSelect.bind(this)}
+        >
+          <TableHeader>
             <TableRow>
               <TableHeaderColumn><TextField
                 hintText="Clients"
                 className="textField"
                 floatingLabelText="find clients:"
-                onChange={this.filterList.bind(this)
-                }
+                onChange={this.filterList.bind(this)}
               /></TableHeaderColumn>
               <TableHeaderColumn>First name</TableHeaderColumn>
               <TableHeaderColumn>Second name</TableHeaderColumn>
@@ -88,14 +96,35 @@ class ClientComponent extends Component {
               <TableHeaderColumn>Phone</TableHeaderColumn>
             </TableRow>
           </TableHeader>
-          <TableBody displayRowCheckbox={this.state.displayRowCheckbox}>
-            {usersView}
+          <TableBody displayRowCheckbox={false}>
+            {/*{usersView}*/}
+            {searchUsers && searchUsers.map(user => <TableRow
+              key={user._id}
+              >
+              <TableRowColumn>
+              <RadioButton
+              checked={checked === user._id && true}
+              value={user._id}
+              />
+              </TableRowColumn>
+              <TableRowColumn/>
+              <TableRowColumn>{user.fname}</TableRowColumn>
+              <TableRowColumn>{user.sname}</TableRowColumn>
+              <TableRowColumn>{user.address}</TableRowColumn>
+              <TableRowColumn>{user.zipp}</TableRowColumn>
+              <TableRowColumn>{user.city}</TableRowColumn>
+              <TableRowColumn>{user.email}</TableRowColumn>
+              <TableRowColumn>{user.phone_number}</TableRowColumn>
+              </TableRow>)}
           </TableBody>
         </Table>
       </div>
     )
   }
 }
+
+
+
 
 const mapStateToProps = (state) => {
   return {
@@ -104,6 +133,6 @@ const mapStateToProps = (state) => {
 };
 export default connect(mapStateToProps, dispatch => ({
   AddOneClients: (client) => {
-    dispatch({type:SET_ONE_CLIENTS, payload:client})
+    dispatch({type: SET_ONE_CLIENTS, payload: client})
   }
 }))(ClientComponent);

@@ -122,7 +122,7 @@ class NewProcessComponent extends React.Component {
           <RaisedButton
             label={stepIndex === 2 ? 'Finish' : 'Next'}
             primary={true}
-            disabled={!!!this.props.client }
+            disabled={!Object.keys(this.props.client).length}
             onClick={this.handleNext}
           />
         </div>
@@ -154,7 +154,8 @@ class NewProcessComponent extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    clients: state.reducerClients.clients
+    clients: state.reducerClients.clients,
+    client: state.reducerClients.client,
   }
 };
 export default connect(mapStateToProps)(NewProcessComponent)
