@@ -54,7 +54,7 @@ class ClientComponent extends Component {
         <Table
           onCellClick={this.handleSelect.bind(this)}
         >
-          <TableHeader>
+          <TableHeader adjustForCheckbox={this.state.displayRowCheckbox} displaySelectAll={this.state.displayRowCheckbox}>
             <TableRow>
               <TableHeaderColumn><TextField
                 hintText="Clients"
@@ -76,12 +76,11 @@ class ClientComponent extends Component {
               key={user._id}
               >
               <TableRowColumn>
-              <RadioButton
-              checked={checked === user._id && true}
-              value={user._id}
-              />
+                {this.props.check ?    <RadioButton
+                  checked={checked === user._id && true}
+                  value={user._id}
+                />: <div/>}
               </TableRowColumn>
-              <TableRowColumn/>
               <TableRowColumn>{user.fname}</TableRowColumn>
               <TableRowColumn>{user.sname}</TableRowColumn>
               <TableRowColumn>{user.address}</TableRowColumn>
