@@ -13,6 +13,7 @@ import ClientComponent from './../ClientComponent/ClientComponent'
 import CreateNewClient from "./CreateNewClient";
 import {connect} from 'react-redux'
 import {NEXT_STEP} from "../../Store/constant";
+import PartnerComponent from "../PartnerComponent/PartnerComponent";
 
 
 class NewProcessComponent extends React.Component {
@@ -26,9 +27,13 @@ class NewProcessComponent extends React.Component {
       finished: false,
       stepIndex: 0,
       nextButton: true,
+      problem: null
     }
   }
-
+  inputField(event) {
+    this.setState({problem:event.target.value});
+    console.log('VAL',event.target.value);
+  }
   dummyAsync = (cb) => {
     this.setState({loading: true}, () => {
       this.asyncTimer = setTimeout(cb, 500);
@@ -66,22 +71,25 @@ class NewProcessComponent extends React.Component {
       case 1:
         return (
           <div>
-            <TextField  floatingLabelText="Ad group name" />
+            <TextField
+              floatingLabelText="Input her the problem"
+              hintText="Message Field"
+              multiLine={true}
+              onChange={this.inputField.bind(this)}
+              rows={3}/>
             <p>
-              Ad group status is different than the statuses for campaigns, ads, and keywords, though the
-              statuses can affect each other. Ad groups are contained within a campaign, and each campaign can
-              have one or more ad groups. Within each ad group are ads, keywords, and bids.
+              Describe the problem with this client.: <b>{this.props.client.fname} {this.props.client.sname}</b>
+
             </p>
-            <p>Something something whatever cool</p>
+            <p>What happened and how to help.</p>
+            <p>preferably in more detail,how we can help him</p>
           </div>
         );
       case 2:
         return (
-          <p>
-            Try out different ad text to see what brings in the most customers, and learn how to
-            enhance your ads using features like ad extensions. If you run into any problems with your
-            ads, find out how to tell if they're running and how to resolve approval issues.
-          </p>
+          [
+            <PartnerComponent key = {201} partners={this.state.partners} check ={true}/>
+          ]
         );
       default:
         return 'You\'re a long way from home sonny jim!';
@@ -122,7 +130,7 @@ class NewProcessComponent extends React.Component {
           <RaisedButton
             label={stepIndex === 2 ? 'Finish' : 'Next'}
             primary={true}
-            disabled={!Object.keys(this.props.client).length}
+            disabled={stepIndex === 1? ! this.state.problem :!Object.keys(this.props.client).length }
             onClick={this.handleNext}
           />
         </div>

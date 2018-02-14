@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {TextField} from 'material-ui';
+import {RadioButton, TextField} from 'material-ui';
 import './PartnerComponent.scss';
 import {
   Table,
@@ -11,12 +11,13 @@ import {
 } from 'material-ui/Table';
 
 class PartnerComponent extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      partners: [],
+      partners: this.props.partners || [],
       searchUsers:[],
-      displayRowCheckbox: false
+      displayRowCheckbox: this.props.check || false,
+      checked: null
     }
   }
 
@@ -24,37 +25,20 @@ class PartnerComponent extends Component {
     this.setState({searchUsers:this.state.partners});
 
   }
-  componentWillMount() {
-    this.setState({partners:this.props.partners});
 
-  }
-  filterList(event){
+  filterList(event) {
     let updatedList = this.state.partners;
     let username = updatedList.filter(
       user => user.fname.search(event.target.value) !== -1 ||
         user.city.search(event.target.value) !== -1 ||
-        user.phone_number.search(event.target.value) !== -1);
+        user.phone_number.search(event.target.value) !== -1 ||
+        user.zipp.search(event.target.value) !== -1
+    );
     this.setState({searchUsers: username});
   }
 
-  getUsersView(users) {
-    const usersView = users.map(user =>
-      <TableRow key={user._id}>
-        <TableRowColumn></TableRowColumn>
-        <TableRowColumn>{user.fname}</TableRowColumn>
-        <TableRowColumn>{user.sname}</TableRowColumn>
-        <TableRowColumn>{user.address}</TableRowColumn>
-        <TableRowColumn>{user.zipp}</TableRowColumn>
-        <TableRowColumn>{user.city}</TableRowColumn>
-        <TableRowColumn>{user.email}</TableRowColumn>
-        <TableRowColumn>{user.phone_number}</TableRowColumn>
-        <TableRowColumn>{user.commission}</TableRowColumn>
-      </TableRow>
-    );
-    return usersView;
-  }
   render() {
-    const usersView = this.getUsersView(this.state.searchUsers);
+    const {searchUsers, checked} = this.state;
     return (
       <div className="clients">
         <Table >
@@ -78,8 +62,24 @@ class PartnerComponent extends Component {
               <TableHeaderColumn>Commission</TableHeaderColumn>
             </TableRow>
           </TableHeader>
-          <TableBody displayRowCheckbox= {this.state.displayRowCheckbox}>
-            {usersView}
+          <TableBody displayRowCheckbox={false}>
+            {searchUsers && searchUsers.map(user => <TableRow
+              key={user._id}
+            >
+              <TableRowColumn>
+                {this.props.check ?    <RadioButton
+                  checked={checked === user._id && true}
+                  value={user._id}
+                />: <div/>}
+              </TableRowColumn>
+              <TableRowColumn>{user.fname}</TableRowColumn>
+              <TableRowColumn>{user.sname}</TableRowColumn>
+              <TableRowColumn>{user.address}</TableRowColumn>
+              <TableRowColumn>{user.zipp}</TableRowColumn>
+              <TableRowColumn>{user.city}</TableRowColumn>
+              <TableRowColumn>{user.email}</TableRowColumn>
+              <TableRowColumn>{user.phone_number}</TableRowColumn>
+            </TableRow>)}
           </TableBody>
 
         </Table>

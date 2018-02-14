@@ -58,7 +58,7 @@ class Dashboard extends React.Component {
       case CLIENTS:
         return ( <ClientComponent users={this.props.clients} check={false}/>);
       case PARTNERS:
-        return (<PartnerComponent partners={this.props.partners}/>);
+        return (<PartnerComponent partners={this.props.partners} check={false}/>);
       case INPROCESS:
         return (<h2>Hello InProcess</h2>);
       case DONE:
