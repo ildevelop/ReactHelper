@@ -7,14 +7,11 @@ const port = 3000;
 const hostname = 'localhost';
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
-var person = require('./person.json');
 var mongo = require('mongodb');
-const configApi = require('./ipi/config.json');
+const configApi = require('./api/conf.json');
 // Incert One to DB
 var MongoClient = mongo.MongoClient;
 var url = 'mongodb://localhost:27017/test12';
-var users = [];
-var resDB = {'21':21};
 
 const passAuthentication = (username, password) => {
   let users = JSON.parse(fs.readFileSync('./users.json', 'utf8'))['permission'];

@@ -57,7 +57,7 @@ class NewProcessComponent extends React.Component {
         .catch(function (error) {
           console.log(error);
         });
-      //TODO send client and problem and partner to email
+      this.props.AddProblem('')
     }
     if (!this.state.loading) {
       this.dummyAsync(() => this.setState({
@@ -184,6 +184,7 @@ const mapStateToProps = (state) => {
     mainC:state.reducerClients,
     clients: state.reducerClients.clients,
     client: state.reducerClients.client,
+    person: state.reducerPartners.partner,
   }
 };
 export default connect(mapStateToProps, dispatch => ({
