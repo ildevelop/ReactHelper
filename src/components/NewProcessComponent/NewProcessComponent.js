@@ -14,7 +14,7 @@ import CreateNewClient from "./CreateNewClient";
 import {connect} from 'react-redux'
 import {NEXT_STEP, SET_PROBLEM} from "../../Store/constant";
 import PartnerComponent from "../PartnerComponent/PartnerComponent";
-
+import axios from 'axios';
 
 class NewProcessComponent extends React.Component {
   constructor(props) {
@@ -28,12 +28,11 @@ class NewProcessComponent extends React.Component {
       stepIndex: 0,
       nextButton: true,
       problem: null,
-      popUpLabel: 'Add new Client'
+      popUpLabel: 'Add new Client',
     }
   }
   inputField(event) {
     this.setState({problem:event.target.value});
-    console.log('VAL',event.target.value);
   }
   dummyAsync = (cb) => {
     this.setState({loading: true}, () => {
@@ -46,6 +45,18 @@ class NewProcessComponent extends React.Component {
       this.props.AddProblem(this.state.problem)
     }
     if(stepIndex ===2){
+      let messageObj = {};
+      messageObj['partner'] = this.props.mainP.partner;
+      messageObj['client'] = this.props.mainC.client;
+      messageObj['problem'] = this.props.mainC.problem;
+      axios.post('/send_message', {message: messageObj})
+        .then(function (response) {
+          let body = response.data['status'];
+          console.log('body ===>', body);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
       //TODO send client and problem and partner to email
     }
     if (!this.state.loading) {
@@ -169,6 +180,8 @@ class NewProcessComponent extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    mainP:state.reducerPartners,
+    mainC:state.reducerClients,
     clients: state.reducerClients.clients,
     client: state.reducerClients.client,
   }

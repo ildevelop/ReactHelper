@@ -9,30 +9,12 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 var person = require('./person.json');
 var mongo = require('mongodb');
-
+const configApi = require('./ipi/config.json');
 // Incert One to DB
 var MongoClient = mongo.MongoClient;
 var url = 'mongodb://localhost:27017/test12';
 var users = [];
 var resDB = {'21':21};
-
-// MongoClient.connect(url, function(err, db) {
-//   if (err) throw err;
-//   console.log('Connected established!');
-//   var dbo = db.db("test12");
-//
-//   var collection = dbo.collection('person');
-//   collection.insertMany(person, function(err, result) {
-//     if (err) {console.log('OOPS something wrong',err); return}
-//     users = result.ops;
-//     console.log('Count ===> ',result.insertedCount);
-//     console.log('Count ===> ',result.ops);
-//     db.close();
-//   });
-// });
-
-
-
 
 const passAuthentication = (username, password) => {
   let users = JSON.parse(fs.readFileSync('./users.json', 'utf8'))['permission'];
@@ -125,6 +107,31 @@ const getExpressApplication = (application) => {
     else {
       res.send(401, JSON.stringify({ 'status': 'wrong Partners!!'}));
     }
+  });
+  application.post('/send_message', function(req, response) {
+    response.setHeader('Content-Type', 'application/json');
+    let message = req.body['message'];
+    console.log('message',message);
+    let http = require('request');
+    let fields = [
+      '<b>CLIENT: </b> ' + message.client.fname + ' ' + message.client.sname,
+      '<b>   phone: </b> ' + message.client.phone_number,
+      '<b>   city:</b> ' + message.client.city,
+      '<b>   street:</b> ' + message.client.address,
+      '<b>PROBLEM:</b> ' + message.problem,
+      '<b>PARTNER:</b> ' + message.partner.fname  + ' '  + message.partner.sname,
+    ];
+    let msg = '';
+    //проходимся по массиву и склеиваем все в одну строку
+    fields.forEach(field => {
+      msg += field + '\n'
+    });
+    //кодируем результат в текст, понятный адресной строке
+    msg = encodeURI(msg);
+    http.post(`https://api.telegram.org/bot${configApi.telegram.token}/sendMessage?chat_id=${configApi.telegram.chat}&parse_mode=html&text=${msg}`, function (error, res, body) {
+    });
+    response.send({status: "Success"});
+
   });
   application.post('/get_token', function(req, res){
     res.setHeader('Content-Type', 'application/json');
