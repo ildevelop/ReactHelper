@@ -1,6 +1,6 @@
 import {createStore , applyMiddleware ,combineReducers } from 'redux';
 import {composeWithDevTools} from 'redux-devtools-extension'
-import {HANDLE_DIALOG, SET_CLIENTS, SET_ONE_CLIENTS, SET_ONE_PARTNER, SET_PARTNERS,} from './constant'
+import {HANDLE_DIALOG, SET_CLIENTS, SET_ONE_CLIENTS, SET_ONE_PARTNER, SET_PARTNERS, SET_PROBLEM,} from './constant'
 import thunk from 'redux-thunk'
 
 const initState = {
@@ -10,6 +10,7 @@ const initState = {
   partners: [],
   partner: {},
   openIntervention: false,
+  problem:''
 
 };
 const reducerMain = (state  = initState, action) => {
@@ -28,6 +29,9 @@ const reducerClients = (state = initState ,action ) => {
       break;
     case SET_ONE_CLIENTS:
       state = {...state, client:action.payload};
+      break;
+    case SET_PROBLEM:
+      state = {...state, problem:action.payload};
       break;
   }
   return state;

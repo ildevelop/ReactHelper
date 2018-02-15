@@ -12,7 +12,7 @@ import './NewProcessComponent.scss'
 import ClientComponent from './../ClientComponent/ClientComponent'
 import CreateNewClient from "./CreateNewClient";
 import {connect} from 'react-redux'
-import {NEXT_STEP} from "../../Store/constant";
+import {NEXT_STEP, SET_PROBLEM} from "../../Store/constant";
 import PartnerComponent from "../PartnerComponent/PartnerComponent";
 
 
@@ -27,7 +27,8 @@ class NewProcessComponent extends React.Component {
       finished: false,
       stepIndex: 0,
       nextButton: true,
-      problem: null
+      problem: null,
+      popUpLabel: 'Add new Client'
     }
   }
   inputField(event) {
@@ -41,6 +42,12 @@ class NewProcessComponent extends React.Component {
   };
   handleNext = () => {
     const {stepIndex} = this.state;
+    if(stepIndex ===1){
+      this.props.AddProblem(this.state.problem)
+    }
+    if(stepIndex ===2){
+      //TODO send client and problem and partner to email
+    }
     if (!this.state.loading) {
       this.dummyAsync(() => this.setState({
         loading: false,
@@ -63,7 +70,7 @@ class NewProcessComponent extends React.Component {
       case 0:
         return (
           [
-            <CreateNewClient key = {100} buttonAdd ={true} />,
+            <CreateNewClient key = {100} buttonAdd ={true} popUpLabel={this.state.popUpLabel}/>,
             <ClientComponent key = {101} users={this.state.clients} check ={true}/>
           ]
 
@@ -166,4 +173,11 @@ const mapStateToProps = (state) => {
     client: state.reducerClients.client,
   }
 };
-export default connect(mapStateToProps)(NewProcessComponent)
+export default connect(mapStateToProps, dispatch => ({
+  AddProblem: (problem) => {
+    const asyncGetPartners = () => dispatch => {
+      dispatch({type: SET_PROBLEM, payload: problem})
+    };
+    dispatch(asyncGetPartners());
+  },
+}))(NewProcessComponent)
