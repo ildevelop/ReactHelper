@@ -79,6 +79,7 @@ class PartnerComponent extends Component {
               <TableRowColumn>{user.city}</TableRowColumn>
               <TableRowColumn>{user.email}</TableRowColumn>
               <TableRowColumn>{user.phone_number}</TableRowColumn>
+              <TableRowColumn>{user.commission}</TableRowColumn>
             </TableRow>)}
           </TableBody>
 

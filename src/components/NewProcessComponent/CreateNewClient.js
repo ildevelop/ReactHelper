@@ -93,6 +93,8 @@ class CreateNewClient extends React.Component {
               <TextField hintText="7750505" ref="zipp" floatingLabelText="ZIP"
               />
               <br/>
+              {this.props.popUpLabel ==='Add new partners'? <TextField hintText="30%" ref="commission" floatingLabelText="Commission"
+              />:<br/>}
             </div>
           </div>
         </Dialog>
