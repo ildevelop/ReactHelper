@@ -95,7 +95,7 @@ class NewProcessComponent extends React.Component {
       case 2:
         return (
           [
-            <PartnerComponent key = {201} partners={this.state.partners} check ={true}/>
+            <PartnerComponent key = {201} part={this.state.partners} check ={true}/>
           ]
         );
       default:

@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {RadioButton, TextField} from 'material-ui';
-import './PartnerComponent.scss';
+import './../ClientComponent/ClientComponent.scss';
+import {connect} from 'react-redux'
+import {SET_ONE_PARTNER} from '../../Store/constant';
 import {
   Table,
   TableBody,
@@ -14,7 +16,7 @@ class PartnerComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      partners: this.props.partners || [],
+      partners: this.props.part || [],
       searchUsers:[],
       displayRowCheckbox: this.props.check || false,
       checked: null
@@ -36,16 +38,23 @@ class PartnerComponent extends Component {
     );
     this.setState({searchUsers: username});
   }
+  handleSelect = (user) => {
+    const checkedUser = this.state.searchUsers[user];
+    this.setState({
+      checked: checkedUser._id
+    });
+    this.props.AddOnePartner(checkedUser);
+  };
 
   render() {
     const {searchUsers, checked} = this.state;
     return (
       <div className="clients">
-        <Table >
+        <Table onCellClick={this.handleSelect.bind(this)}>
           <TableHeader adjustForCheckbox= {this.state.displayRowCheckbox} displaySelectAll ={this.state.displayRowCheckbox}>
             <TableRow >
               <TableHeaderColumn><TextField
-                hintText="Clients"
+                hintText="Partners"
                 className="textField"
                 floatingLabelText="find partners:"
                 onChange={this.filterList.bind(this)
@@ -88,5 +97,13 @@ class PartnerComponent extends Component {
     )
   }
 }
-
-export default PartnerComponent;
+const mapStateToProps = (state) => {
+  return {
+    partners: state.reducerPartners
+  }
+};
+export default connect(mapStateToProps, dispatch => ({
+  AddOnePartner: (client) => {
+    dispatch({type: SET_ONE_PARTNER, payload: client})
+  }
+}))(PartnerComponent);
