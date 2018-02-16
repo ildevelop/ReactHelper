@@ -4,11 +4,20 @@
     text-align: center;
   }
   .paper_process{
-    height: 300px;
-    width: 300px;
-    margin: 20px;
+    height: 395px;
+    width: 350px;
+    margin: 10px;
     text-align: center;
     display: inline-block;
+    font-size: 14px;
+
+    .oneProcessButton{
+      margin-top: 10px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      background: #93cdcb;
+    }
   }
 }
 
