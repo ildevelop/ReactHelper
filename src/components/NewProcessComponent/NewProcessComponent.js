@@ -12,7 +12,7 @@ import './NewProcessComponent.scss'
 import ClientComponent from './../ClientComponent/ClientComponent'
 import CreateNewClient from "./CreateNewClient";
 import {connect} from 'react-redux'
-import {NEXT_STEP, SET_PROBLEM} from "../../Store/constant";
+import {NEXT_STEP, SET_NEW_PROCESS, SET_PROBLEM} from "../../Store/constant";
 import PartnerComponent from "../PartnerComponent/PartnerComponent";
 import axios from 'axios';
 
@@ -57,6 +57,7 @@ class NewProcessComponent extends React.Component {
         .catch(function (error) {
           console.log(error);
         });
+      this.props.SetNewProcess(messageObj);
       this.props.AddProblem('')
     }
     if (!this.state.loading) {
@@ -193,5 +194,11 @@ export default connect(mapStateToProps, dispatch => ({
       dispatch({type: SET_PROBLEM, payload: problem})
     };
     dispatch(asyncGetPartners());
+  },
+  SetNewProcess: (process) => {
+    const asyncSetNewProcess = () => dispatch => {
+      dispatch({type: SET_NEW_PROCESS, payload: process})
+    };
+    dispatch(asyncSetNewProcess());
   },
 }))(NewProcessComponent)

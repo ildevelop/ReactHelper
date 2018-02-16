@@ -18,6 +18,8 @@ import NewProcessComponent from '../NewProcessComponent/NewProcessComponent';
 import {connect} from 'react-redux'
 import {SET_CLIENTS, SET_PARTNERS, HANDLE_DIALOG} from './../../Store/constant'
 import CreateNewClient from '../NewProcessComponent/CreateNewClient';
+import InProcess from '../InProcess/InProcess';
+import {SET_PROCESS} from "../../Store/constant";
 
 const CLIENTS = 'clients',
   PARTNERS = 'partners',
@@ -45,6 +47,7 @@ class Dashboard extends React.Component {
     };
     this.setClients();
     this.setPartners();
+    this.setProcess();
   }
 
   handleRequestClose = () => {
@@ -60,7 +63,7 @@ class Dashboard extends React.Component {
       case PARTNERS:
         return (<PartnerComponent part={this.props.partners} check={false}/>);
       case INPROCESS:
-        return (<h2>Hello InProcess</h2>);
+        return (<InProcess proc = {this.props.main}/>);
       case DONE:
         return (<h2>Hello Done</h2>);
       case INNEWPROCESS:
@@ -91,7 +94,16 @@ class Dashboard extends React.Component {
         console.log(error);
       });
   }
-
+  setProcess(){
+    let self = this;
+    axios.get('/get_process')
+      .then(function (response) {
+        self.props.AddProcess(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
 
   onClickMenu(qw) {
     this.setState({curentState: qw});
@@ -226,7 +238,7 @@ const mapStateToProps = (state) => {
   return {
     clients: state.reducerClients.clients,
     partners: state.reducerPartners.partners,
-    main: state.reducerMain
+    main: state.reducerMain.process
   }
 };
 
@@ -243,6 +255,12 @@ export default connect(mapStateToProps, dispatch => ({
       dispatch({type: SET_PARTNERS, payload: partners})
     };
     dispatch(asyncGetPartners());
+  },
+  AddProcess:(process) => {
+    const asyncGetProcess = () => dispatch => {
+      dispatch({type: SET_PROCESS, payload: process})
+    };
+    dispatch(asyncGetProcess());
   },
 
   HandleDialog: (val) => {

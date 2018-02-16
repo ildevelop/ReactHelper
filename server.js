@@ -109,6 +109,9 @@ const getExpressApplication = (application) => {
     response.setHeader('Content-Type', 'application/json');
     let message = req.body['message'];
     console.log('message',message);
+
+    //TODO ADD to process
+
     let http = require('request');
     let fields = [
       '<b>CLIENT: </b> ' + message.client.fname + ' ' + message.client.sname,
@@ -130,6 +133,24 @@ const getExpressApplication = (application) => {
     response.send({status: "Success"});
 
   });
+  application.get('/get_process', function(req, response) {
+    if(process.env.REACT_APP_TEST === 'true') {
+      MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        console.log('Connected to DB established!');
+        var collection = db.collection('process');
+        collection.find().toArray(function (err, res) {
+          if (err) throw err;
+          response.json(res);
+          db.close();
+        })
+      });
+    }
+    else{
+      res.json({'3':3})
+    }
+  });
+
   application.post('/get_token', function(req, res){
     res.setHeader('Content-Type', 'application/json');
     let username = req.body['username'];

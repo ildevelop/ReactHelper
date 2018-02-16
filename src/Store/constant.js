@@ -4,3 +4,5 @@ export const SET_ONE_PARTNER= 'SET_ONE_PARTNER';
 export const SET_ONE_CLIENTS= 'SET_ONE_CLIENTS';
 export const HANDLE_DIALOG= 'HANDLE_DIALOG';
 export const SET_PROBLEM= 'SET_PROBLEM';
+export const SET_NEW_PROCESS= 'SET_NEW_PROCESS';
+export const SET_PROCESS= 'SET_PROCESS';
