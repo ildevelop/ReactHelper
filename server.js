@@ -34,11 +34,14 @@ const getExpressApplication = (application) => {
         if (err) throw err;
         console.log('Connected to DB established!');
         var collection = db.collection('clients');
-        collection.find().toArray(function (err, res) {
-          if (err) throw err;
-          response.json(res);
-          db.close();
-        })
+        try{
+          collection.find().toArray(function (err, res) {
+            if (err) throw err;
+            response.json(res);
+            db.close();
+          })
+        }catch (e) {console.log(e)}
+
       });
     }
     else {
@@ -51,11 +54,14 @@ const getExpressApplication = (application) => {
         if (err) throw err;
         console.log('Connected to DB established!');
         var collection = db.collection('partners');
-        collection.find().toArray(function (err, res) {
-          if (err) throw err;
-          response.json(res);
-          db.close();
-        })
+        try{
+          collection.find().toArray(function (err, res) {
+            if (err) throw err;
+            response.json(res);
+            db.close();
+          })
+        }catch (e){console.log(e)}
+
       });
     }
     else {
@@ -73,11 +79,13 @@ const getExpressApplication = (application) => {
         if (err) throw err;
         console.log('Connected to DB established!');
         var collection = db.collection('clients');
-        collection.insertOne(client, function (err, res) {
-          if (err) throw err;
-          response.send({status: "Success"});
-          db.close();
-        })
+        try{
+          collection.insertOne(client, function (err, res) {
+            if (err) throw err;
+            response.send({status: "Success"});
+            db.close();
+          })
+        }catch (e){console.log(e)}
       });
 
     }
@@ -95,11 +103,14 @@ const getExpressApplication = (application) => {
         if (err) throw err;
         console.log('Connected to DB established!');
         var collection = db.collection('partners');
-        collection.insertOne(partners, function (err, res) {
-          if (err) throw err;
-          response.send({status: "Success"});
-          db.close();
-        })
+        try {
+          collection.insertOne(partners, function (err, res) {
+            if (err) throw err;
+            response.send({status: "Success"});
+            db.close();
+          })
+        }catch (e){console.log(e)}
+
       });
 
     }
@@ -118,11 +129,14 @@ const getExpressApplication = (application) => {
         if (err) throw err;
         console.log('Connected to DB established!');
         var collection = db.collection('process');
-        collection.insertOne(message, function (err, res) {
-          if (err) throw err;
-          // response.send({status: "Success"});
-          db.close();
-        })
+        try {
+          collection.insertOne(message, function (err, res) {
+            if (err) throw err;
+            // response.send({status: "Success"});
+            db.close();
+          })
+        }catch (e){console.log(e)}
+
       });
 
       let http = require('request');
@@ -156,11 +170,13 @@ const getExpressApplication = (application) => {
         if (err) throw err;
         console.log('Connected to DB established!');
         var collection = db.collection('process');
-        collection.find().toArray(function (err, res) {
-          if (err) throw err;
-          response.json(res);
-          db.close();
-        })
+        try{
+          collection.find().toArray(function (err, res) {
+            if (err) throw err;
+            response.json(res);
+            db.close();
+          })
+        }catch (e){console.log(e)}
       });
     }
     else {
