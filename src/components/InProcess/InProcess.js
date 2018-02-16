@@ -1,14 +1,7 @@
 import React, {Component} from 'react';
 import {Paper} from "material-ui";
 import {connect} from 'react-redux'
-const style = {
-  height: 300,
-  width: 300,
-  margin: 20,
-  textAlign: 'center',
-  display: 'inline-block',
-};
-
+import './InProcess.scss'
 
 class InProcess extends Component {
   constructor(props) {
@@ -23,8 +16,16 @@ class InProcess extends Component {
     let cl = this.state.all_process;
     console.log('all process:',cl);
     return (
-      <div>
-        <Paper style={style} zDepth={2} rounded={false} />
+      <div className="in_process">
+        {Object.keys(this.state.all_process).length?
+          <div>
+            <Paper className ="paper_process" zDepth={2} rounded={false} />
+          </div>:
+          <div>
+            <h1 className="not_process"> There is not one open process </h1>
+
+          </div>}
+
       </div>
     )
   }

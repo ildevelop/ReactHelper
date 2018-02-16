@@ -15,20 +15,22 @@ var url = 'mongodb://localhost:27017/test12';
 
 const passAuthentication = (username, password) => {
   let users = JSON.parse(fs.readFileSync('./users.json', 'utf8'))['permission'];
-  let user = users.find(function (user) { return user.email === username
-    && user.password === password; });
-    return user !== undefined;
+  let user = users.find(function (user) {
+    return user.email === username
+      && user.password === password;
+  });
+  return user !== undefined;
 };
 
 const getExpressApplication = (application) => {
   application.use(bodyParser.json());
-  application.get('/some/path', function(req, res) {
-    res.json({ custom: 'response' });
+  application.get('/some/path', function (req, res) {
+    res.json({custom: 'response'});
   });
 
-  application.get('/get_clients', function(req, response) {
-    if(process.env.REACT_APP_TEST === 'true') {
-      MongoClient.connect(url, function(err, db) {
+  application.get('/get_clients', function (req, response) {
+    if (process.env.REACT_APP_TEST === 'true') {
+      MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         console.log('Connected to DB established!');
         var collection = db.collection('clients');
@@ -39,13 +41,13 @@ const getExpressApplication = (application) => {
         })
       });
     }
-    else{
-      res.json({'1':1})
+    else {
+      res.json({'1': 1})
     }
   });
-  application.get('/get_partners', function(req, response) {
-    if(process.env.REACT_APP_TEST === 'true') {
-      MongoClient.connect(url, function(err, db) {
+  application.get('/get_partners', function (req, response) {
+    if (process.env.REACT_APP_TEST === 'true') {
+      MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         console.log('Connected to DB established!');
         var collection = db.collection('partners');
@@ -56,22 +58,22 @@ const getExpressApplication = (application) => {
         })
       });
     }
-    else{
-      res.json({'2':2})
+    else {
+      res.json({'2': 2})
     }
   });
 
-  application.post('/add_client', function(req, response) {
+  application.post('/add_client', function (req, response) {
     response.setHeader('Content-Type', 'application/json');
     let client = req.body['clients'];
     console.log(client);
-    if (client){
+    if (client) {
 
-      MongoClient.connect(url, function(err, db) {
+      MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         console.log('Connected to DB established!');
         var collection = db.collection('clients');
-        collection.insertOne(client,function (err, res) {
+        collection.insertOne(client, function (err, res) {
           if (err) throw err;
           response.send({status: "Success"});
           db.close();
@@ -80,20 +82,20 @@ const getExpressApplication = (application) => {
 
     }
     else {
-      res.send(401, JSON.stringify({ 'status': 'wrong Clients!!'}));
+      res.send(401, JSON.stringify({'status': 'wrong Clients!!'}));
     }
   });
-  application.post('/add_partners', function(req, response) {
+  application.post('/add_partners', function (req, response) {
     response.setHeader('Content-Type', 'application/json');
     let partners = req.body['partners'];
     console.log(partners);
-    if (partners){
+    if (partners) {
 
-      MongoClient.connect(url, function(err, db) {
+      MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         console.log('Connected to DB established!');
         var collection = db.collection('partners');
-        collection.insertOne(partners,function (err, res) {
+        collection.insertOne(partners, function (err, res) {
           if (err) throw err;
           response.send({status: "Success"});
           db.close();
@@ -102,40 +104,55 @@ const getExpressApplication = (application) => {
 
     }
     else {
-      res.send(401, JSON.stringify({ 'status': 'wrong Partners!!'}));
+      res.send(401, JSON.stringify({'status': 'wrong Partners!!'}));
     }
   });
-  application.post('/send_message', function(req, response) {
+  application.post('/send_message', function (req, response) {
     response.setHeader('Content-Type', 'application/json');
     let message = req.body['message'];
-    console.log('message',message);
+    console.log('message', message);
+    if (message) {
+      //TODO ADD to process
 
-    //TODO ADD to process
+      MongoClient.connect(url, function (err, db) {
+        if (err) throw err;
+        console.log('Connected to DB established!');
+        var collection = db.collection('process');
+        collection.insertOne(message, function (err, res) {
+          if (err) throw err;
+          // response.send({status: "Success"});
+          db.close();
+        })
+      });
 
-    let http = require('request');
-    let fields = [
-      '<b>CLIENT: </b> ' + message.client.fname + ' ' + message.client.sname,
-      '<b>   phone: </b> ' + message.client.phone_number,
-      '<b>   city:</b> ' + message.client.city,
-      '<b>   street:</b> ' + message.client.address,
-      '<b>PROBLEM:</b> ' + message.problem,
-      '<b>PARTNER:</b> ' + message.partner.fname  + ' '  + message.partner.sname,
-    ];
-    let msg = '';
-    //проходимся по массиву и склеиваем все в одну строку
-    fields.forEach(field => {
-      msg += field + '\n'
-    });
-    //кодируем результат в текст, понятный адресной строке
-    msg = encodeURI(msg);
-    http.post(`https://api.telegram.org/bot${configApi.telegram.token}/sendMessage?chat_id=${configApi.telegram.chat}&parse_mode=html&text=${msg}`, function (error, res, body) {
-    });
-    response.send({status: "Success"});
+      let http = require('request');
+      let fields = [
+        '<b>CLIENT: </b> ' + message.client.fname + ' ' + message.client.sname,
+        '<b>   phone: </b> ' + message.client.phone_number,
+        '<b>   city:</b> ' + message.client.city,
+        '<b>   street:</b> ' + message.client.address,
+        '<b>PROBLEM:</b> ' + message.problem,
+        '<b>PARTNER:</b> ' + message.partner.fname + ' ' + message.partner.sname,
+      ];
+      let msg = '';
+      //проходимся по массиву и склеиваем все в одну строку
+      fields.forEach(field => {
+        msg += field + '\n'
+      });
+      //кодируем результат в текст, понятный адресной строке
+      msg = encodeURI(msg);
+      http.post(`https://api.telegram.org/bot${configApi.telegram.token}/sendMessage?chat_id=${configApi.telegram.chat}&parse_mode=html&text=${msg}`, function (error, res, body) {
+      });
+      response.send({status: "Success"});
+    }
+    else {
+      res.send(401, JSON.stringify({'status': 'wrong Partners!!'}));
+    }
 
   });
-  application.get('/get_process', function(req, response) {
-    if(process.env.REACT_APP_TEST === 'true') {
-      MongoClient.connect(url, function(err, db) {
+  application.get('/get_process', function (req, response) {
+    if (process.env.REACT_APP_TEST === 'true') {
+      MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         console.log('Connected to DB established!');
         var collection = db.collection('process');
@@ -146,36 +163,36 @@ const getExpressApplication = (application) => {
         })
       });
     }
-    else{
-      res.json({'3':3})
+    else {
+      res.json({'3': 3})
     }
   });
 
-  application.post('/get_token', function(req, res){
+  application.post('/get_token', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
     let username = req.body['username'];
     let password = req.body['password'];
-    if (passAuthentication(username, password)){
-        let token = jwt.sign({ body: req.body}, 'shhhhh');
-        let decoded = jwt.verify(token, 'shhhhh');
-        res.send(JSON.stringify({ token: token}));
-      }
+    if (passAuthentication(username, password)) {
+      let token = jwt.sign({body: req.body}, 'shhhhh');
+      let decoded = jwt.verify(token, 'shhhhh');
+      res.send(JSON.stringify({token: token}));
+    }
     else {
-    res.send(401, JSON.stringify({ 'status': 'wrong credentials!!'}));
+      res.send(401, JSON.stringify({'status': 'wrong credentials!!'}));
     }
   });
 
-  application.post('/authenticate', function(req, res){
+  application.post('/authenticate', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
     let token = req.body['token'];
     let decoded = jwt.verify(token, 'shhhhh')['body'];
     let username = decoded['username'];
     let password = decoded['password'];
-    if (passAuthentication(username, password)){
-        res.send(JSON.stringify({ 'status': 'approved'}));
-      }
+    if (passAuthentication(username, password)) {
+      res.send(JSON.stringify({'status': 'approved'}));
+    }
     else {
-    res.send(401, JSON.stringify({ 'status': 'not permitted'}));
+      res.send(401, JSON.stringify({'status': 'not permitted'}));
     }
   });
 
@@ -187,7 +204,7 @@ new WebpackDevServer(webpack(config), {
   publicPath: config.output.publicPath,
   hot: true,
   historyApiFallback: true,
-  setup: function (app){
+  setup: function (app) {
     getExpressApplication(app);
   }
 }).listen(port, hostname, (err) => {
