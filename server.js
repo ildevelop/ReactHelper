@@ -162,6 +162,28 @@ const getExpressApplication = (application) => {
     }
 
   });
+  application.post('/delete_process', function (req, response) {
+    response.setHeader('Content-Type', 'application/json');
+    let process = req.body['process'];
+    if(process){
+      console.log("processSERVER:",process);
+      MongoClient.connect(url, function (err, db) {
+        if (err) throw err;
+        console.log('Connected to DB established!');
+        var collection = db.collection('process');
+        try {
+          collection.deleteOne( { "_id" : process._id } , function (err, res) {
+            if (err) throw err;
+            // response.send({status: "Success"});
+            db.close();
+          })
+        }catch (e){console.log(e)}
+      });
+    }else {
+      response.send(401, JSON.stringify({'status': 'wrong Partners!!'}));
+    }
+    response.send({status: "Success"});
+  });
   application.get('/get_process', function (req, response) {
     if (process.env.REACT_APP_TEST === 'true') {
       MongoClient.connect(url, function (err, db) {

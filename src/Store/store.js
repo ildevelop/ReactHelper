@@ -1,6 +1,7 @@
 import {createStore , applyMiddleware ,combineReducers } from 'redux';
 import {composeWithDevTools} from 'redux-devtools-extension'
 import {
+  DELETE_PROCESS,
   HANDLE_DIALOG, SET_CLIENTS, SET_NEW_PROCESS, SET_ONE_CLIENTS, SET_ONE_PARTNER, SET_PARTNERS,
   SET_PROBLEM, SET_PROCESS,
 } from './constant'
@@ -29,6 +30,11 @@ const reducerMain = (state  = initState, action) => {
       let newProcess = state.process;
       newProcess.push(action.payload);
       state = {...state, process: newProcess};
+      break;
+    case DELETE_PROCESS:
+      let arr2 =state.process;
+      let arr =arr2.filter(e => e !== action.payload);
+      state = {...state, process: arr};
       break;
 
   }

@@ -4,20 +4,36 @@ import {connect} from 'react-redux'
 import Done from 'material-ui/svg-icons/action/done';
 import Delete from 'material-ui/svg-icons/action/delete';
 import './InProcess.scss'
+import {DELETE_PROCESS} from "../../Store/constant";
+import axios from 'axios';
 
 const style = {
   margin: 12,
 };
+
 class InProcess extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      all_process : this.props.proc
+      all_process: this.props.proc
     }
 
   }
-oneProcess = (process) => {
-    return(
+
+  deleteOneProcess(pr){
+    axios.post('/delete_process', {process: pr})
+      .then(function (response) {
+        let body = response.data['status'];
+        console.log('delete ===>', body);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    this.props.deleteOne(pr);
+  }
+
+  oneProcess = (process) => {
+    return (
       <div>
         <div>
           <div>
@@ -42,17 +58,21 @@ oneProcess = (process) => {
         <div className="oneProcessButton">
           <RaisedButton
             label="DELETE"
-            icon={<Delete />}
+            icon={<Delete/>}
             backgroundColor="#E53935"
-            labelColor = "#fff"
+            labelColor="#fff"
             style={style}
+            onClick={this.deleteOneProcess.bind(this,process)}
           />
           <RaisedButton
             label="DONE"
             backgroundColor="#388E3C"
-            labelColor = "#fff"
+            labelColor="#fff"
             icon={<Done/>}
             style={style}
+            onClick={() => {
+              console.log("processOne", process);
+            }}
           />
         </div>
       </div>
@@ -60,21 +80,20 @@ oneProcess = (process) => {
   };
 
   render() {
-    let cl = this.state.all_process;
-    console.log('all process:',cl);
+
     return (
       <div className="in_process">
-        {Object.keys(this.state.all_process).length?
+        {Object.keys(this.state.all_process).length ?
           <div>
             {this.state.all_process.map(process =>
-            <Paper key={process.data}
-                   className ="paper_process"
-                   zDepth={2}
-                   rounded={false}
-                   children={this.oneProcess(process)}
-            />
+              <Paper key={process.data}
+                     className="paper_process"
+                     zDepth={2}
+                     rounded={false}
+                     children={this.oneProcess(process)}
+              />
             )}
-          </div>:
+          </div> :
           <div>
             <h1 className="not_process"> There is not one open process </h1>
 
@@ -84,15 +103,18 @@ oneProcess = (process) => {
     )
   }
 }
+
 const mapStateToProps = (state) => {
   return {
-    clients: state.reducerClients
+    clients: state.reducerClients,
+    main: state.reducerMain
   }
 };
 
 export default connect(mapStateToProps
-  // , dispatch => ({
-  // AddOneClients: (client) => {
-  //   dispatch({type: SET_ONE_CLIENTS, payload: client})
-  // }})
+  , dispatch => ({
+    deleteOne: (process) => {
+      dispatch({type: DELETE_PROCESS, payload: process})
+    }
+  })
 )(InProcess)
