@@ -16,11 +16,11 @@ import Popover from 'material-ui/Popover';
 import './Dashboard.scss'
 import NewProcessComponent from '../NewProcessComponent/NewProcessComponent';
 import {connect} from 'react-redux'
-import {SET_CLIENTS, SET_PARTNERS, HANDLE_DIALOG} from './../../Store/constant'
+import {SET_CLIENTS, SET_PARTNERS, HANDLE_DIALOG ,SET_PROCESS} from './../../Store/constant'
 import CreateNewClient from '../NewProcessComponent/CreateNewClient';
 import InProcess from '../InProcess/InProcess';
-import {SET_PROCESS} from "../../Store/constant";
-
+import DoneComponent from './../DoneComponent/Done'
+import {SET_DONE_PROCESS} from "../../Store/constant";
 const CLIENTS = 'clients',
   PARTNERS = 'partners',
   INPROCESS = 'inProcess',
@@ -48,6 +48,7 @@ class Dashboard extends React.Component {
     this.setClients();
     this.setPartners();
     this.setProcess();
+    this.setDoneProcess();
   }
 
   handleRequestClose = () => {
@@ -65,7 +66,7 @@ class Dashboard extends React.Component {
       case INPROCESS:
         return (<InProcess proc = {this.props.main}/>);
       case DONE:
-        return (<h2>Hello Done</h2>);
+        return (<DoneComponent done={this.props.main.done_process}/>);
       case INNEWPROCESS:
         return (<NewProcessComponent
           clients={this.props.clients}
@@ -99,6 +100,16 @@ class Dashboard extends React.Component {
     axios.get('/get_process')
       .then(function (response) {
         self.props.AddProcess(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+  setDoneProcess(){
+    let self = this;
+    axios.get('/get_done_process')
+      .then(function (response) {
+        self.props.AddDoneProcess(response.data);
       })
       .catch(function (error) {
         console.log(error);
@@ -261,6 +272,12 @@ export default connect(mapStateToProps, dispatch => ({
       dispatch({type: SET_PROCESS, payload: process})
     };
     dispatch(asyncGetProcess());
+  },
+  AddDoneProcess:(done_proc) => {
+    const asyncGetDoneProcess = () => dispatch => {
+      dispatch({type: SET_DONE_PROCESS, payload: done_proc})
+    };
+    dispatch(asyncGetDoneProcess());
   },
 
   HandleDialog: (val) => {

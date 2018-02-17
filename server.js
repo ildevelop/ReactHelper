@@ -45,7 +45,7 @@ const getExpressApplication = (application) => {
       });
     }
     else {
-      res.json({'1': 1})
+      response.json({'1': 1})
     }
   });
   application.get('/get_partners', function (req, response) {
@@ -65,7 +65,7 @@ const getExpressApplication = (application) => {
       });
     }
     else {
-      res.json({'2': 2})
+      response.json({'2': 2})
     }
   });
 
@@ -90,7 +90,7 @@ const getExpressApplication = (application) => {
 
     }
     else {
-      res.send(401, JSON.stringify({'status': 'wrong Clients!!'}));
+      response.send(401, JSON.stringify({'status': 'wrong Clients!!'}));
     }
   });
   application.post('/add_partners', function (req, response) {
@@ -115,7 +115,7 @@ const getExpressApplication = (application) => {
 
     }
     else {
-      res.send(401, JSON.stringify({'status': 'wrong Partners!!'}));
+      response.send(401, JSON.stringify({'status': 'wrong Partners!!'}));
     }
   });
   application.post('/send_message', function (req, response) {
@@ -158,7 +158,7 @@ const getExpressApplication = (application) => {
       response.send({status: "Success"});
     }
     else {
-      res.send(401, JSON.stringify({'status': 'wrong Partners!!'}));
+      response.send(401, JSON.stringify({'status': 'wrong Partners!!'}));
     }
 
   });
@@ -168,7 +168,7 @@ const getExpressApplication = (application) => {
     if(process){
       MongoClient.connect(url, function (err, db) {
         if (err) throw err;
-        console.log('Connected to DB established!');
+        console.log('Connected to process collection established!');
         var collection = db.collection('process');
         try {
           collection.deleteOne( { "_id" : new mongo.ObjectID(process._id) } , function (err, res) {
@@ -187,7 +187,7 @@ const getExpressApplication = (application) => {
     if (process.env.REACT_APP_TEST === 'true') {
       MongoClient.connect(url, function (err, db) {
         if (err) throw err;
-        console.log('Connected to DB established!');
+        console.log('Connected to process collection established!');
         var collection = db.collection('process');
         try{
           collection.find().toArray(function (err, res) {
@@ -199,7 +199,26 @@ const getExpressApplication = (application) => {
       });
     }
     else {
-      res.json({'3': 3})
+      response.json({'3': 3})
+    }
+  });
+  application.get('/get_done_process', function (req, response) {
+    if (process.env.REACT_APP_TEST === 'true') {
+      MongoClient.connect(url, function (err, db) {
+        if (err) throw err;
+        console.log('Connected to collection done established!');
+        var collection = db.collection('done_process');
+        try{
+          collection.find().toArray(function (err, res) {
+            if (err) throw err;
+            response.json(res);
+            db.close();
+          })
+        }catch (e){console.log(e)}
+      });
+    }
+    else {
+      response.json({'4': 4})
     }
   });
 

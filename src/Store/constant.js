@@ -7,3 +7,4 @@ export const SET_PROBLEM= 'SET_PROBLEM';
 export const SET_NEW_PROCESS= 'SET_NEW_PROCESS';
 export const SET_PROCESS= 'SET_PROCESS';
 export const DELETE_PROCESS= 'DELETE_PROCESS';
+export const SET_DONE_PROCESS= 'SET_DONE_PROCESS';

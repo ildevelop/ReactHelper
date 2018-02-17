@@ -2,7 +2,7 @@ import {createStore , applyMiddleware ,combineReducers } from 'redux';
 import {composeWithDevTools} from 'redux-devtools-extension'
 import {
   DELETE_PROCESS,
-  HANDLE_DIALOG, SET_CLIENTS, SET_NEW_PROCESS, SET_ONE_CLIENTS, SET_ONE_PARTNER, SET_PARTNERS,
+  HANDLE_DIALOG, SET_CLIENTS, SET_DONE_PROCESS, SET_NEW_PROCESS, SET_ONE_CLIENTS, SET_ONE_PARTNER, SET_PARTNERS,
   SET_PROBLEM, SET_PROCESS,
 } from './constant'
 import thunk from 'redux-thunk'
@@ -16,6 +16,7 @@ const initState = {
   openIntervention: false,
   problem:'',
   process: [],
+  done_process: [],
 
 };
 const reducerMain = (state  = initState, action) => {
@@ -35,6 +36,9 @@ const reducerMain = (state  = initState, action) => {
       let arr2 =state.process;
       let arr =arr2.filter(e => e !== action.payload);
       state = {...state, process: arr};
+      break;
+    case SET_DONE_PROCESS:
+      state = {...state, done_process: action.payload};
       break;
 
   }
