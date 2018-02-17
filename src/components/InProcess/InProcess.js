@@ -67,7 +67,7 @@ oneProcess = (process) => {
         {Object.keys(this.state.all_process).length?
           <div>
             {this.state.all_process.map(process =>
-            <Paper key={process._id}
+            <Paper key={process.data}
                    className ="paper_process"
                    zDepth={2}
                    rounded={false}

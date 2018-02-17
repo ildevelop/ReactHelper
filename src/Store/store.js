@@ -22,12 +22,15 @@ const reducerMain = (state  = initState, action) => {
     case HANDLE_DIALOG:
       state = {...state, openIntervention: action.payload};
       break;
-    case SET_NEW_PROCESS:
-      state = {...state, process: action.payload};
-      break;
     case SET_PROCESS:
       state = {...state, process: action.payload};
       break;
+    case SET_NEW_PROCESS:
+      let newProcess = state.process;
+      newProcess.push(action.payload);
+      state = {...state, process: newProcess};
+      break;
+
   }
   return state;
 };

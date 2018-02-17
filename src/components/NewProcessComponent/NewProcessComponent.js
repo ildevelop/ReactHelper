@@ -39,6 +39,12 @@ class NewProcessComponent extends React.Component {
       this.asyncTimer = setTimeout(cb, 500);
     });
   };
+  addZero = (i) => {
+    if (i < 10) {
+      i = "0" + i;
+    }
+    return i;
+  };
   handleNext = () => {
     const {stepIndex} = this.state;
     if(stepIndex ===1){
@@ -47,12 +53,14 @@ class NewProcessComponent extends React.Component {
     if(stepIndex ===2){
       let messageObj = {};
 
-      var today = new Date(),
-        date = today.getFullYear() + '-'
+      let today = new Date();
+      let h = this.addZero(today.getHours());
+      let m = this.addZero(today.getMinutes());
+      let date = today.getFullYear() + '-'
           + (today.getMonth() + 1) + '-'
           + today.getDate() + ' '
-          + today.getHours() + ':'
-          + today.getMinutes();
+          + h + ':'
+          + m;
       messageObj['partner'] = this.props.mainP.partner;
       messageObj['client'] = this.props.mainC.client;
       messageObj['problem'] = this.props.mainC.problem;
