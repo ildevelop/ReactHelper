@@ -123,8 +123,6 @@ const getExpressApplication = (application) => {
     let message = req.body['message'];
     console.log('message', message);
     if (message) {
-      //TODO ADD to process
-
       MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         console.log('Connected to DB established!');

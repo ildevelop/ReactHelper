@@ -10,7 +10,12 @@
     text-align: center;
     display: inline-block;
     font-size: 14px;
-
+    .dateD{
+      color: #388E3C;
+      position: absolute;
+      margin-left: 15px;
+      font-weight: 600;
+    }
     .oneProcessButton{
       margin-top: 10px;
       display: flex;

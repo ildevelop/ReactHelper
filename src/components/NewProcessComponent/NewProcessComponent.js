@@ -46,9 +46,17 @@ class NewProcessComponent extends React.Component {
     }
     if(stepIndex ===2){
       let messageObj = {};
+
+      var today = new Date(),
+        date = today.getFullYear() + '-'
+          + (today.getMonth() + 1) + '-'
+          + today.getDate() + ' '
+          + today.getHours() + ':'
+          + today.getMinutes();
       messageObj['partner'] = this.props.mainP.partner;
       messageObj['client'] = this.props.mainC.client;
       messageObj['problem'] = this.props.mainC.problem;
+      messageObj['data'] = date;
       axios.post('/send_message', {message: messageObj})
         .then(function (response) {
           let body = response.data['status'];

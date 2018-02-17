@@ -21,6 +21,7 @@ oneProcess = (process) => {
       <div>
         <div>
           <div>
+            <div className="dateD">{process.data}</div>
             <h4>CLIENT:</h4>
             <div>Full Name: {process.client.fname} {process.client.sname}</div>
             <div>Email: {process.client.email} </div>
