@@ -166,13 +166,12 @@ const getExpressApplication = (application) => {
     response.setHeader('Content-Type', 'application/json');
     let process = req.body['process'];
     if(process){
-      console.log("processSERVER:",process);
       MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         console.log('Connected to DB established!');
         var collection = db.collection('process');
         try {
-          collection.deleteOne( { "_id" : process._id } , function (err, res) {
+          collection.deleteOne( { "_id" : new mongo.ObjectID(process._id) } , function (err, res) {
             if (err) throw err;
             // response.send({status: "Success"});
             db.close();
