@@ -66,7 +66,7 @@ class Dashboard extends React.Component {
       case INPROCESS:
         return (<InProcess proc = {this.props.main}/>);
       case DONE:
-        return (<DoneComponent done={this.props.main.done_process}/>);
+        return (<DoneComponent done = {this.props.doneP}/>);
       case INNEWPROCESS:
         return (<NewProcessComponent
           clients={this.props.clients}
@@ -249,7 +249,8 @@ const mapStateToProps = (state) => {
   return {
     clients: state.reducerClients.clients,
     partners: state.reducerPartners.partners,
-    main: state.reducerMain.process
+    main: state.reducerMain.process,
+    doneP: state.reducerMain.done_process
   }
 };
 
@@ -273,9 +274,9 @@ export default connect(mapStateToProps, dispatch => ({
     };
     dispatch(asyncGetProcess());
   },
-  AddDoneProcess:(done_proc) => {
+  AddDoneProcess:(done_process) => {
     const asyncGetDoneProcess = () => dispatch => {
-      dispatch({type: SET_DONE_PROCESS, payload: done_proc})
+      dispatch({type: SET_DONE_PROCESS, payload: done_process})
     };
     dispatch(asyncGetDoneProcess());
   },

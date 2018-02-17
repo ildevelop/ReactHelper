@@ -183,6 +183,28 @@ const getExpressApplication = (application) => {
     }
     response.send({status: "Success"});
   });
+  application.post('/done_process', function (req, response) {
+    response.setHeader('Content-Type', 'application/json');
+    let done_process = req.body['done_pr'];
+    console.log('done_process:',done_process);
+    if(done_process){
+      MongoClient.connect(url, function (err, db) {
+        if (err) throw err;
+        console.log('Connected to process collection established!');
+        let collection = db.collection('done_process');
+        try {
+          collection.insertOne(done_process, function (err, res) {
+            if (err) throw err;
+            // response.send({status: "Success"});
+            db.close();
+          })
+        }catch (e){console.log(e)}
+      });
+    }else {
+      response.send(401, JSON.stringify({'status': 'wrong Partners!!'}));
+    }
+    response.send({status: "Success"});
+  });
   application.get('/get_process', function (req, response) {
     if (process.env.REACT_APP_TEST === 'true') {
       MongoClient.connect(url, function (err, db) {

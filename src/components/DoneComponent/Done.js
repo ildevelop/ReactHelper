@@ -5,18 +5,21 @@ import {Paper} from "material-ui";
 class Done extends Component {
   constructor(props) {
     super(props);
+    console.log('this.props',this.props.done);
     this.state = {
-      all_done: this.props.done || []
+      all_done: this.props.done
     }
 
   }
 
   render() {
+    let dn =this.state.all_done;
+    console.log("DONE:",dn);
     return (
       <div className="done_main">
         {Object.keys(this.state.all_done).length ?
           <div>
-            {this.state.all_process.map(process =>
+            {this.state.all_done.map(process =>
               <Paper key={process.data}
                      className="paper_process"
                      zDepth={2}

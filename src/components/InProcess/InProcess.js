@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import Done from 'material-ui/svg-icons/action/done';
 import Delete from 'material-ui/svg-icons/action/delete';
 import './InProcess.scss'
-import {DELETE_PROCESS} from "../../Store/constant";
+import {DELETE_PROCESS, SET_DONE_PROCESS} from "../../Store/constant";
 import axios from 'axios';
 
 const style = {
@@ -29,6 +29,18 @@ class InProcess extends Component {
       .catch(function (error) {
         console.log(error);
       });
+    this.props.deleteOne(pr);
+  }
+  DoneOneProcess(pr){
+    axios.post('/done_process', {done_pr: pr})
+      .then(function (response) {
+        let body = response.data['status'];
+        console.log('done ===>', body);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    this.props.setDoneProcess(pr);
     this.props.deleteOne(pr);
   }
 
@@ -70,9 +82,7 @@ class InProcess extends Component {
             labelColor="#fff"
             icon={<Done/>}
             style={style}
-            onClick={() => {
-              console.log("processOne", process);
-            }}
+            onClick={this.DoneOneProcess.bind(this,process)}
           />
         </div>
       </div>
@@ -115,6 +125,9 @@ export default connect(mapStateToProps
   , dispatch => ({
     deleteOne: (process) => {
       dispatch({type: DELETE_PROCESS, payload: process})
+    },
+    setDoneProcess: (process) => {
+      dispatch({type: SET_DONE_PROCESS, payload: process})
     }
   })
 )(InProcess)
