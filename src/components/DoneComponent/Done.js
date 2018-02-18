@@ -17,7 +17,6 @@ class Done extends Component {
   }
 
   oneProcess = (process) => {
-    console.log('process::::',process);
     return (
       <div>
         <div>
@@ -56,7 +55,6 @@ class Done extends Component {
   };
   render() {
     let dn =this.state.all_done;
-    console.log("DONE:",dn);
     return (
       <div className="done_main">
         {Object.keys(this.state.all_done[0]).length ?

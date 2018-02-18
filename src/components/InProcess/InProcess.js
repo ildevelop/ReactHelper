@@ -32,6 +32,15 @@ class InProcess extends Component {
     this.props.deleteOne(pr);
   }
   DoneOneProcess(pr){
+    let today = new Date();
+    let h = this.addZero(today.getHours());
+    let m = this.addZero(today.getMinutes());
+    let date = today.getFullYear() + '-'
+      + (today.getMonth() + 1) + '-'
+      + today.getDate() + ' '
+      + h + ':'
+      + m;
+
     axios.post('/done_process', {done_pr: pr})
       .then(function (response) {
         let body = response.data['status'];
