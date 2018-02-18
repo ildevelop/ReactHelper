@@ -1,7 +1,26 @@
 .done_main{
-  width: 100%;
-  max-width: 1000px;
-  margin: auto;
+
+  .paper_process {
+    height: 395px;
+    width: 350px;
+    margin: 10px;
+    text-align: center;
+    display: inline-block;
+    font-size: 14px;
+    .dateD {
+      color: #388E3C;
+      position: absolute;
+      margin-left: 15px;
+      font-weight: 600;
+    }
+    .oneProcessButton {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      background: #93cdcb;
+    }
+  }
   .not_process{
     color: #ffffff;
     text-align: center;

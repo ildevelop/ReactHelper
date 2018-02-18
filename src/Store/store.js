@@ -40,7 +40,6 @@ const reducerMain = (state  = initState, action) => {
     case SET_DONE_PROCESS:
       let newDoneProcess = state.done_process;
       newDoneProcess.push(action.payload);
-      console.log('newDoneProcess',newDoneProcess);
       state = {...state, done_process: newDoneProcess};
       break;
 
