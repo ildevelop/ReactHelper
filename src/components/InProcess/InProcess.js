@@ -21,6 +21,7 @@ class InProcess extends Component {
   }
 
   deleteOneProcess(pr){
+    console.log('deleteOneProcess',pr);
     axios.post('/delete_process', {process: pr})
       .then(function (response) {
         let body = response.data['status'];
@@ -29,8 +30,14 @@ class InProcess extends Component {
       .catch(function (error) {
         console.log(error);
       });
-    this.props.deleteOne(pr);
+    this.props.deleteOne(pr._id);
   }
+  addZero = (i) => {
+    if (i < 10) {
+      i = "0" + i;
+    }
+    return i;
+  };
   DoneOneProcess(pr){
     let today = new Date();
     let h = this.addZero(today.getHours());
@@ -40,7 +47,8 @@ class InProcess extends Component {
       + today.getDate() + ' '
       + h + ':'
       + m;
-
+    pr['finish_data'] = date;
+    console.log('DoneOneProcess:',pr);
     axios.post('/done_process', {done_pr: pr})
       .then(function (response) {
         let body = response.data['status'];
@@ -49,8 +57,7 @@ class InProcess extends Component {
       .catch(function (error) {
         console.log(error);
       });
-    this.props.setDoneProcess(pr);
-    this.props.deleteOne(pr);
+    this.props.deleteOne(pr._id);
   }
 
   oneProcess = (process) => {
@@ -99,13 +106,13 @@ class InProcess extends Component {
   };
 
   render() {
-
+    console.log("process:", this.state.all_process);
     return (
       <div className="in_process">
         {Object.keys(this.state.all_process).length ?
           <div>
             {this.state.all_process.map(process =>
-              <Paper key={process.data}
+              <Paper key={process._id}
                      className="paper_process"
                      zDepth={2}
                      rounded={false}
@@ -133,7 +140,9 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps
   , dispatch => ({
     deleteOne: (process) => {
-      dispatch({type: DELETE_PROCESS, payload: process})
+      const asyncDeleteProcess = () => dispatch => {
+        dispatch({type: DELETE_PROCESS, payload: process})};
+      dispatch(asyncDeleteProcess());
     },
     setDoneProcess: (process) => {
       dispatch({type: SET_DONE_PROCESS, payload: process})

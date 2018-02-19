@@ -1,6 +1,7 @@
 import {createStore , applyMiddleware ,combineReducers } from 'redux';
 import {composeWithDevTools} from 'redux-devtools-extension'
 import {
+  DELETE_DONE,
   DELETE_PROCESS,
   HANDLE_DIALOG, SET_CLIENTS, SET_DONE_PROCESS, SET_NEW_PROCESS, SET_ONE_CLIENTS, SET_ONE_PARTNER, SET_PARTNERS,
   SET_PROBLEM, SET_PROCESS,
@@ -38,11 +39,17 @@ const reducerMain = (state  = initState, action) => {
       state = {...state, process: arr};
       break;
     case SET_DONE_PROCESS:
-      let newDoneProcess = state.done_process;
-      newDoneProcess.push(action.payload);
-      state = {...state, done_process: newDoneProcess};
+      state = {...state, done_process: action.payload};
       break;
+    case DELETE_DONE:
+      let arrD =state.done_process;
+      // console.log('arrD',arrD);
+      // console.log('action.payload',action.payload);
 
+      let arrDone =arrD.filter(e => e._id !== action.payload);
+      console.log('arrDone',arrDone);
+      state = {...state, done_process: arrDone};
+      break;
   }
   return state;
 };

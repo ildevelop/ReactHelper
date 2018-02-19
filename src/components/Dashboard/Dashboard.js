@@ -141,6 +141,7 @@ class Dashboard extends React.Component {
       })
     }
     if (qw === INPROCESS) {
+      this.setProcess();
       this.setState({
         isClients: false,
         isPartners: false,
@@ -150,6 +151,7 @@ class Dashboard extends React.Component {
       })
     }
     if (qw === DONE) {
+      this.setDoneProcess();
       this.setState({
         isClients: false,
         isPartners: false,

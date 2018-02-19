@@ -183,6 +183,28 @@ const getExpressApplication = (application) => {
     }
     response.send({status: "Success"});
   });
+  application.post('/delete_done_process', function (req, response) {
+    response.setHeader('Content-Type', 'application/json');
+    var done_process = req.body['done_process'];
+    console.log("DONE processID",done_process);
+    if(done_process){
+      MongoClient.connect(url, function (err, db) {
+        if (err) throw err;
+        console.log('Connected to Done process collection established!');
+        var collection = db.collection('done_process');
+        try {
+          collection.deleteOne( { "_id" : done_process._id } , function (err, res) {
+            if (err) throw err;
+            // response.send({status: "Success"});
+            db.close();
+          })
+        }catch (e){console.log(e)}
+      });
+    }else {
+      response.send(401, JSON.stringify({'status': 'wrong Partners!!'}));
+    }
+    response.send({status: "Success"});
+  });
   application.post('/done_process', function (req, response) {
     response.setHeader('Content-Type', 'application/json');
     let done_process = req.body['done_pr'];
@@ -194,6 +216,18 @@ const getExpressApplication = (application) => {
         let collection = db.collection('done_process');
         try {
           collection.insertOne(done_process, function (err, res) {
+            if (err) throw err;
+            // response.send({status: "Success"});
+            db.close();
+          })
+        }catch (e){console.log(e)}
+      });
+      MongoClient.connect(url, function (err, db) {
+        if (err) throw err;
+        console.log('Connected to process collection established!');
+        var collection = db.collection('process');
+        try {
+          collection.deleteOne( { "_id" : new mongo.ObjectID(done_process._id) } , function (err, res) {
             if (err) throw err;
             // response.send({status: "Success"});
             db.close();

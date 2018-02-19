@@ -7,10 +7,16 @@
     text-align: center;
     display: inline-block;
     font-size: 14px;
-    .dateD {
+    .dateS {
       color: #388E3C;
       position: absolute;
       margin-left: 15px;
+      font-weight: 600;
+    }
+    .dateF {
+      color: #E53935;
+      position: absolute;
+      margin-left:220px;
       font-weight: 600;
     }
     .oneProcessButton {

@@ -2,7 +2,9 @@ import React, {Component} from 'react';
 import './Done.scss'
 import {Paper, RaisedButton} from "material-ui";
 import Delete from 'material-ui/svg-icons/action/delete';
-
+import axios from 'axios';
+import {connect} from 'react-redux'
+import {DELETE_DONE} from "../../Store/constant";
 const style = {
   margin: 12,
 };
@@ -16,12 +18,26 @@ class Done extends Component {
 
   }
 
+
+  deleteOneProcess(pr){
+    console.log('deleteOneProcess',pr);
+    axios.post('/delete_done_process', {done_process: pr})
+      .then(function (response) {
+        let body = response.data['status'];
+        console.log('delete ===>', body);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    this.props.deleteOneDone(pr._id);
+  }
   oneProcess = (process) => {
     return (
       <div>
         <div>
           <div>
-            <div className="dateD">{process.data}</div>
+            <div className="dateS">{process.data}</div>
+            <div className="dateF">{process.finish_data}</div>
             <h4>CLIENT:</h4>
             <div>Full Name: {process.client.fname} {process.client.sname}</div>
             <div>Email: {process.client.email} </div>
@@ -46,7 +62,7 @@ class Done extends Component {
             backgroundColor="#E53935"
             labelColor="#fff"
             style={style}
-
+            onClick={this.deleteOneProcess.bind(this,process)}
           />
 
         </div>
@@ -54,13 +70,13 @@ class Done extends Component {
     )
   };
   render() {
-    let dn =this.state.all_done;
+    console.log("all_done:", this.state.all_done);
     return (
       <div className="done_main">
-        {Object.keys(this.state.all_done[0]).length ?
+        {Object.keys(this.state.all_done).length ?
           <div>
-            {this.state.all_done[0].map(process =>
-              <Paper key={process.data}
+            {this.state.all_done.map(process =>
+              <Paper key={process._id}
                      className="paper_process"
                      zDepth={2}
                      rounded={false}
@@ -76,5 +92,16 @@ class Done extends Component {
     )
   }
 }
-
-export default Done
+const mapStateToProps = (state) => {
+  return {
+    main: state.reducerMain
+  }
+};
+export default connect( mapStateToProps,dispatch => ({
+    deleteOneDone: (process) => {
+      const asyncDeleteDone = () => dispatch => {
+        dispatch({type: DELETE_DONE, payload: process})};
+      dispatch(asyncDeleteDone());
+  },
+})
+)(Done)
