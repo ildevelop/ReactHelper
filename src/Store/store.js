@@ -3,7 +3,8 @@ import {composeWithDevTools} from 'redux-devtools-extension'
 import {
   DELETE_DONE,
   DELETE_PROCESS,
-  HANDLE_DIALOG, SET_CLIENTS, SET_DONE_PROCESS, SET_NEW_PROCESS, SET_ONE_CLIENTS, SET_ONE_PARTNER, SET_PARTNERS,
+  HANDLE_DIALOG, SET_CLIENTS, SET_DONE_PROCESS, SET_NEW_PROCESS, SET_ONE_CLIENTS, SET_ONE_DONE_PROCESS, SET_ONE_PARTNER,
+  SET_PARTNERS,
   SET_PROBLEM, SET_PROCESS,
 } from './constant'
 import thunk from 'redux-thunk'
@@ -34,17 +35,19 @@ const reducerMain = (state  = initState, action) => {
       state = {...state, process: newProcess};
       break;
     case DELETE_PROCESS:
-      let arr2 =state.process;
-      let arr =arr2.filter(e => e !== action.payload);
-      state = {...state, process: arr};
-      break;
+      let arr2 = state.process;
+      let arr = arr2.filter(e =>  e._id !== action.pr._id);
+      return state = {...state, process: arr};
+    case SET_ONE_DONE_PROCESS:
+      let arrDoneOne = state.done_process;
+      arrDoneOne.push(action.pr);
+      return state = {...state, done_process: arrDoneOne};
     case SET_DONE_PROCESS:
       state = {...state, done_process: action.payload};
       break;
     case DELETE_DONE:
       let arrD =state.done_process;
-      // console.log('arrD',arrD);
-      // console.log('action.payload',action.payload);
+
 
       let arrDone =arrD.filter(e => e._id !== action.payload);
       console.log('arrDone',arrDone);

@@ -4,33 +4,17 @@ import {connect} from 'react-redux'
 import Done from 'material-ui/svg-icons/action/done';
 import Delete from 'material-ui/svg-icons/action/delete';
 import './InProcess.scss'
-import {DELETE_PROCESS, SET_DONE_PROCESS} from "../../Store/constant";
-import axios from 'axios';
+import { bindActionCreators } from 'redux';
+import * as mainActions from '../../Actions/MainActions';
 
 const style = {
   margin: 12,
 };
 
 class InProcess extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      all_process: this.props.proc
-    }
-
-  }
 
   deleteOneProcess(pr){
-    console.log('deleteOneProcess',pr);
-    axios.post('/delete_process', {process: pr})
-      .then(function (response) {
-        let body = response.data['status'];
-        console.log('delete ===>', body);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-    this.props.deleteOne(pr._id);
+    this.props.deleteProcess(pr);
   }
   addZero = (i) => {
     if (i < 10) {
@@ -48,16 +32,8 @@ class InProcess extends Component {
       + h + ':'
       + m;
     pr['finish_data'] = date;
-    console.log('DoneOneProcess:',pr);
-    axios.post('/done_process', {done_pr: pr})
-      .then(function (response) {
-        let body = response.data['status'];
-        console.log('done ===>', body);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-    this.props.deleteOne(pr._id);
+    this.props.doneProcess(pr);
+    this.props.deleteProcess(pr);
   }
 
   oneProcess = (process) => {
@@ -106,12 +82,12 @@ class InProcess extends Component {
   };
 
   render() {
-    console.log("process:", this.state.all_process);
+    console.log("process:", this.props.proc);
     return (
       <div className="in_process">
-        {Object.keys(this.state.all_process).length ?
+        {Object.keys(this.props.proc).length ?
           <div>
-            {this.state.all_process.map(process =>
+            {this.props.proc.map(process =>
               <Paper key={process._id}
                      className="paper_process"
                      zDepth={2}
@@ -137,15 +113,10 @@ const mapStateToProps = (state) => {
   }
 };
 
-export default connect(mapStateToProps
-  , dispatch => ({
-    deleteOne: (process) => {
-      const asyncDeleteProcess = () => dispatch => {
-        dispatch({type: DELETE_PROCESS, payload: process})};
-      dispatch(asyncDeleteProcess());
-    },
-    setDoneProcess: (process) => {
-      dispatch({type: SET_DONE_PROCESS, payload: process})
-    }
-  })
-)(InProcess)
+function mapDispatchToProps(dispatch) {
+  return {
+    ...bindActionCreators(mainActions, dispatch)
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(InProcess)

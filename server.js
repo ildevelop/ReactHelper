@@ -165,6 +165,7 @@ const getExpressApplication = (application) => {
   application.post('/delete_process', function (req, response) {
     response.setHeader('Content-Type', 'application/json');
     let process = req.body['process'];
+    console.log('processServer:',process);
     if(process){
       MongoClient.connect(url, function (err, db) {
         if (err) throw err;
@@ -216,18 +217,6 @@ const getExpressApplication = (application) => {
         let collection = db.collection('done_process');
         try {
           collection.insertOne(done_process, function (err, res) {
-            if (err) throw err;
-            // response.send({status: "Success"});
-            db.close();
-          })
-        }catch (e){console.log(e)}
-      });
-      MongoClient.connect(url, function (err, db) {
-        if (err) throw err;
-        console.log('Connected to process collection established!');
-        var collection = db.collection('process');
-        try {
-          collection.deleteOne( { "_id" : new mongo.ObjectID(done_process._id) } , function (err, res) {
             if (err) throw err;
             // response.send({status: "Success"});
             db.close();

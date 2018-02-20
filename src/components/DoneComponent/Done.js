@@ -10,17 +10,10 @@ const style = {
 };
 
 class Done extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      all_done: this.props.done
-    }
-
-  }
-
 
   deleteOneProcess(pr){
     console.log('deleteOneProcess',pr);
+    this.props.deleteOneDone(pr._id);
     axios.post('/delete_done_process', {done_process: pr})
       .then(function (response) {
         let body = response.data['status'];
@@ -29,7 +22,6 @@ class Done extends Component {
       .catch(function (error) {
         console.log(error);
       });
-    this.props.deleteOneDone(pr._id);
   }
   oneProcess = (process) => {
     return (
@@ -70,12 +62,12 @@ class Done extends Component {
     )
   };
   render() {
-    console.log("all_done:", this.state.all_done);
+    console.log("all_done:", this.props.main);
     return (
       <div className="done_main">
-        {Object.keys(this.state.all_done).length ?
+        {Object.keys(this.props.main).length ?
           <div>
-            {this.state.all_done.map(process =>
+            {this.props.main.map(process =>
               <Paper key={process._id}
                      className="paper_process"
                      zDepth={2}
@@ -94,7 +86,7 @@ class Done extends Component {
 }
 const mapStateToProps = (state) => {
   return {
-    main: state.reducerMain
+    main: state.reducerMain.done_process
   }
 };
 export default connect( mapStateToProps,dispatch => ({
