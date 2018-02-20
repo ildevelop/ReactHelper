@@ -20,4 +20,14 @@ export function doneProcess(pr) {
     )
   }
 }
+export function deleteDone(pr) {
+  return function(dispatch) {
+    return Api.deleteDone(pr).then(() => dispatch({
+        type: actionTypes.DELETE_DONE,
+        pr
+      })
+    )
+  }
+}
+
 

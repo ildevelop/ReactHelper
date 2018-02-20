@@ -47,10 +47,7 @@ const reducerMain = (state  = initState, action) => {
       break;
     case DELETE_DONE:
       let arrD =state.done_process;
-
-
-      let arrDone =arrD.filter(e => e._id !== action.payload);
-      console.log('arrDone',arrDone);
+      let arrDone =arrD.filter(e => e._id !== action.pr._id);
       state = {...state, done_process: arrDone};
       break;
   }

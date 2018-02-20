@@ -4,7 +4,8 @@ import {Paper, RaisedButton} from "material-ui";
 import Delete from 'material-ui/svg-icons/action/delete';
 import axios from 'axios';
 import {connect} from 'react-redux'
-import {DELETE_DONE} from "../../Store/constant";
+import { bindActionCreators } from 'redux';
+import * as mainActions from '../../Actions/MainActions';
 const style = {
   margin: 12,
 };
@@ -13,15 +14,16 @@ class Done extends Component {
 
   deleteOneProcess(pr){
     console.log('deleteOneProcess',pr);
-    this.props.deleteOneDone(pr._id);
-    axios.post('/delete_done_process', {done_process: pr})
-      .then(function (response) {
-        let body = response.data['status'];
-        console.log('delete ===>', body);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+    this.props.deleteDone(pr)
+    // this.props.deleteOneDone(pr._id);
+    // axios.post('/delete_done_process', {done_process: pr})
+    //   .then(function (response) {
+    //     let body = response.data['status'];
+    //     console.log('delete ===>', body);
+    //   })
+    //   .catch(function (error) {
+    //     console.log(error);
+    //   });
   }
   oneProcess = (process) => {
     return (
@@ -89,11 +91,9 @@ const mapStateToProps = (state) => {
     main: state.reducerMain.done_process
   }
 };
-export default connect( mapStateToProps,dispatch => ({
-    deleteOneDone: (process) => {
-      const asyncDeleteDone = () => dispatch => {
-        dispatch({type: DELETE_DONE, payload: process})};
-      dispatch(asyncDeleteDone());
-  },
-})
-)(Done)
+function mapDispatchToProps(dispatch) {
+  return {
+    ...bindActionCreators(mainActions, dispatch)
+  }
+}
+export default connect( mapStateToProps,mapDispatchToProps)(Done)
