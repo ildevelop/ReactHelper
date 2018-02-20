@@ -9,18 +9,18 @@ import AddNew from 'material-ui/svg-icons/content/add-circle-outline';
 import Done from 'material-ui/svg-icons/maps/beenhere';
 import Process from 'material-ui/svg-icons/maps/local-shipping';
 import Partners from 'material-ui/svg-icons/communication/business';
-import axios from 'axios';
 import ClientComponent from '../ClientComponent/ClientComponent';
 import PartnerComponent from '../PartnerComponent/PartnerComponent';
 import Popover from 'material-ui/Popover';
 import './Dashboard.scss'
 import NewProcessComponent from '../NewProcessComponent/NewProcessComponent';
 import {connect} from 'react-redux'
-import {SET_CLIENTS, SET_PARTNERS, HANDLE_DIALOG ,SET_PROCESS} from './../../Store/constant'
 import CreateNewClient from '../NewProcessComponent/CreateNewClient';
 import InProcess from '../InProcess/InProcess';
 import DoneComponent from './../DoneComponent/Done'
-import {SET_DONE_PROCESS} from "../../Store/constant";
+import { bindActionCreators } from 'redux';
+import * as mainActions from '../../Actions/MainActions';
+
 const CLIENTS = 'clients',
   PARTNERS = 'partners',
   INPROCESS = 'inProcess',
@@ -45,10 +45,10 @@ class Dashboard extends React.Component {
       isNewProcess: false,
       newProccess: false,
     };
-    this.setClients();
-    this.setPartners();
-    this.setProcess();
-    this.setDoneProcess();
+    this.props.setPartners();
+    this.props.setClients();
+    this.props.setProcess();
+    this.props.setDone();
   }
 
   handleRequestClose = () => {
@@ -74,52 +74,9 @@ class Dashboard extends React.Component {
     }
   }
 
-  setPartners() {
-    let self = this;
-    axios.get('/get_partners')
-      .then(function (response) {
-        self.props.AddPartners(response.data);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }
-
-  setClients() {
-    let self = this;
-    axios.get('/get_clients')
-      .then(function (response) {
-        self.props.AddClients(response.data);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }
-  setProcess(){
-    let self = this;
-    axios.get('/get_process')
-      .then(function (response) {
-        self.props.AddProcess(response.data);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }
-  setDoneProcess(){
-    let self = this;
-    axios.get('/get_done_process')
-      .then(function (response) {
-        self.props.AddDoneProcess(response.data);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }
-
   onClickMenu(qw) {
     this.setState({curentState: qw});
     if (qw === CLIENTS) {
-      this.setClients();
       this.setState({
         isClients: true,
         isPartners: false,
@@ -130,7 +87,6 @@ class Dashboard extends React.Component {
       })
     }
     if (qw === PARTNERS) {
-      this.setPartners();
       this.setState({
         isClients: false,
         isPartners: true,
@@ -141,7 +97,6 @@ class Dashboard extends React.Component {
       })
     }
     if (qw === INPROCESS) {
-      this.setProcess();
       this.setState({
         isClients: false,
         isPartners: false,
@@ -151,7 +106,6 @@ class Dashboard extends React.Component {
       })
     }
     if (qw === DONE) {
-      this.setDoneProcess();
       this.setState({
         isClients: false,
         isPartners: false,
@@ -175,7 +129,6 @@ class Dashboard extends React.Component {
   }
 
   handleClick = (event) => {
-    // This prevents ghost click.
     event.preventDefault();
     this.setState({
       curentState: 'NewIntervention',
@@ -189,14 +142,11 @@ class Dashboard extends React.Component {
       newProccess: false,
     })
   };
-
-
   onClickAddNew(qw) {
     this.setState({open: false, popUpLabel: "Add new " + qw});
     this.props.HandleDialog(true);
 
   }
-
   render() {
     return [<div key={3000}>
       <Paper className="paper">
@@ -256,35 +206,10 @@ const mapStateToProps = (state) => {
   }
 };
 
-
-export default connect(mapStateToProps, dispatch => ({
-  AddClients: (clients) => {
-    const asyncGetClients = () => dispatch => {
-      dispatch({type: SET_CLIENTS, payload: clients})
-    };
-    dispatch(asyncGetClients());
-  },
-  AddPartners: (partners) => {
-    const asyncGetPartners = () => dispatch => {
-      dispatch({type: SET_PARTNERS, payload: partners})
-    };
-    dispatch(asyncGetPartners());
-  },
-  AddProcess:(process) => {
-    const asyncGetProcess = () => dispatch => {
-      dispatch({type: SET_PROCESS, payload: process})
-    };
-    dispatch(asyncGetProcess());
-  },
-  AddDoneProcess:(done_process) => {
-    const asyncGetDoneProcess = () => dispatch => {
-      dispatch({type: SET_DONE_PROCESS, payload: done_process})
-    };
-    dispatch(asyncGetDoneProcess());
-  },
-
-  HandleDialog: (val) => {
-    dispatch({type: HANDLE_DIALOG, payload: val})
-
+function mapDispatchToProps(dispatch) {
+  return {
+    ...bindActionCreators(mainActions, dispatch)
   }
-}))(Dashboard)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard)

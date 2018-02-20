@@ -48,6 +48,7 @@ class PartnerComponent extends Component {
 
   render() {
     const {searchUsers, checked} = this.state;
+    console.log('partners',this.state.partners);
     return (
       <div className="clients">
         <Table onCellClick={this.handleSelect.bind(this)}>

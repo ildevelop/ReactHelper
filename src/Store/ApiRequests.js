@@ -10,4 +10,16 @@ export default class Api {
   static deleteDone(pr) {
     return axios.post('/delete_done_process', {done_process: pr})
   }
+  static setPartners() {
+    return axios.get('/get_partners')
+  }
+  static setClients() {
+    return axios.get('/get_clients')
+  }
+  static setProcess() {
+    return axios.get('/get_process')
+  }
+  static setDone() {
+    return axios.get('/get_done_process')
+  }
 }
