@@ -4,7 +4,8 @@ import {
   ADD_CLIENT_CLIENTS, ADD_PARTNER_PARTNERS,
   DELETE_DONE,
   DELETE_PROCESS,
-  HANDLE_DIALOG, SET_CLIENTS, SET_DONE_PROCESS, SET_NEW_PROCESS, SET_ONE_CLIENTS, SET_ONE_DONE_PROCESS, SET_ONE_PARTNER,
+  HANDLE_DIALOG, SET_CATEGORIES, SET_CLIENTS, SET_DONE_PROCESS, SET_NEW_PROCESS, SET_ONE_CLIENTS, SET_ONE_DONE_PROCESS,
+  SET_ONE_PARTNER,
   SET_PARTNERS,
   SET_PROBLEM, SET_PROCESS,
 } from './constant'
@@ -20,7 +21,8 @@ const initState = {
   problem:'',
   process: [],
   done_process: [],
-  loading: false
+  loading: false,
+  categories:[]
 
 };
 const reducerMain = (state  = initState, action) => {
@@ -44,13 +46,16 @@ const reducerMain = (state  = initState, action) => {
       let arrDoneOne = state.done_process;
       arrDoneOne.push(action.pr);
       return state = {...state, done_process: arrDoneOne};
-    case SET_DONE_PROCESS:
-      state = {...state, done_process: action.payload};
+    case SET_CATEGORIES:
+      state = {...state, categories: action.payload};
       break;
     case DELETE_DONE:
       let arrD =state.done_process;
       let arrDone =arrD.filter(e => e._id !== action.pr._id);
       state = {...state, done_process: arrDone};
+      break;
+    case SET_DONE_PROCESS:
+      state = {...state, done_process: action.payload};
       break;
   }
   return state;

@@ -85,9 +85,18 @@ export function addClient(cl) {
 }
 export function addPartner(partner) {
   return function(dispatch) {
-    return Api.addClient(partner).then(() => dispatch({
+    return Api.addPartner(partner).then(() => dispatch({
         type: actionTypes.ADD_PARTNER_PARTNERS,
         partner
+      })
+    )
+  }
+}
+export function setCategories() {
+  return function(dispatch) {
+    return Api.setCategories().then((res) => dispatch({
+        type: actionTypes.SET_CATEGORIES,
+        payload: res.data
       })
     )
   }

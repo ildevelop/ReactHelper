@@ -50,6 +50,7 @@ class Dashboard extends React.Component {
     this.props.setClients();
     this.props.setProcess();
     this.props.setDone();
+    this.props.setCategories();
   }
 
   handleRequestClose = () => {
@@ -219,7 +220,8 @@ const mapStateToProps = (state) => {
     loadingP: state.reducerPartners.loading,
     loadingPr: state.reducerMain.loading,
     main: state.reducerMain.process,
-    doneP: state.reducerMain.done_process
+    doneP: state.reducerMain.done_process,
+    categories: state.reducerMain.categories
   }
 };
 

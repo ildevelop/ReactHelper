@@ -266,7 +266,25 @@ const getExpressApplication = (application) => {
       response.json({'4': 4})
     }
   });
-
+  application.get('/get_categories', function (req, response) {
+    if (process.env.REACT_APP_TEST === 'true') {
+      MongoClient.connect(url, function (err, db) {
+        if (err) throw err;
+        console.log('Connected to collection categories established!');
+        var collection = db.collection('categories');
+        try{
+          collection.find().toArray(function (err, res) {
+            if (err) throw err;
+            response.json(res);
+            db.close();
+          })
+        }catch (e){console.log(e)}
+      });
+    }
+    else {
+      response.json({'5': 5})
+    }
+  });
   application.post('/get_token', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
     let username = req.body['username'];

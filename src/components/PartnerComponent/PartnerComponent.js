@@ -34,7 +34,8 @@ class PartnerComponent extends Component {
       user => user.fname.search(event.target.value) !== -1 ||
         user.city.search(event.target.value) !== -1 ||
         user.phone_number.search(event.target.value) !== -1 ||
-        user.zipp.search(event.target.value) !== -1
+        user.zipp.search(event.target.value) !== -1 ||
+        user.category.search(event.target.value) !== -1
     );
     this.setState({searchUsers: username});
   }
@@ -48,7 +49,7 @@ class PartnerComponent extends Component {
 
   render() {
     const {searchUsers, checked} = this.state;
-    console.log('partners',this.state.partners);
+    // console.log('partners',this.state.partners);
     return (
       <div className="clients">
         <Table onCellClick={this.handleSelect.bind(this)}>
@@ -70,6 +71,7 @@ class PartnerComponent extends Component {
               <TableHeaderColumn>Email</TableHeaderColumn>
               <TableHeaderColumn>Phone</TableHeaderColumn>
               <TableHeaderColumn>Commission</TableHeaderColumn>
+              <TableHeaderColumn>Categories</TableHeaderColumn>
             </TableRow>
           </TableHeader>
           <TableBody displayRowCheckbox={false}>
@@ -90,6 +92,7 @@ class PartnerComponent extends Component {
               <TableRowColumn>{user.email}</TableRowColumn>
               <TableRowColumn>{user.phone_number}</TableRowColumn>
               <TableRowColumn>{user.commission}</TableRowColumn>
+              <TableRowColumn>{user.category}</TableRowColumn>
             </TableRow>)}
           </TableBody>
 

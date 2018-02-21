@@ -28,4 +28,7 @@ export default class Api {
   static addPartner(parner) {
     return axios.post('/add_partners',{partners: parner})
   }
+  static setCategories() {
+    return axios.get('/get_categories')
+  }
 }
