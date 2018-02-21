@@ -93,10 +93,9 @@ const getExpressApplication = (application) => {
       response.send(401, JSON.stringify({'status': 'wrong Clients!!'}));
     }
   });
-  application.post('/add_partners', function (req, response) {
+  application.post('/add_partner', function (req, response) {
     response.setHeader('Content-Type', 'application/json');
     let partners = req.body['partners'];
-    console.log(partners);
     if (partners) {
 
       MongoClient.connect(url, function (err, db) {

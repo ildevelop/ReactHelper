@@ -137,7 +137,7 @@ class NewProcessComponent extends React.Component {
       case 2:
         return (
           [
-            <PartnerComponent key = {201} part={this.state.partners} check ={true}/>
+            <PartnerComponent key = {201} part={this.state.partners.filter(user => user.category.search(this.state.value) !== -1)} check ={true}/>
           ]
         );
       default:

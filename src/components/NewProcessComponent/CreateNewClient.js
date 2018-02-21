@@ -16,7 +16,8 @@ class CreateNewClient extends React.Component {
   handleOnSubmitClose() {
     let formData = {};
     Object.keys(this.refs).forEach((key) => formData[key] = this.refs[key].getValue());
-    if (this.props.popUpLabel === "Add new clients") {
+    console.log('popUpLabel',this.props.popUpLabel);
+    if (this.props.popUpLabel === "Add new Client") {
       this.props.addClient(formData);
       this.props.handleDialog(false);
     }
