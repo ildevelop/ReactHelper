@@ -15,6 +15,7 @@ import {connect} from 'react-redux'
 import {NEXT_STEP, SET_NEW_PROCESS, SET_PROBLEM} from "../../Store/constant";
 import PartnerComponent from "../PartnerComponent/PartnerComponent";
 import axios from 'axios';
+import {MenuItem, SelectField} from "material-ui";
 
 class NewProcessComponent extends React.Component {
   constructor(props) {
@@ -29,6 +30,7 @@ class NewProcessComponent extends React.Component {
       nextButton: true,
       problem: null,
       popUpLabel: 'Add new Client',
+      value: 1,
     }
   }
   inputField(event) {
@@ -84,6 +86,9 @@ class NewProcessComponent extends React.Component {
       }));
     }
   };
+  handleChange = (event, index, value) => {
+    return this.setState({value});
+  };
   handlePrev = () => {
     const {stepIndex} = this.state;
     if (!this.state.loading) {
@@ -112,9 +117,18 @@ class NewProcessComponent extends React.Component {
               multiLine={true}
               onChange={this.inputField.bind(this)}
               rows={3}/>
+            <div>
+              <h4> Please choose category :</h4>
+              <SelectField value={this.state.value} onChange={this.handleChange}>
+                {this.props.categories.map(e => <MenuItem key={e._id}
+                                                          value={e.category}
+                                                          label={e.category}
+                                                          primaryText={e.category}/>)}
+              </SelectField>
+            </div>
+
             <p>
               Describe the problem with this client.: <b>{this.props.client.fname} {this.props.client.sname}</b>
-
             </p>
             <p>What happened and how to help.</p>
             <p>preferably in more detail,how we can help him</p>
@@ -202,6 +216,7 @@ const mapStateToProps = (state) => {
     clients: state.reducerClients.clients,
     client: state.reducerClients.client,
     person: state.reducerPartners.partner,
+    categories: state.reducerMain.categories
   }
 };
 export default connect(mapStateToProps, dispatch => ({
