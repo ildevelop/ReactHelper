@@ -65,5 +65,32 @@ export function setDone() {
     )
   }
 }
+export function handleDialog( op) {
+  return function(dispatch) {
+    return dispatch({
+        type: actionTypes.HANDLE_DIALOG,
+        payload: op
+      })
+  }
+}
+
+export function addClient(cl) {
+  return function(dispatch) {
+    return Api.addClient(cl).then(() => dispatch({
+        type: actionTypes.ADD_CLIENT_CLIENTS,
+        cl
+      })
+    )
+  }
+}
+export function addPartner(partner) {
+  return function(dispatch) {
+    return Api.addClient(partner).then(() => dispatch({
+        type: actionTypes.ADD_PARTNER_PARTNERS,
+        partner
+      })
+    )
+  }
+}
 
 

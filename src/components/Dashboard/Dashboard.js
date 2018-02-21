@@ -18,8 +18,9 @@ import {connect} from 'react-redux'
 import CreateNewClient from '../NewProcessComponent/CreateNewClient';
 import InProcess from '../InProcess/InProcess';
 import DoneComponent from './../DoneComponent/Done'
-import { bindActionCreators } from 'redux';
+import {bindActionCreators} from 'redux';
 import * as mainActions from '../../Actions/MainActions';
+import Loading from './../Loading';
 
 const CLIENTS = 'clients',
   PARTNERS = 'partners',
@@ -60,17 +61,30 @@ class Dashboard extends React.Component {
   switcher() {
     switch (this.state.curentState) {
       case CLIENTS:
-        return ( <ClientComponent users={this.props.clients} check={false}/>);
+        return ( <div>
+          {this.props.loadingC ?
+            <ClientComponent users={this.props.clients} check={false}/> :
+            <Loading/>}
+        </div>);
       case PARTNERS:
-        return (<PartnerComponent part={this.props.partners} check={false}/>);
+        return ( <div>
+          {this.props.loadingP ?
+            <PartnerComponent part={this.props.partners} check={false}/> :
+            <Loading/>}
+        </div>);
       case INPROCESS:
-        return (<InProcess proc = {this.props.main}/>);
+
+        return (<div>
+          {this.props.loadingPr ?
+            <InProcess proc={this.props.main}/> :
+            <Loading/>}
+        </div>);
       case DONE:
-        return (<DoneComponent done = {this.props.doneP}/>);
+        return (<DoneComponent done={this.props.doneP}/>);
       case INNEWPROCESS:
         return (<NewProcessComponent
           clients={this.props.clients}
-          partners={this.props.partners} />);
+          partners={this.props.partners}/>);
     }
   }
 
@@ -144,7 +158,7 @@ class Dashboard extends React.Component {
   };
   onClickAddNew(qw) {
     this.setState({open: false, popUpLabel: "Add new " + qw});
-    this.props.HandleDialog(true);
+    this.props.handleDialog(true);
 
   }
   render() {
@@ -201,6 +215,9 @@ const mapStateToProps = (state) => {
   return {
     clients: state.reducerClients.clients,
     partners: state.reducerPartners.partners,
+    loadingC: state.reducerClients.loading,
+    loadingP: state.reducerPartners.loading,
+    loadingPr: state.reducerMain.loading,
     main: state.reducerMain.process,
     doneP: state.reducerMain.done_process
   }

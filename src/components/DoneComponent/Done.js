@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import './Done.scss'
 import {Paper, RaisedButton} from "material-ui";
 import Delete from 'material-ui/svg-icons/action/delete';
-import axios from 'axios';
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux';
 import * as mainActions from '../../Actions/MainActions';

@@ -22,4 +22,10 @@ export default class Api {
   static setDone() {
     return axios.get('/get_done_process')
   }
+  static addClient(cl) {
+    return axios.post('/add_client',{clients: cl})
+  }
+  static addPartner(parner) {
+    return axios.post('/add_partners',{partners: parner})
+  }
 }

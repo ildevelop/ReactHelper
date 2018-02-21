@@ -3,43 +3,27 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import {TextField} from 'material-ui';
-import axios from 'axios';
 import {connect} from 'react-redux'
 import {HANDLE_DIALOG, SET_ONE_CLIENTS, SET_ONE_PARTNER} from "../../Store/constant";
-
+import {bindActionCreators} from 'redux';
+import * as mainActions from '../../Actions/MainActions';
 class CreateNewClient extends React.Component {
   handleOnSubmitClose() {
     let formData = {};
     Object.keys(this.refs).forEach((key) => formData[key] = this.refs[key].getValue());
     if (this.props.popUpLabel === "Add new clients") {
-      this.props.AddOneClients(formData);
-      axios.post('/add_client', {clients: formData})
-        .then(function (response) {
-          let body = response.data['status'];
-          console.log('body ===>', body);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      this.props.HandleDialog(false);
+      this.props.addClient(formData);
+      this.props.handleDialog(false);
     }
     else {
-      this.props.AddOnePartner(formData);
-      axios.post('/add_partners', {partners: formData})
-        .then(function (response) {
-          let body = response.data['status'];
-          console.log('body ===>', body);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      this.props.HandleDialog(false);
+      this.props.addPartner(formData);
+      this.props.handleDialog(false);
     }
   }
 
 
   handleClose = () => {
-    this.props.HandleDialog(false)
+    this.props.handleDialog(false);
   };
 
   render() {
@@ -108,21 +92,9 @@ const mapStateToProps = (state) => {
     main: state.reducerMain
   }
 };
-export default connect(mapStateToProps, dispatch => ({
-  HandleDialog: (val) => {
-    dispatch({type: HANDLE_DIALOG, payload: val})
-
-  },
-  AddOnePartner: (partner) => {
-    const asyncGetPartner = () => dispatch => {
-      dispatch({type: SET_ONE_PARTNER, payload: partner})
-    };
-    dispatch(asyncGetPartner());
-  },
-  AddOneClients: (client) => {
-    const asyncGetClient = () => dispatch => {
-      dispatch({type: SET_ONE_CLIENTS, payload: client})
-    };
-    dispatch(asyncGetClient());
+function mapDispatchToProps(dispatch) {
+  return {
+    ...bindActionCreators(mainActions, dispatch)
   }
-}))(CreateNewClient)
+}
+export default connect(mapStateToProps,mapDispatchToProps )(CreateNewClient)

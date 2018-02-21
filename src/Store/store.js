@@ -1,6 +1,7 @@
 import {createStore , applyMiddleware ,combineReducers } from 'redux';
 import {composeWithDevTools} from 'redux-devtools-extension'
 import {
+  ADD_CLIENT_CLIENTS, ADD_PARTNER_PARTNERS,
   DELETE_DONE,
   DELETE_PROCESS,
   HANDLE_DIALOG, SET_CLIENTS, SET_DONE_PROCESS, SET_NEW_PROCESS, SET_ONE_CLIENTS, SET_ONE_DONE_PROCESS, SET_ONE_PARTNER,
@@ -19,6 +20,7 @@ const initState = {
   problem:'',
   process: [],
   done_process: [],
+  loading: false
 
 };
 const reducerMain = (state  = initState, action) => {
@@ -27,7 +29,7 @@ const reducerMain = (state  = initState, action) => {
       state = {...state, openIntervention: action.payload};
       break;
     case SET_PROCESS:
-      state = {...state, process: action.payload};
+      state = {...state, process: action.payload,loading: true};
       break;
     case SET_NEW_PROCESS:
       let newProcess = state.process;
@@ -57,7 +59,7 @@ const reducerMain = (state  = initState, action) => {
 const reducerClients = (state = initState ,action ) => {
   switch (action.type) {
     case SET_CLIENTS:
-      state = {...state, clients:action.payload};
+      state = {...state, clients:action.payload,loading: true};
       break;
     case SET_ONE_CLIENTS:
       state = {...state, client:action.payload};
@@ -65,18 +67,26 @@ const reducerClients = (state = initState ,action ) => {
     case SET_PROBLEM:
       state = {...state, problem:action.payload};
       break;
+    case ADD_CLIENT_CLIENTS:
+      let arrCl = state.clients;
+      arrCl.push(action.cl);
+      return state = {...state, clients: arrCl};
   }
   return state;
 };
 const reducerPartners = (state = initState ,action ) => {
   switch (action.type) {
     case SET_PARTNERS:
-      state = {...state, partners:action.payload};
+      state = {...state, partners:action.payload ,loading: true};
       // console.log('add partners to reducer', state);
       break;
     case SET_ONE_PARTNER:
       state = {...state, partner:action.payload};
       break;
+    case ADD_PARTNER_PARTNERS:
+      let arrPr = state.partners;
+      arrPr.push(action.partner);
+      return state = {...state, partners: arrPr};
   }
   return state;
 };

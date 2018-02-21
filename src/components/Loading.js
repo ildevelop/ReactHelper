@@ -3,7 +3,7 @@
  */
 
 import React, { PropTypes, Component } from 'react';
-
+import './ClientComponent/ClientComponent.scss'
 export default class Loading extends Component {
 
   shouldComponentUpdate() {
@@ -12,8 +12,10 @@ export default class Loading extends Component {
 
   render() {
     return (
-      <div className="loading-container">
-        <div className="loading-speeding-wheel"/>
+      <div className="clients">
+        <div className="loading-container">
+          <div className="loading-speeding-wheel"/>
+        </div>
       </div>
     );
   }
