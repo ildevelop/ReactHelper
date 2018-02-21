@@ -12,6 +12,7 @@ const configApi = require('./api/conf.json');
 // Incert One to DB
 var MongoClient = mongo.MongoClient;
 var url = 'mongodb://localhost:27017/test12';
+const TelegramBot = require('node-telegram-bot-api');
 
 const passAuthentication = (username, password) => {
   let users = JSON.parse(fs.readFileSync('./users.json', 'utf8'))['permission'];
@@ -152,8 +153,27 @@ const getExpressApplication = (application) => {
       });
       //кодируем результат в текст, понятный адресной строке
       msg = encodeURI(msg);
-      http.post(`https://api.telegram.org/bot${configApi.telegram.token}/sendMessage?chat_id=${configApi.telegram.chat}&parse_mode=html&text=${msg}`, function (error, res, body) {
-      });
+//       var stam2 = msg;
+//       const bot = new TelegramBot(configApi.telegram.token, {polling: true});
+//       bot.onText(/\/echo (.+)/, (msg, match) => {
+//         // 'msg' is the received Message from Telegram
+//         // 'match' is the result of executing the regexp above on the text content
+//         // of the message
+//
+//         const resp = match[1]; // the captured "whatever"
+//
+//         // send back the matched "whatever" to the chat
+//         bot.sendMessage(configApi.telegram.chat, resp);
+//       });
+//       // Listen for any kind of message. There are different kinds of
+// // messages.
+//       bot.on('message', (msg) => {
+//         const chatId = msg;
+//         console.log('chatId',chatId);
+//         // send a message to the chat acknowledging receipt of their message
+//         bot.sendMessage(configApi.telegram.chat, stam2);
+//       });
+      http.post(`https://api.telegram.org/bot${configApi.telegram.token}/sendMessage?chat_id=${configApi.telegram.chat}&parse_mode=html&text=${msg}`, function (error, res, body) {});
       response.send({status: "Success"});
     }
     else {
