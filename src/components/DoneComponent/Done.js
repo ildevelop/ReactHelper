@@ -14,15 +14,6 @@ class Done extends Component {
   deleteOneProcess(pr){
     console.log('deleteOneProcess',pr);
     this.props.deleteDone(pr)
-    // this.props.deleteOneDone(pr._id);
-    // axios.post('/delete_done_process', {done_process: pr})
-    //   .then(function (response) {
-    //     let body = response.data['status'];
-    //     console.log('delete ===>', body);
-    //   })
-    //   .catch(function (error) {
-    //     console.log(error);
-    //   });
   }
   oneProcess = (process) => {
     return (
