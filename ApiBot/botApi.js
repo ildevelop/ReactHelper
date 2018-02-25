@@ -42,28 +42,22 @@ const inline_keyboard = [
 
 bot.onText(/\/add (.+)/, (msg, match) => {
   const {from: {id}} = msg;
-  const newvalues = { $set: {chat_id: id} };
+  const newvalues = {$set: {chat_id: id}};
   const resp = match[1]; // the captured "whatever"
   // console.log('msg', msg);
   var arr = resp.split(' ');
   console.log('resp', arr);
   if (resp && !msg.from.is_bot) {
-    var findedAcc;
-    MongoClient.connect(url, function(err, db) {
+    var foundAccount;
+    MongoClient.connect(url, function (err, db) {
       if (err) throw err;
-      db.collection("partners").find({fname: arr[0], sname: arr[1]}).toArray(function(err, result) {
-        if (err) throw err;
-        findedAcc =result;
-        db.close();
-        if (findedAcc.length>0){
-          console.log('findedAcc',findedAcc);
-          console.log('findedAcc id',id);
-          bot.sendMessage(id, ` thank you we added  ${resp} to db`);
-        }else
-          bot.sendMessage(id, 'wrong name, please resent the full name of partner !');
-      });
+      console.log("id", id);
+      foundAccount = db.collection("partners").findOneAndUpdate({fname: arr[0], sname: arr[1]}, {$set: {"chatId": id}},
+        {
+          returnNewDocument: true,
+        });
     });
-    // setTimeout(console.log('finded',findedAcc ),2000)
+    // setTimeout(console.log('finded',foundAccount ),2000)
   }
   else {
     bot.sendMessage(id, 'wrong name, please resent the full name of partner !');
@@ -113,7 +107,7 @@ bot.onText(/\/keyboard (.+)/, (msg, match) => {
 bot.on('message', (msg) => {
   const {from: {id}} = msg;
   // bot.sendMessage(id, msg.text);
-  if (msg.text === '/add' || msg.text === '/add ' ) {
+  if (msg.text === '/add' || msg.text === '/add ') {
     bot.sendMessage(id, 'wrong name, please resent the full name of partner !');
   }
 });
