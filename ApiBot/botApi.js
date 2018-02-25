@@ -1,3 +1,7 @@
+var mongo = require('mongodb');
+var MongoClient = mongo.MongoClient;
+var url = 'mongodb://localhost:27017/test12';
+
 const TelegramBot = require('node-telegram-bot-api');
 const configApi = require('./conf.json');
 const bot = new TelegramBot(configApi.telegram.token, {polling: true});
@@ -6,11 +10,12 @@ const KEYBOARD_COMAND = '/keyboard';
 const KEYBOARD_COMAND_SHOW = 'show';
 const KEYBOARD_COMAND_HIDE = 'hide';
 const KEYBOARD_COMAND_INLINE = 'inline';
+const COMAND_ADD = '/add';
 
-const COMMAND_FORWARD ='forward';
-const COMMAND_REPLAY ='reply';
-const COMMAND_EDIT ='edit';
-const COMMAND_DELETE ='delete';
+const COMMAND_FORWARD = 'forward';
+const COMMAND_REPLAY = 'reply';
+const COMMAND_EDIT = 'edit';
+const COMMAND_DELETE = 'delete';
 
 const inline_keyboard = [
   [
@@ -35,17 +40,46 @@ const inline_keyboard = [
   ]
 ]
 
-bot.onText(/\/keyboard (.+)/, (msg ,match ) => {
-  const {chat: {id}} = msg;
+bot.onText(/\/add (.+)/, (msg, match) => {
+  const {from: {id}} = msg;
+  const newvalues = { $set: {chat_id: id} };
   const resp = match[1]; // the captured "whatever"
-  console.log('msg',msg);
+  // console.log('msg', msg);
+  var arr = resp.split(' ');
+  console.log('resp', arr);
+  if (resp && !msg.from.is_bot) {
+    var findedAcc;
+    MongoClient.connect(url, function(err, db) {
+      if (err) throw err;
+      db.collection("partners").find({fname: arr[0], sname: arr[1]}).toArray(function(err, result) {
+        if (err) throw err;
+        findedAcc =result;
+        db.close();
+        if (findedAcc.length>0){
+          console.log('findedAcc',findedAcc);
+          console.log('findedAcc id',id);
+          bot.sendMessage(id, ` thank you we added  ${resp} to db`);
+        }else
+          bot.sendMessage(id, 'wrong name, please resent the full name of partner !');
+      });
+    });
+    // setTimeout(console.log('finded',findedAcc ),2000)
+  }
+  else {
+    bot.sendMessage(id, 'wrong name, please resent the full name of partner !');
+  }
+});
+bot.onText(/\/keyboard (.+)/, (msg, match) => {
+  const {from: {id}} = msg;
+  const resp = match[1]; // the captured "whatever"
+  console.log('msg', msg);
 
-  console.log('resp',resp);
+  console.log('resp', resp);
 
-  switch(resp){
+  switch (resp) {
     case KEYBOARD_COMAND_SHOW:
       console.log('SHOW:');
-      bot.sendMessage( id , 'Showing a keyboard', {
+      bot.sendMessage(id, 'Showing a keyboard', {
         reply_markup: {
           keyboard: [
             [
@@ -58,7 +92,7 @@ bot.onText(/\/keyboard (.+)/, (msg ,match ) => {
     case KEYBOARD_COMAND_HIDE:
       console.log('HIDE:');
       bot.sendMessage(id, 'Hiding a keyboard', {
-        reply_markup:{
+        reply_markup: {
           remove_keyboard: true
         }
       });
@@ -66,42 +100,49 @@ bot.onText(/\/keyboard (.+)/, (msg ,match ) => {
     case KEYBOARD_COMAND_INLINE:
       console.log('INLINE:');
       bot.sendMessage(id, 'InLine keybord is below', {
-        reply_markup:{
+        reply_markup: {
           inline_keyboard
         }
       });
       break;
     default:
-      bot.sendMessage(id,'Invalid input')
+      bot.sendMessage(id, 'Invalid input')
   }
-} );
+});
 
+bot.on('message', (msg) => {
+  const {from: {id}} = msg;
+  // bot.sendMessage(id, msg.text);
+  if (msg.text === '/add' || msg.text === '/add ' ) {
+    bot.sendMessage(id, 'wrong name, please resent the full name of partner !');
+  }
+});
 bot.on('callback_query', query => {
-  console.log('query',query);
-  const {message: {chat, message_id,text}} = query;
+  console.log('query', query);
+  const {message: {chat, message_id, text}} = query;
 
-  switch (query.data){
+  switch (query.data) {
     case COMMAND_FORWARD:
-      bot.forwardMessage(chat.id, chat.id,message_id);
+      bot.forwardMessage(chat.id, chat.id, message_id);
       break;
     case COMMAND_REPLAY:
-      bot.sendMessage(chat.id, 'Reply to message' ,{
+      bot.sendMessage(chat.id, 'Reply to message', {
         reply_to_message_id: message_id
       });
       break;
     case COMMAND_EDIT:
-    bot.editMessageText(`${text}(edited)`,{
-      chat_id: chat.id,
-      message_id: message_id,
-      reply_markup: {inline_keyboard}
-    } );
-    break;
+      bot.editMessageText(`${text}(edited)`, {
+        chat_id: chat.id,
+        message_id: message_id,
+        reply_markup: {inline_keyboard}
+      });
+      break;
     case COMMAND_DELETE:
-      bot.deleteMessage(chat.id ,message_id);
+      bot.deleteMessage(chat.id, message_id);
       break;
   }
-  bot.answerCallbackQuery({ callback_query_id : query.id})
-} );
+  bot.answerCallbackQuery({callback_query_id: query.id})
+});
 
 bot.onText(/\/echo (.+)/, (msg, match) => {
   const {chat: {id}} = msg;

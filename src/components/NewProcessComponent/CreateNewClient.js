@@ -27,7 +27,7 @@ class CreateNewClient extends React.Component {
     console.log('Object formData:',formData);
     if(this.state.fname && this.state.sname && this.state.phone_number && this.state.email && this.state.city && this.state.address && this.state.zipp ) {
       console.log("good");
-      if (this.props.popUpLabel === "Add new Client") {
+      if (this.props.popUpLabel === "Add new clients") {
         this.props.addClient(formData);
         this.props.handleDialog(false);
       }
