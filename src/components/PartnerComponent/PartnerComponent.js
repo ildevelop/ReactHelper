@@ -76,7 +76,7 @@ class PartnerComponent extends Component {
           </TableHeader>
           <TableBody displayRowCheckbox={false}>
             {searchUsers && searchUsers.map(user => <TableRow
-              key={user._id}
+              key={user._id} style={user.chatId?{color: '#388E3C'}: {color: '#000'}}
             >
               <TableRowColumn>
                 {this.props.check ?    <RadioButton

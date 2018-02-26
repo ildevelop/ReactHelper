@@ -98,8 +98,10 @@ bot.onText(/\/delete (.+)/, (msg, match) => {
   const newvalues = {$set: {chat_id: id}};
   const resp = match[1]; // the captured "whatever"
   var arr = resp.split(' ');
-  console.log('deleted partner: ', arr[0].toLowerCase() + ' ' + arr[1].toLowerCase());
-  if (arr.length ===2 && !msg.from.is_bot) {
+
+  // console.log('deleted partner: ', arr[0].toLowerCase() + ' ' + arr[1].toLowerCase());
+  console.log('deleted partner: ', arr);
+  if (arr.length ===2 ) {
     var foundAccount;
     MongoClient.connect(url, function (err, db) {
       if (err) throw err;
