@@ -42,11 +42,8 @@ const inline_keyboard = [
 
 bot.onText(/\/add (.+)/, (msg, match) => {
   const {from: {id}} = msg;
-  const newvalues = {$set: {chat_id: id}};
   const resp = match[1]; // the captured "whatever"
-  // console.log('msg', msg);
   var arr = resp.split(' ');
-  console.log('resp', arr[0].toLowerCase() + ' ' + arr[1].toLowerCase());
   if (arr.length ===2 && !msg.from.is_bot) {
     var foundAccount;
     MongoClient.connect(url, function (err, db) {
@@ -57,6 +54,60 @@ bot.onText(/\/add (.+)/, (msg, match) => {
           {
             returnNewDocument: true,
           });
+        db.close();
+        bot.sendMessage(id, 'good! we added '+ arr[0]+' ' + arr[1]);
+      }catch (e){
+        console.log(e);
+        bot.sendMessage(id, 'wrong name, please resent the full name of partner ! first name & second name');
+      }
+
+    });
+  }
+  else {
+    bot.sendMessage(id, 'wrong name, please resent the full name of partner ! first name & second name');
+  }
+});
+// add categories to db  db.categories.insert({ category : "plumper"})
+bot.onText(/\/add_category (.+)/, (msg, match) => {
+  const {from: {id}} = msg;
+  const resp = match[1]; // the captured "whatever"
+  var arr = resp.split(' ');
+  console.log('add categories: ', arr[0].toLowerCase());
+  if (arr.length ===1 && !msg.from.is_bot) {
+    var foundAccount;
+    MongoClient.connect(url, function (err, db) {
+      if (err) throw err;
+      console.log("id", id);
+      try {
+        foundAccount = db.collection("categories").insertOne({category: arr[0].toLowerCase()});
+        db.close();
+        bot.sendMessage(id, 'good! we added '+ arr[0]);
+      }catch (e){
+        console.log(e);
+        bot.sendMessage(id, 'wrong name, please resent the categories! in one string');
+      }
+
+    });
+  }
+  else {
+    bot.sendMessage(id, 'wrong name, please resent the categories! in one string');
+  }
+});
+bot.onText(/\/delete (.+)/, (msg, match) => {
+  const {from: {id}} = msg;
+  const newvalues = {$set: {chat_id: id}};
+  const resp = match[1]; // the captured "whatever"
+  var arr = resp.split(' ');
+  console.log('deleted partner: ', arr[0].toLowerCase() + ' ' + arr[1].toLowerCase());
+  if (arr.length ===2 && !msg.from.is_bot) {
+    var foundAccount;
+    MongoClient.connect(url, function (err, db) {
+      if (err) throw err;
+      console.log("id", id);
+      try {
+        foundAccount = db.collection("partners").deleteOne({fname: arr[0].toLowerCase(), sname: arr[1].toLowerCase()});
+        db.close();
+        bot.sendMessage(id, 'good! we deleted '+ arr[0]+' ' + arr[1]);
       }catch (e){
         console.log(e);
         bot.sendMessage(id, 'wrong name, please resent the full name of partner ! first name & second name');

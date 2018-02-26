@@ -158,7 +158,7 @@ const getExpressApplication = (application) => {
 
 
 
-      // http.post(`https://api.telegram.org/bot${configApi.telegram.token}/sendMessage?chat_id=${configApi.telegram.chat}&parse_mode=html&text=${msg}`, function (error, res, body) {});
+      http.post(`https://api.telegram.org/bot${configApi.telegram.token}/sendMessage?chat_id=${message.partner.chatId}&parse_mode=html&text=${msg}`, function (error, res, body) {});
       response.send({status: "Success"});
     }
     else {
