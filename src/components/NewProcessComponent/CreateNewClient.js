@@ -23,7 +23,7 @@ class CreateNewClient extends React.Component {
 
   handleOnSubmitClose() {
     let formData = {};
-    Object.keys(this.refs).forEach((key) => formData[key] = this.refs[key].getValue());
+    Object.keys(this.refs).forEach((key) => formData[key] = this.refs[key].getValue().toLowerCase());
     console.log('Object formData:',formData);
     if(this.state.fname && this.state.sname && this.state.phone_number && this.state.email && this.state.city && this.state.address && this.state.zipp ) {
       console.log("good");

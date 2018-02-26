@@ -46,21 +46,27 @@ bot.onText(/\/add (.+)/, (msg, match) => {
   const resp = match[1]; // the captured "whatever"
   // console.log('msg', msg);
   var arr = resp.split(' ');
-  console.log('resp', arr);
-  if (resp && !msg.from.is_bot) {
+  console.log('resp', arr[0].toLowerCase() + ' ' + arr[1].toLowerCase());
+  if (arr.length ===2 && !msg.from.is_bot) {
     var foundAccount;
     MongoClient.connect(url, function (err, db) {
       if (err) throw err;
       console.log("id", id);
-      foundAccount = db.collection("partners").findOneAndUpdate({fname: arr[0], sname: arr[1]}, {$set: {"chatId": id}},
-        {
-          returnNewDocument: true,
-        });
+      try {
+        foundAccount = db.collection("partners").findOneAndUpdate({fname: arr[0].toLowerCase(), sname: arr[1].toLowerCase()}, {$set: {"chatId": id}},
+          {
+            returnNewDocument: true,
+          });
+      }catch (e){
+        console.log(e);
+        bot.sendMessage(id, 'wrong name, please resent the full name of partner ! first name & second name');
+      }
+
     });
     // setTimeout(console.log('finded',foundAccount ),2000)
   }
   else {
-    bot.sendMessage(id, 'wrong name, please resent the full name of partner !');
+    bot.sendMessage(id, 'wrong name, please resent the full name of partner ! first name & second name');
   }
 });
 bot.onText(/\/keyboard (.+)/, (msg, match) => {
