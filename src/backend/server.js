@@ -1,27 +1,31 @@
 'use strict';
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
-const config = require('./webpack.config');
 const fs = require('fs');
-const port = 3000;
-const hostname = 'localhost';
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
-var mongo = require('mongodb');
-const configApi = require('./ApiBot/conf.json');
+let mongo = require('mongodb');
+const MainServer = require('./MainServer.js');
 // Incert One to DB
-var MongoClient = mongo.MongoClient;
-var url = 'mongodb://localhost:27017/test12';
+let MongoClient = mongo.MongoClient;
+// import MainServer from './MainServer.js';
+const config = require('../../webpack.config');
+let url = 'mongodb://localhost:27017/test12';
+const port = 3000;
+const configApi = require('../../ApiBot/conf.json');
+const hostname = 'localhost';
 
-var runB  = require('./ApiBot/botApi');
+
+/*
+ * Initialization server with botApi
+ */
+
+let runB  = require('../../ApiBot/botApi');
 runB;
+let mainServer = new MainServer();
+
 const passAuthentication = (username, password) => {
-  let users = JSON.parse(fs.readFileSync('./users.json', 'utf8'))['permission'];
-  let user = users.find(function (user) {
-    return user.email === username
-      && user.password === password;
-  });
-  return user !== undefined;
+  return mainServer.authenticate(username, password);
 };
 
 const getExpressApplication = (application) => {
