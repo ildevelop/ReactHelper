@@ -4,7 +4,7 @@ import assert from 'assert';
 
 let server = new MainServer();
 
-describe('TestServer() in backend/server.js with all functionality', function() {
+describe('TestMainServer() in backend/server.js with all functionality', function() {
 
   beforeEach(function() {
     server = new MainServer();
