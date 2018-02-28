@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {RadioButton, TextField} from 'material-ui';
 import './../ClientComponent/ClientComponent.scss';
 import {connect} from 'react-redux'
-import {SET_ONE_PARTNER} from '../../Store/constant';
+import {REMOVE_ONE_PARTNER, SET_ONE_PARTNER} from '../../Store/constant';
 import {
   Table,
   TableBody,
@@ -17,14 +17,13 @@ class PartnerComponent extends Component {
     super(props);
     this.state = {
       partners: this.props.part || [],
-      searchUsers:[],
+      searchUsers: [],
       displayRowCheckbox: this.props.check || false,
-      checked: null
     }
   }
 
   componentDidMount() {
-    this.setState({searchUsers:this.state.partners});
+    this.setState({searchUsers: this.state.partners});
 
   }
 
@@ -39,22 +38,26 @@ class PartnerComponent extends Component {
     );
     this.setState({searchUsers: username});
   }
+
   handleSelect = (user) => {
     const checkedUser = this.state.searchUsers[user];
-    this.setState({
-      checked: checkedUser._id
-    });
-    this.props.AddOnePartner(checkedUser);
+    if (!this.props.partners.partner.includes(checkedUser._id)) {
+      this.props.AddOnePartner(checkedUser._id);
+    } else {
+      console.log('partners.partner', this.props.partners.partner);
+      this.props.RemoveOnePartner(checkedUser._id);
+
+    }
   };
 
   render() {
-    const {searchUsers, checked} = this.state;
-    // console.log('partners',this.state.partners);
+    const {searchUsers} = this.state;
     return (
       <div className="clients">
         <Table onCellClick={this.handleSelect.bind(this)}>
-          <TableHeader adjustForCheckbox= {this.state.displayRowCheckbox} displaySelectAll ={this.state.displayRowCheckbox}>
-            <TableRow >
+          <TableHeader adjustForCheckbox={this.state.displayRowCheckbox}
+                       displaySelectAll={this.state.displayRowCheckbox}>
+            <TableRow>
               <TableHeaderColumn><TextField
                 hintText="Partners"
                 className="textField"
@@ -75,14 +78,14 @@ class PartnerComponent extends Component {
             </TableRow>
           </TableHeader>
           <TableBody displayRowCheckbox={false}>
-            {searchUsers && searchUsers.map(user => <TableRow
-              key={user._id} style={user.chatId?{color: '#388E3C'}: {color: '#000'}}
+            {searchUsers && searchUsers.map((user, key) => <TableRow
+              key={user._id} style={user.chatId ? {color: '#388E3C'} : {color: '#000'}}
             >
               <TableRowColumn>
-                {this.props.check ?    <RadioButton
-                  checked={checked === user._id && true}
+                {this.props.check ? <RadioButton
+                  checked={this.props.partners.partner.includes(user._id) && true}
                   value={user._id}
-                />: <div/>}
+                /> : <div/>}
               </TableRowColumn>
               <TableRowColumn>{user.fname}</TableRowColumn>
               <TableRowColumn>{user.sname}</TableRowColumn>
@@ -101,6 +104,7 @@ class PartnerComponent extends Component {
     )
   }
 }
+
 const mapStateToProps = (state) => {
   return {
     partners: state.reducerPartners
@@ -109,5 +113,8 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, dispatch => ({
   AddOnePartner: (client) => {
     dispatch({type: SET_ONE_PARTNER, payload: client})
+  },
+  RemoveOnePartner: (client) => {
+    dispatch({type: REMOVE_ONE_PARTNER, payload: client})
   }
 }))(PartnerComponent);

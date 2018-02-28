@@ -1,7 +1,7 @@
 # Logs
 logs
 *.log
-
+lib
 .idea
 node_module
 package.config.js
@@ -38,4 +38,3 @@ node_modules
 # App packaged
 dist
 
-.idea
