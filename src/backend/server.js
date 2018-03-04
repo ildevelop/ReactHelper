@@ -161,8 +161,12 @@ const getExpressApplication = (application) => {
       var msgRH = encodeURI(msg);
 
 
-
-      http.post(`https://api.telegram.org/bot${configApi.telegram.token}/sendMessage?chat_id=${message.partner.chatId}&parse_mode=html&text=${msgRH}`, function (error, res, body) {});
+      for( let i in message.partner){
+        console.log('PARTNERS', message.partner[i]);
+        if( message.partner[i].chatId){
+          http.post(`https://api.telegram.org/bot${configApi.telegram.token}/sendMessage?chat_id=${ message.partner[i].chatId}&parse_mode=html&text=${msgRH}`, function (error, res, body) {});
+        }
+      }
       response.send({status: "Success"});
     }
     else {

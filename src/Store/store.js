@@ -88,13 +88,14 @@ const reducerPartners = (state = initState ,action ) => {
       break;
     case SET_ONE_PARTNER:
       console.log('partners STORE',action.payload);
-      state = {...state, partner:[...state.partner,action.payload]};
+      let arrP = state.partner;
+      arrP.push(action.payload);
+      state = {...state, partner:arrP};
       console.log('partners',state.partner);
 
       break;
     case REMOVE_ONE_PARTNER:
       console.log('REMOVE_ONE_PARTNER STORE',action.payload);
-      console.log('REMOVE_ONE_PARTNER',state.partner);
       let filterArrey = state.partner.filter( e => e!== action.payload);
       console.log('filterArrey',filterArrey);
       state = {...state, partner:filterArrey};

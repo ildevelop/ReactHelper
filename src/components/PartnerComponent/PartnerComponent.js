@@ -41,12 +41,10 @@ class PartnerComponent extends Component {
 
   handleSelect = (user) => {
     const checkedUser = this.state.searchUsers[user];
-    if (!this.props.partners.partner.includes(checkedUser._id)) {
-      this.props.AddOnePartner(checkedUser._id);
+    if (!this.props.partners.partner.includes(checkedUser)) {
+      this.props.AddOnePartner(checkedUser);
     } else {
-      console.log('partners.partner', this.props.partners.partner);
-      this.props.RemoveOnePartner(checkedUser._id);
-
+      this.props.RemoveOnePartner(checkedUser);
     }
   };
 
@@ -83,7 +81,7 @@ class PartnerComponent extends Component {
             >
               <TableRowColumn>
                 {this.props.check ? <RadioButton
-                  checked={this.props.partners.partner.includes(user._id) && true}
+                  checked={this.props.partners.partner.includes(user) && true}
                   value={user._id}
                 /> : <div/>}
               </TableRowColumn>
