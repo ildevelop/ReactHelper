@@ -149,7 +149,6 @@ const getExpressApplication = (application) => {
         '<b>   city:</b> ' + message.client.city,
         '<b>   street:</b> ' + message.client.address,
         '<b>PROBLEM:</b> ' + message.problem,
-        '<b>PARTNER:</b> ' + message.partner,
       ];
       let msg = '';
       //проходимся по массиву и склеиваем все в одну строку

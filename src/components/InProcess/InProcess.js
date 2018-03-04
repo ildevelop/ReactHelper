@@ -37,9 +37,8 @@ class InProcess extends Component {
   }
 
   oneProcess = (process) => {
-    return (
-      <div>
-        <div>
+    return ([
+        <div key="1">
           <div>
             <div className="dateD">{process.data}</div>
             <h4>CLIENT:</h4>
@@ -49,17 +48,16 @@ class InProcess extends Component {
             <div>City: {process.client.city} </div>
             <div>Street: {process.client.address} </div>
           </div>
-          <div>
+          <div className="partners">
             <h4>PARTNER:</h4>
-            <div>Full Name: {process.partner.fname} {process.partner.sname}</div>
-            <div>Email: {process.partner.email} </div>
-            <div>Phone: {process.partner.phone_number} </div>
-            <div>City: {process.partner.city} </div>
-            <div>Street: {process.partner.address} </div>
+            {process.partner.map((partner,key) =>
+                  <div key ={partner._id}>{key+1} - Full Name: {partner.fname} {partner.sname}</div>
+            )
+            }
           </div>
           <div><h4>PROBLEM: </h4>{process.problem} </div>
-        </div>
-        <div className="oneProcessButton">
+        </div>,
+        <div className="oneProcessButton" key="2">
           <RaisedButton
             label="DELETE"
             icon={<Delete/>}
@@ -76,8 +74,8 @@ class InProcess extends Component {
             style={style}
             onClick={this.DoneOneProcess.bind(this,process)}
           />
-        </div>
-      </div>
+        </div>]
+
     )
   };
 
