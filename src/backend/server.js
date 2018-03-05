@@ -147,7 +147,20 @@ const getExpressApplication = (application) => {
         '  city:' + message.client.city,
         'PROBLEM:' + message.problem,
       ];
-      let msg = '';
+
+      let fields2 = [
+        'CLIENT: ' + message.client.fname + ' ' + message.client.sname,
+        '  city:' + message.client.city,
+        '  zip:' + message.client.zipp,
+        '  address:' + message.client.address,
+        '  Phone:' + message.client.phone_number,
+        'PROBLEM:' + message.problem,
+      ];
+      let msg  = '';
+      let msg2  = '';
+      fields2.forEach(field => {
+        msg2 += field + '\n'
+      });
       //проходимся по массиву и склеиваем все в одну строку
       fields.forEach(field => {
         msg += field + '\n'
@@ -157,7 +170,7 @@ const getExpressApplication = (application) => {
       var msgRH = encodeURI(msg);
       for( let i in message.partner){
         if( message.partner[i].chatId){
-          telegramApi.messageToPartners(message.partner[i].chatId,msg);
+          telegramApi.messageToPartners(message.partner[i].chatId,msg,msg2);
         }
       }
       response.send({status: "Success"});

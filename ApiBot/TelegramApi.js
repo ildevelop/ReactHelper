@@ -14,33 +14,36 @@ const COMMAND_FORWARD = 'forward';
 const COMMAND_REPLAY = 'reply';
 const COMMAND_EDIT = 'edit';
 const COMMAND_DELETE = 'delete';
+const COMMAND_YES = 'yes';
+const COMMAND_NOT = 'not';
+const COMMAND_FINISH = 'finish';
 
 const inline_keyboard = [
   [
     {
-      text: 'Forward',
-      callback_data: COMMAND_FORWARD
+      text: 'YES I Take it!!',
+      callback_data: COMMAND_YES
     },
     {
-      text: 'Reply',
-      callback_data: COMMAND_REPLAY
-    },
-  ],
-  [
-    {
-      text: 'Edit',
-      callback_data: COMMAND_EDIT
-    },
-    {
-      text: 'Delete',
+      text: 'NOT!  I`m busy now',
       callback_data: COMMAND_DELETE
     },
+  ]
+];
+
+const process_step = [
+  [
+    {
+      text: 'Send invoice!',
+      callback_data: COMMAND_FINISH
+    }
   ]
 ];
 let mongo = require('mongodb');
 let MongoClient = mongo.MongoClient;
 let botApi = null;
-
+let messageFormClientToPartner = '';
+let messageFormClientToPartnerFull = '';
 class TelegramApi {
   constructor() {
     this.api = null;
@@ -114,8 +117,14 @@ class TelegramApi {
     }
   }
 
-  messageToPartners(id,msg){
-    botApi.sendMessage(id, msg);
+  messageToPartners(id,msg, msg2){
+    messageFormClientToPartner = msg;
+    messageFormClientToPartnerFull = msg2;
+    botApi.sendMessage(id, msg,{
+      reply_markup: {
+        inline_keyboard
+      }
+    });
   }
   keyboard(msg, match) {
     console.log('keyboard start');
@@ -123,7 +132,6 @@ class TelegramApi {
     const resp = match[1]; // the captured "whatever"
     console.log('msg', msg);
     console.log('resp', resp);
-    console.log("here!", botApi);
     switch (resp) {
       case KEYBOARD_COMAND_SHOW:
         console.log('SHOW:');
@@ -147,7 +155,7 @@ class TelegramApi {
         break;
       case KEYBOARD_COMAND_INLINE:
         console.log('INLINE:');
-        botApi.sendMessage(id, 'InLine keybord is below', {
+        botApi.sendMessage(id, messageFormClientToPartner, {
           reply_markup: {
             inline_keyboard
           }
@@ -278,6 +286,21 @@ class TelegramApi {
       case COMMAND_DELETE:
         botApi.deleteMessage(chat.id, message_id);
         break;
+      case COMMAND_FINISH:
+        botApi.deleteMessage(chat.id, message_id);
+        botApi.sendMessage(chat.id, 'Good job !!! ');
+        break;
+      case COMMAND_YES:
+        console.log('YES:::');
+        botApi.editMessageText(messageFormClientToPartnerFull, {
+          chat_id: chat.id,
+          message_id: message_id,
+          reply_markup: {inline_keyboard: process_step}
+        });
+        break;
+      default:
+          botApi.sendMessage(chat.id, 'Wrong tipe')
+
     }
     botApi.answerCallbackQuery({callback_query_id: query.id})
   }
