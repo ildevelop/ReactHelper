@@ -14,14 +14,15 @@ let url = 'mongodb://localhost:27017/test12';
 const port = 3000;
 const configApi = require('../../ApiBot/conf.json');
 const hostname = 'localhost';
-
+const telagramBotApi = require('../../ApiBot/TelegramApi');
 
 /*
  * Initialization server with botApi
  */
-
-let runB  = require('../../ApiBot/botApi');
-runB;
+let telegramApi = new telagramBotApi();
+telegramApi.init();
+// let runB  = require('../../ApiBot/botApi');
+// runB;
 let mainServer = new MainServer();
 
 const passAuthentication = (username, password) => {
@@ -159,10 +160,10 @@ const getExpressApplication = (application) => {
       var stam2 = msg;
       var msgRH = encodeURI(msg);
 
-
+      // const bot = new TelegramBot(configApi.telegram.token, {polling: true});
       for( let i in message.partner){
-        console.log('PARTNERS', message.partner[i]);
         if( message.partner[i].chatId){
+          // bot.sendMessage(message.partner[i].chatId, stam2);
           http.post(`https://api.telegram.org/bot${configApi.telegram.token}/sendMessage?chat_id=${ message.partner[i].chatId}&parse_mode=html&text=${msgRH}`, function (error, res, body) {});
         }
       }

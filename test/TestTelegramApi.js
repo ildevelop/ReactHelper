@@ -17,7 +17,7 @@ describe('TestTelegramApi() Create Telegram interface chat', function() {
   });
   it('add functionality to TelegramApi', function() {
     telegramApi.init();
-    let controllers = telegramApi.getTelegramControllers();
+    let controllers = telegramApi.getTelegramControllers('add_category');
     assert.ok(controllers['add_category'] !== undefined);
     // telegramApi.addControllers(controllers);
   });
