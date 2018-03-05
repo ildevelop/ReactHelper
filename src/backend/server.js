@@ -21,8 +21,7 @@ const telagramBotApi = require('../../ApiBot/TelegramApi');
  */
 let telegramApi = new telagramBotApi();
 telegramApi.init();
-// let runB  = require('../../ApiBot/botApi');
-// runB;
+
 let mainServer = new MainServer();
 
 const passAuthentication = (username, password) => {
@@ -143,13 +142,10 @@ const getExpressApplication = (application) => {
 
       });
 
-      let http = require('request');
       let fields = [
-        '<b>CLIENT: </b> ' + message.client.fname + ' ' + message.client.sname,
-        '<b>   phone: </b> ' + message.client.phone_number,
-        '<b>   city:</b> ' + message.client.city,
-        '<b>   street:</b> ' + message.client.address,
-        '<b>PROBLEM:</b> ' + message.problem,
+        'CLIENT: ' + message.client.fname + ' ' + message.client.sname,
+        '  city:' + message.client.city,
+        'PROBLEM:' + message.problem,
       ];
       let msg = '';
       //проходимся по массиву и склеиваем все в одну строку
@@ -159,12 +155,9 @@ const getExpressApplication = (application) => {
       //кодируем результат в текст, понятный адресной строке
       var stam2 = msg;
       var msgRH = encodeURI(msg);
-
-      // const bot = new TelegramBot(configApi.telegram.token, {polling: true});
       for( let i in message.partner){
         if( message.partner[i].chatId){
-          // bot.sendMessage(message.partner[i].chatId, stam2);
-          http.post(`https://api.telegram.org/bot${configApi.telegram.token}/sendMessage?chat_id=${ message.partner[i].chatId}&parse_mode=html&text=${msgRH}`, function (error, res, body) {});
+          telegramApi.messageToPartners(message.partner[i].chatId,msg);
         }
       }
       response.send({status: "Success"});

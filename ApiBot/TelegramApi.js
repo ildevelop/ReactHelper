@@ -114,6 +114,9 @@ class TelegramApi {
     }
   }
 
+  messageToPartners(id,msg){
+    botApi.sendMessage(id, msg);
+  }
   keyboard(msg, match) {
     console.log('keyboard start');
     const {from: {id}} = msg;
