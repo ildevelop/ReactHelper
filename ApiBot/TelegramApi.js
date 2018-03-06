@@ -1,7 +1,8 @@
 'use strict';
 const TelegramBot = require('node-telegram-bot-api');
 const configApi = require('./conf.json');
-
+var fs = require('fs');
+var http = require('https');
 
 const DATABASE_URL = 'mongodb://localhost:27017/test12';
 const KEYBOARD_COMAND = '/keyboard';
@@ -268,6 +269,21 @@ class TelegramApi {
   message(msg){
     const {from: {id}} = msg;
     // bot.sendMessage(id, msg.text);
+    console.log("msg here::::",msg);
+    if(msg.photo){
+      let photoFormUser = '';
+
+      console.log("PHOTO");
+      botApi.getFile( msg.photo[3].file_id).then((res) => {
+        photoFormUser = res.file_path;
+        let file = fs.createWriteStream(`./${res.file_path}`);
+        let request = http.get(`https://api.telegram.org/file/bot${configApi.telegram.token}/${photoFormUser}`, function (response) {
+          response.pipe(file);
+        });
+        console.log('request:::::::>',request);
+
+      });
+    }
     if (msg.text === '/add' || msg.text === '/add ') {
       botApi.sendMessage(id, 'wrong name, please resent the full name of partner !');
     }
@@ -298,6 +314,12 @@ class TelegramApi {
         break;
       case COMMAND_FINISH:
         botApi.deleteMessage(chat.id, message_id);
+        let file = fs.readFileSync('./ApiBot/sss.jpg');
+        const fileOpts = {
+          filename : 'sss',
+          contentType : 'image/jpeg'
+        };
+        botApi.sendPhoto(chat.id,file,{},fileOpts);
         botApi.sendMessage(chat.id, 'Good job !!! ');
         break;
       case COMMAND_YES:
