@@ -155,11 +155,21 @@ class TelegramApi {
         break;
       case KEYBOARD_COMAND_INLINE:
         console.log('INLINE:');
-        botApi.sendMessage(id, messageFormClientToPartner, {
-          reply_markup: {
-            inline_keyboard
-          }
-        });
+        if(messageFormClientToPartner){
+          botApi.sendMessage(id, messageFormClientToPartner, {
+            reply_markup: {
+              inline_keyboard
+            }
+          });
+        }else{
+          botApi.sendMessage(id, 'Development mode', {
+            reply_markup: {
+              inline_keyboard
+            }
+          });
+        }
+
+
         break;
       default:
         botApi.sendMessage(id, 'Invalid input')
@@ -292,11 +302,20 @@ class TelegramApi {
         break;
       case COMMAND_YES:
         console.log('YES:::');
+        if(messageFormClientToPartnerFull){
         botApi.editMessageText(messageFormClientToPartnerFull, {
           chat_id: chat.id,
           message_id: message_id,
           reply_markup: {inline_keyboard: process_step}
         });
+      } else{
+        botApi.editMessageText('develop mode', {
+          chat_id: chat.id,
+          message_id: message_id,
+          reply_markup: {inline_keyboard: process_step}
+        });
+      }
+
         break;
       default:
           botApi.sendMessage(chat.id, 'Wrong tipe')
