@@ -168,7 +168,7 @@ const getExpressApplication = (application) => {
       //кодируем результат в текст, понятный адресной строке
       var stam2 = msg;
       var msgRH = encodeURI(msg);
-      http.post(`https://api.telegram.org/bot${configApi.telegram.token}/sendMessage?chat_id=${configApi.telegram.chat}&parse_mode=html&text=${msg}`, function (error, res, body) {});
+      // http.post(`https://api.telegram.org/bot${configApi.telegram.token}/sendMessage?chat_id=${configApi.telegram.chat}&parse_mode=html&text=${msg}`, function (error, res, body) {});
       for( let i in message.partner){
         if( message.partner[i].chatId){
           telegramApi.messageToPartners(message.partner[i].chatId,msg,msg2);

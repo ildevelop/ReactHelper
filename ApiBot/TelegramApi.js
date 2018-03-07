@@ -35,7 +35,7 @@ const inline_keyboard = [
 const process_step = [
   [
     {
-      text: 'Send invoice!',
+      text: 'FINISH Please send photo invoice!',
       callback_data: COMMAND_FINISH
     }
   ]
@@ -45,6 +45,7 @@ let MongoClient = mongo.MongoClient;
 let botApi = null;
 let messageFormClientToPartner = '';
 let messageFormClientToPartnerFull = '';
+let idProcess = '';
 class TelegramApi {
   constructor() {
     this.api = null;
@@ -121,6 +122,7 @@ class TelegramApi {
   messageToPartners(id,msg, msg2){
     messageFormClientToPartner = msg;
     messageFormClientToPartnerFull = msg2;
+    idProcess=id;
     botApi.sendMessage(id, msg,{
       reply_markup: {
         inline_keyboard
@@ -324,19 +326,49 @@ class TelegramApi {
         break;
       case COMMAND_YES:
         console.log('YES:::');
-        if(messageFormClientToPartnerFull){
-        botApi.editMessageText(messageFormClientToPartnerFull, {
-          chat_id: chat.id,
-          message_id: message_id,
-          reply_markup: {inline_keyboard: process_step}
-        });
-      } else{
-        botApi.editMessageText('develop mode', {
-          chat_id: chat.id,
-          message_id: message_id,
-          reply_markup: {inline_keyboard: process_step}
-        });
-      }
+        console.log(idProcess);
+        console.log(chat.id);
+        if(chat.id ===idProcess){
+          console.log('******************');
+          if(messageFormClientToPartnerFull){
+            botApi.editMessageText(messageFormClientToPartnerFull, {
+              chat_id: chat.id,
+              message_id: message_id,
+              reply_markup: {inline_keyboard: process_step}
+            });
+            // MongoClient.connect(DATABASE_URL, function (err, db) {
+            //   if (err) throw err;
+            //   console.log('Connected to process collection established!');
+            //   let collection = db.collection('done_process');
+            //   try {
+            //     collection.insertOne(query, function (err, res) {
+            //       if (err) throw err;
+            //       // response.send({status: "Success"});
+            //       db.close();
+            //     })
+            //   }catch (e){console.log(e)}
+            // });
+            MongoClient.connect(DATABASE_URL, function (err, db) {
+              if (err) throw err;
+              console.log('Connected to process collection established!');
+              var collection = db.collection('process');
+              try {
+                collection.deleteOne( { "partner.chatId" :idProcess } , function (err, res) {
+                  if (err) throw err;
+                  // response.send({status: "Success"});
+                  db.close();
+                })
+              }catch (e){console.log(e)}
+            });
+          }
+
+        }else{
+          botApi.editMessageText('develop mode', {
+            chat_id: chat.id,
+            message_id: message_id,
+            reply_markup: {inline_keyboard: process_step}
+          });
+        }
 
         break;
       default:
