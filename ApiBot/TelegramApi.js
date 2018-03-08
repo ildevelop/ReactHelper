@@ -45,7 +45,7 @@ let MongoClient = mongo.MongoClient;
 let botApi = null;
 let messageFormClientToPartner = '';
 let messageFormClientToPartnerFull = '';
-let idProcess = '';
+let idProcess = [];
 
 class TelegramApi {
   constructor() {
@@ -122,8 +122,9 @@ class TelegramApi {
 
   messageToPartners(id, msg, msg2) {
     messageFormClientToPartner = msg;
+    console.log('messageFormClientToPartner', messageFormClientToPartner);
     messageFormClientToPartnerFull = msg2;
-    idProcess = id;
+    idProcess.push({"id": id, "messageFormClientToPartner": messageFormClientToPartner});
     botApi.sendMessage(id, msg, {
       reply_markup: {
         inline_keyboard
@@ -296,7 +297,7 @@ class TelegramApi {
 
   callback_query(query) {
     console.log('query', query);
-    const {message: {chat, message_id, text}} = query;
+    const {message: {chat, message_id, text },from:{id}} = query;
 
     switch (query.data) {
       case COMMAND_FORWARD:
@@ -334,6 +335,7 @@ class TelegramApi {
                 if (err) throw err;
                 findedProcess = res;
                 console.log('findOne', res);
+                //TODO need do filteer by proble + chatID
                 if (res._id) {
                   MongoClient.connect(DATABASE_URL, function (err, db) {
                     if (err) throw err;
@@ -377,22 +379,28 @@ class TelegramApi {
         break;
       case COMMAND_YES:
         console.log('YES:::');
-        if (chat.id === idProcess) {
-          console.log('******************');
-          if (messageFormClientToPartnerFull) {
-            botApi.editMessageText(messageFormClientToPartnerFull, {
-              chat_id: chat.id,
-              message_id: message_id,
-              reply_markup: {inline_keyboard: process_step}
-            });
-          }
-        } else {
-          botApi.editMessageText('develop mode', {
-            chat_id: chat.id,
-            message_id: message_id,
-            reply_markup: {inline_keyboard: process_step}
+        if (messageFormClientToPartnerFull) {
+          console.log('idProcess::::', idProcess);
+          console.log('message_id',id);
+          idProcess.map(idProc => {
+            console.log('if:::',idProc.id , id );
+            if( idProc.id === id){
+              console.log('COOOOOL!');
+              botApi.editMessageText(messageFormClientToPartnerFull, {
+                chat_id: chat.id,
+                message_id: message_id,
+                reply_markup: {inline_keyboard: process_step}
+              });
+            }else {
+              // botApi.deleteMessage(chat.id, message_id);
+              //TODO  need delete message from another user
+              botApi.sendMessage(idProc.id, 'Someone took  first. Process are closed you are miss!! next time' );
+            }
           });
+
+
         }
+
         break;
       default:
         botApi.sendMessage(chat.id, 'Wrong tipe')
