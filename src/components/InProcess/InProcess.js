@@ -66,14 +66,14 @@ class InProcess extends Component {
             style={style}
             onClick={this.deleteOneProcess.bind(this,process)}
           />
-          <RaisedButton
-            label="DONE"
-            backgroundColor="#388E3C"
-            labelColor="#fff"
-            icon={<Done/>}
-            style={style}
-            onClick={this.DoneOneProcess.bind(this,process)}
-          />
+          {/*<RaisedButton*/}
+            {/*label="DONE"*/}
+            {/*backgroundColor="#388E3C"*/}
+            {/*labelColor="#fff"*/}
+            {/*icon={<Done/>}*/}
+            {/*style={style}*/}
+            {/*onClick={this.DoneOneProcess.bind(this,process)}*/}
+          {/*/>*/}
         </div>]
 
     )

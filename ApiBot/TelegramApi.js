@@ -336,30 +336,38 @@ class TelegramApi {
               message_id: message_id,
               reply_markup: {inline_keyboard: process_step}
             });
-            MongoClient.connect(DATABASE_URL, function (err, db) {
-              if (err) throw err;
-              console.log('Connected to process collection established!');
-              let done_process = {"text": query.message.text, "from": query.from};
-              let collection = db.collection('done_process');
-              try {
-                collection.insertOne(done_process, function (err, res) {
-                  if (err) throw err;
-                  // response.send({status: "Success"});
-                  db.close();
-                })
-              }catch (e){console.log(e)}
-            });
+            let findedProcess = null;
             MongoClient.connect(DATABASE_URL, function (err, db) {
               if (err) throw err;
               console.log('Connected to process collection established!');
               var collection = db.collection('process');
               try {
+                collection.findOne( { "partner.chatId" :idProcess }).then((res,err) => {
+                  if (err) throw err;
+                  findedProcess = res;
+                  console.log('findOne',res);
+                  if(res._id){
+                    MongoClient.connect(DATABASE_URL, function (err, db) {
+                      if (err) throw err;
+                      console.log('Connected to process collection established!');
+                      let collection = db.collection('done_process');
+                      try {
+                        collection.insertOne(res, function (err, r) {
+                          if (err) throw err;
+                          // response.send({status: "Success"});
+                          db.close();
+                        })
+                      }catch (e){console.log(e)}
+                    });
+                  }
+                });
                 collection.deleteOne( { "partner.chatId" :idProcess } , function (err, res) {
                   if (err) throw err;
-                  // response.send({status: "Success"});
                   db.close();
                 })
               }catch (e){console.log(e)}
+              console.log('findedProcess',findedProcess);
+
             });
           }
 

@@ -20,24 +20,23 @@ class Done extends Component {
       <div>
         <div>
           <div>
-            {/*<div className="dateS">{process.data}</div>*/}
-            {/*<div className="dateF">{process.finish_data}</div>*/}
-
+            <div className="dateS">{process.data}</div>
+            <div className="dateF">{process.finish_data}</div>
             <h4>CLIENT:</h4>
-            <div>Full Name: {process.from.first_name} {process.from.last_name}</div>
-            {/*<div>Email: {process.client.email} </div>*/}
-            {/*<div>Phone: {process.client.phone_number} </div>*/}
-            {/*<div>City: {process.client.city} </div>*/}
-            {/*<div>Street: {process.client.address} </div>*/}
+            <div>Full Name: {process.client.fname} {process.client.sname}</div>
+            <div>Email: {process.client.email} </div>
+            <div>Phone: {process.client.phone_number} </div>
+            <div>City: {process.client.city} </div>
+            <div>Street: {process.client.address} </div>
           </div>
           <div className="partners">
-            {/*<h4>PARTNER:</h4>*/}
-            {/*{process.partner.map((partner,key) =>*/}
-                  {/*<div  key ={partner._id}>{key+1} - Full Name: {partner.fname} {partner.sname}</div>*/}
-              {/*)*/}
-            {/*}*/}
+            <h4>PARTNER:</h4>
+            {process.partner.map((partner,key) =>
+              <div key ={partner._id}>{key+1} - Full Name: {partner.fname} {partner.sname}</div>
+            )
+            }
           </div>
-          {/*<div><h4>PROBLEM: </h4>{process.problem} </div>*/}
+          <div><h4>PROBLEM: </h4>{process.problem} </div>
         </div>
         <div className="oneProcessButton">
           <RaisedButton
@@ -48,6 +47,7 @@ class Done extends Component {
             style={style}
             onClick={this.deleteOneProcess.bind(this,process)}
           />
+
         </div>
       </div>
     )
