@@ -336,18 +336,19 @@ class TelegramApi {
               message_id: message_id,
               reply_markup: {inline_keyboard: process_step}
             });
-            // MongoClient.connect(DATABASE_URL, function (err, db) {
-            //   if (err) throw err;
-            //   console.log('Connected to process collection established!');
-            //   let collection = db.collection('done_process');
-            //   try {
-            //     collection.insertOne(query, function (err, res) {
-            //       if (err) throw err;
-            //       // response.send({status: "Success"});
-            //       db.close();
-            //     })
-            //   }catch (e){console.log(e)}
-            // });
+            MongoClient.connect(DATABASE_URL, function (err, db) {
+              if (err) throw err;
+              console.log('Connected to process collection established!');
+              let done_process = {"text": query.message.text, "from": query.from};
+              let collection = db.collection('done_process');
+              try {
+                collection.insertOne(done_process, function (err, res) {
+                  if (err) throw err;
+                  // response.send({status: "Success"});
+                  db.close();
+                })
+              }catch (e){console.log(e)}
+            });
             MongoClient.connect(DATABASE_URL, function (err, db) {
               if (err) throw err;
               console.log('Connected to process collection established!');
