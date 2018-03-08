@@ -46,6 +46,7 @@ let botApi = null;
 let messageFormClientToPartner = '';
 let messageFormClientToPartnerFull = '';
 let idProcess = '';
+
 class TelegramApi {
   constructor() {
     this.api = null;
@@ -56,12 +57,12 @@ class TelegramApi {
     try {
       this.api = new TelegramBot(configApi.telegram.token, {polling: true});
       botApi = this.api;
-      this.api.on('callback_query',this.callback_query);
-      this.api.on('message',this.message);
-      this.api.onText(/\/keyboard (.+)/,this.keyboard);
-      this.api.onText(/\/add (.+)/,this.addPartnerToApi);
-      this.api.onText(/\/add_category (.+)/,this.addCategory);
-      this.api.onText(/\/delete (.+)/,this.deletePartner);
+      this.api.on('callback_query', this.callback_query);
+      this.api.on('message', this.message);
+      this.api.onText(/\/keyboard (.+)/, this.keyboard);
+      this.api.onText(/\/add (.+)/, this.addPartnerToApi);
+      this.api.onText(/\/add_category (.+)/, this.addCategory);
+      this.api.onText(/\/delete (.+)/, this.deletePartner);
 
     }
     catch (ex) {
@@ -119,16 +120,17 @@ class TelegramApi {
     }
   }
 
-  messageToPartners(id,msg, msg2){
+  messageToPartners(id, msg, msg2) {
     messageFormClientToPartner = msg;
     messageFormClientToPartnerFull = msg2;
-    idProcess=id;
-    botApi.sendMessage(id, msg,{
+    idProcess = id;
+    botApi.sendMessage(id, msg, {
       reply_markup: {
         inline_keyboard
       }
     });
   }
+
   keyboard(msg, match) {
     console.log('keyboard start');
     const {from: {id}} = msg;
@@ -158,13 +160,13 @@ class TelegramApi {
         break;
       case KEYBOARD_COMAND_INLINE:
         console.log('INLINE:');
-        if(messageFormClientToPartner){
+        if (messageFormClientToPartner) {
           botApi.sendMessage(id, messageFormClientToPartner, {
             reply_markup: {
               inline_keyboard
             }
           });
-        }else{
+        } else {
           botApi.sendMessage(id, 'Development mode', {
             reply_markup: {
               inline_keyboard
@@ -183,7 +185,7 @@ class TelegramApi {
     const {from: {id}} = msg;
     const resp = match[1]; // the captured "whatever"
     let arr = resp.split(' ');
-    console.log('arr',arr);
+    console.log('arr', arr);
     if (arr.length === 2) {
       let foundAccount;
       MongoClient.connect(DATABASE_URL, function (err, db) {
@@ -200,7 +202,7 @@ class TelegramApi {
           db.close();
           botApi.sendMessage(id, 'good! we added ' + arr[0] + ' ' + arr[1]);
         } catch (e) {
-          console.log('DB error',e);
+          console.log('DB error', e);
           botApi.sendMessage(id, 'wrong name, please resent the full name of partner ! first name & second name');
         }
 
@@ -268,21 +270,22 @@ class TelegramApi {
       botApi.sendMessage(id, 'wrong name, please resent the categories! in one string');
     }
   }
-  message(msg){
+
+  message(msg) {
     const {from: {id}} = msg;
     // bot.sendMessage(id, msg.text);
-    console.log("msg here::::",msg);
-    if(msg.photo){
+    console.log("msg here::::", msg);
+    if (msg.photo) {
       let photoFormUser = '';
 
       console.log("PHOTO");
-      botApi.getFile( msg.photo[3].file_id).then((res) => {
+      botApi.getFile(msg.photo[3].file_id).then((res) => {
         photoFormUser = res.file_path;
         let file = fs.createWriteStream(`./${res.file_path}`);
         let request = http.get(`https://api.telegram.org/file/bot${configApi.telegram.token}/${photoFormUser}`, function (response) {
           response.pipe(file);
         });
-        console.log('request:::::::>',request);
+        console.log('request:::::::>', request);
 
       });
     }
@@ -291,7 +294,7 @@ class TelegramApi {
     }
   }
 
-  callback_query(query){
+  callback_query(query) {
     console.log('query', query);
     const {message: {chat, message_id, text}} = query;
 
@@ -317,71 +320,82 @@ class TelegramApi {
       case COMMAND_FINISH:
         botApi.deleteMessage(chat.id, message_id);
         let file = fs.readFileSync('./ApiBot/sss.jpg');
-        const fileOpts = {
-          filename : 'sss',
-          contentType : 'image/jpeg'
-        };
-        botApi.sendPhoto(chat.id,file,{},fileOpts);
-        botApi.sendMessage(chat.id, 'Good job !!! ');
-        break;
-      case COMMAND_YES:
-        console.log('YES:::');
         console.log(idProcess);
         console.log(chat.id);
-        if(chat.id ===idProcess){
+        if (chat.id === idProcess) {
           console.log('******************');
-          if(messageFormClientToPartnerFull){
-            botApi.editMessageText(messageFormClientToPartnerFull, {
-              chat_id: chat.id,
-              message_id: message_id,
-              reply_markup: {inline_keyboard: process_step}
-            });
-            let findedProcess = null;
-            MongoClient.connect(DATABASE_URL, function (err, db) {
-              if (err) throw err;
-              console.log('Connected to process collection established!');
-              var collection = db.collection('process');
-              try {
-                collection.findOne( { "partner.chatId" :idProcess }).then((res,err) => {
-                  if (err) throw err;
-                  findedProcess = res;
-                  console.log('findOne',res);
-                  if(res._id){
-                    MongoClient.connect(DATABASE_URL, function (err, db) {
-                      if (err) throw err;
-                      console.log('Connected to process collection established!');
-                      let collection = db.collection('done_process');
-                      try {
-                        collection.insertOne(res, function (err, r) {
-                          if (err) throw err;
-                          // response.send({status: "Success"});
-                          db.close();
-                        })
-                      }catch (e){console.log(e)}
-                    });
-                  }
-                });
-                collection.deleteOne( { "partner.chatId" :idProcess } , function (err, res) {
-                  if (err) throw err;
-                  db.close();
-                })
-              }catch (e){console.log(e)}
-              console.log('findedProcess',findedProcess);
+          let findedProcess = null;
+          MongoClient.connect(DATABASE_URL, function (err, db) {
+            if (err) throw err;
+            console.log('Connected to process collection established!');
+            var collection = db.collection('process');
+            try {
+              collection.findOne({"partner.chatId": idProcess}).then((res, err) => {
+                if (err) throw err;
+                findedProcess = res;
+                console.log('findOne', res);
+                if (res._id) {
+                  MongoClient.connect(DATABASE_URL, function (err, db) {
+                    if (err) throw err;
+                    console.log('Connected to process collection established!');
+                    let collection = db.collection('done_process');
+                    try {
+                      collection.insertOne(res, function (err, r) {
+                        if (err) throw err;
+                        // response.send({status: "Success"});
+                        db.close();
+                      })
+                    } catch (e) {
+                      console.log(e)
+                    }
+                  });
+                }
+              });
+              collection.deleteOne({"partner.chatId": idProcess}, function (err, res) {
+                if (err) throw err;
+                db.close();
+              })
+            } catch (e) {
+              console.log(e)
+            }
+            console.log('findedProcess', findedProcess);
+          });
 
-            });
-          }
-
-        }else{
+        } else {
           botApi.editMessageText('develop mode', {
             chat_id: chat.id,
             message_id: message_id,
             reply_markup: {inline_keyboard: process_step}
           });
         }
-
+        const fileOpts = {
+          filename: 'sss',
+          contentType: 'image/jpeg'
+        };
+        botApi.sendPhoto(chat.id, file, {}, fileOpts);
+        botApi.sendMessage(chat.id, 'Good job !!! ');
+        break;
+      case COMMAND_YES:
+        console.log('YES:::');
+        if (chat.id === idProcess) {
+          console.log('******************');
+          if (messageFormClientToPartnerFull) {
+            botApi.editMessageText(messageFormClientToPartnerFull, {
+              chat_id: chat.id,
+              message_id: message_id,
+              reply_markup: {inline_keyboard: process_step}
+            });
+          }
+        } else {
+          botApi.editMessageText('develop mode', {
+            chat_id: chat.id,
+            message_id: message_id,
+            reply_markup: {inline_keyboard: process_step}
+          });
+        }
         break;
       default:
-          botApi.sendMessage(chat.id, 'Wrong tipe')
+        botApi.sendMessage(chat.id, 'Wrong tipe')
 
     }
     botApi.answerCallbackQuery({callback_query_id: query.id})
