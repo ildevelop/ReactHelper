@@ -321,9 +321,10 @@ class TelegramApi {
       case COMMAND_FINISH:
         botApi.deleteMessage(chat.id, message_id);
         let file = fs.readFileSync('./ApiBot/sss.jpg');
-        console.log(idProcess);
-        console.log(chat.id);
-        if (chat.id === idProcess) {
+        console.log('idProcess:::',idProcess);
+        console.log('chat.id::::',chat.id);
+        idProcess.map(process => {
+        if (chat.id === process.id) {
           console.log('******************');
           let findedProcess = null;
           MongoClient.connect(DATABASE_URL, function (err, db) {
@@ -331,12 +332,14 @@ class TelegramApi {
             console.log('Connected to process collection established!');
             var collection = db.collection('process');
             try {
-              collection.findOne({"partner.chatId": idProcess}).then((res, err) => {
+              collection.findOne({"partner.chatId": process.id}).then((res, err) => {
                 if (err) throw err;
                 findedProcess = res;
                 console.log('findOne', res);
-                //TODO need do filteer by proble + chatID
-                if (res._id) {
+                console.log('process::::::::', process.messageFormClientToPartner);
+                console.log('problem::::::::', res.problem);
+                if (process.messageFormClientToPartner.includes(res.problem)) {
+                  console.log('INCLUDE PROBLEM !!!!!!!!!!!!!!!!');
                   MongoClient.connect(DATABASE_URL, function (err, db) {
                     if (err) throw err;
                     console.log('Connected to process collection established!');
@@ -348,12 +351,14 @@ class TelegramApi {
                         db.close();
                       })
                     } catch (e) {
-                      console.log(e)
+                      console.log('ERROR:::',e)
                     }
                   });
                 }
+                else {
+                  console.log('WTF');}
               });
-              collection.deleteOne({"partner.chatId": idProcess}, function (err, res) {
+              collection.deleteOne({"partner.chatId": process.id}, function (err, res) {
                 if (err) throw err;
                 db.close();
               })
@@ -374,8 +379,9 @@ class TelegramApi {
           filename: 'sss',
           contentType: 'image/jpeg'
         };
-        botApi.sendPhoto(chat.id, file, {}, fileOpts);
+        // botApi.sendPhoto(chat.id, file, {}, fileOpts);
         botApi.sendMessage(chat.id, 'Good job !!! ');
+        });
         break;
       case COMMAND_YES:
         console.log('YES:::');
