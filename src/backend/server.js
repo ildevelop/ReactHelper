@@ -8,11 +8,9 @@ let mongo = require('mongodb');
 const MainServer = require('./MainServer.js');
 // Incert One to DB
 let MongoClient = mongo.MongoClient;
-// import MainServer from './MainServer.js';
 const config = require('../../webpack.config');
 let url = 'mongodb://localhost:27017/test12';
 const port = 3000;
-const configApi = require('../../ApiBot/conf.json');
 const hostname = 'localhost';
 const telagramBotApi = require('../../ApiBot/TelegramApi');
 
@@ -40,13 +38,15 @@ const getExpressApplication = (application) => {
         if (err) throw err;
         console.log('Connected to DB established!');
         var collection = db.collection('clients');
-        try{
+        try {
           collection.find().toArray(function (err, res) {
             if (err) throw err;
             response.json(res);
             db.close();
           })
-        }catch (e) {console.log(e)}
+        } catch (e) {
+          console.log(e)
+        }
 
       });
     }
@@ -60,13 +60,15 @@ const getExpressApplication = (application) => {
         if (err) throw err;
         console.log('Connected to DB established!');
         var collection = db.collection('partners');
-        try{
+        try {
           collection.find().toArray(function (err, res) {
             if (err) throw err;
             response.json(res);
             db.close();
           })
-        }catch (e){console.log(e)}
+        } catch (e) {
+          console.log(e)
+        }
 
       });
     }
@@ -85,13 +87,15 @@ const getExpressApplication = (application) => {
         if (err) throw err;
         console.log('Connected to DB established!');
         var collection = db.collection('clients');
-        try{
+        try {
           collection.insertOne(client, function (err, res) {
             if (err) throw err;
             response.send({status: "Success"});
             db.close();
           })
-        }catch (e){console.log(e)}
+        } catch (e) {
+          console.log(e)
+        }
       });
 
     }
@@ -114,10 +118,10 @@ const getExpressApplication = (application) => {
             response.send({status: "Success"});
             db.close();
           })
-        }catch (e){console.log(e)}
-
+        } catch (e) {
+          console.log(e)
+        }
       });
-
     }
     else {
       response.send(401, JSON.stringify({'status': 'wrong Partners!!'}));
@@ -126,8 +130,8 @@ const getExpressApplication = (application) => {
   application.post('/send_message', function (req, response) {
     response.setHeader('Content-Type', 'application/json');
     let message = req.body['message'];
-    console.log('message', message);
     if (message) {
+      let processId = null;
       MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         console.log('Connected to DB established!');
@@ -135,45 +139,43 @@ const getExpressApplication = (application) => {
         try {
           collection.insertOne(message, function (err, res) {
             if (err) throw err;
-            // response.send({status: "Success"});
+            processId = res.ops[0]._id;
             db.close();
+            let msg = '';
+            let fields = [
+              'CLIENT: ' + message.client.fname + ' ' + message.client.sname,
+              '  city:' + message.client.city,
+              'PROBLEM:' + message.problem,
+            ];
+            //проходимся по массиву и склеиваем все в одну строку
+            fields.forEach(field => {
+              msg += field + '\n'
+            });
+            if (processId) {
+              let msg2 = '';
+              let fields2 = [
+                'id:' + processId,
+                'CLIENT: ' + message.client.fname + ' ' + message.client.sname,
+                '  city:' + message.client.city,
+                '  zip:' + message.client.zipp,
+                '  address:' + message.client.address,
+                '  Phone:' + message.client.phone_number,
+                'PROBLEM:' + message.problem,
+              ];
+              fields2.forEach(field => {
+                msg2 += field + '\n'
+              });
+              for (let i in message.partner) {
+                if (message.partner[i].chatId) {
+                  telegramApi.messageToPartners(message.partner[i].chatId, msg, msg2);
+                }
+              }
+            }
           })
-        }catch (e){console.log(e)}
-
-      });
-
-      let fields = [
-        'CLIENT: ' + message.client.fname + ' ' + message.client.sname,
-        '  city:' + message.client.city,
-        'PROBLEM:' + message.problem,
-      ];
-
-      let fields2 = [
-        'CLIENT: ' + message.client.fname + ' ' + message.client.sname,
-        '  city:' + message.client.city,
-        '  zip:' + message.client.zipp,
-        '  address:' + message.client.address,
-        '  Phone:' + message.client.phone_number,
-        'PROBLEM:' + message.problem,
-      ];
-      let msg  = '';
-      let msg2  = '';
-      fields2.forEach(field => {
-        msg2 += field + '\n'
-      });
-      //проходимся по массиву и склеиваем все в одну строку
-      fields.forEach(field => {
-        msg += field + '\n'
-      });
-      //кодируем результат в текст, понятный адресной строке
-      var stam2 = msg;
-      var msgRH = encodeURI(msg);
-      // http.post(`https://api.telegram.org/bot${configApi.telegram.token}/sendMessage?chat_id=${configApi.telegram.chat}&parse_mode=html&text=${msg}`, function (error, res, body) {});
-      for( let i in message.partner){
-        if( message.partner[i].chatId){
-          telegramApi.messageToPartners(message.partner[i].chatId,msg,msg2);
+        } catch (e) {
+          console.log(e)
         }
-      }
+      });
       response.send({status: "Success"});
     }
     else {
@@ -184,21 +186,23 @@ const getExpressApplication = (application) => {
   application.post('/delete_process', function (req, response) {
     response.setHeader('Content-Type', 'application/json');
     let process = req.body['process'];
-    console.log('processServer:',process);
-    if(process){
+    console.log('processServer:', process);
+    if (process) {
       MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         console.log('Connected to process collection established!');
         var collection = db.collection('process');
         try {
-          collection.deleteOne( { "_id" : new mongo.ObjectID(process._id) } , function (err, res) {
+          collection.deleteOne({"_id": new mongo.ObjectID(process._id)}, function (err, res) {
             if (err) throw err;
             // response.send({status: "Success"});
             db.close();
           })
-        }catch (e){console.log(e)}
+        } catch (e) {
+          console.log(e)
+        }
       });
-    }else {
+    } else {
       response.send(401, JSON.stringify({'status': 'wrong Partners!!'}));
     }
     response.send({status: "Success"});
@@ -206,21 +210,23 @@ const getExpressApplication = (application) => {
   application.post('/delete_done_process', function (req, response) {
     response.setHeader('Content-Type', 'application/json');
     var done_process = req.body['done_process'];
-    console.log("DONE processID",done_process);
-    if(done_process){
+    console.log("DONE processID", done_process);
+    if (done_process) {
       MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         console.log('Connected to Done process collection established!');
         var collection = db.collection('done_process');
         try {
-          collection.deleteOne( { "_id" :   new mongo.ObjectID(done_process._id) } , function (err, res) {
+          collection.deleteOne({"_id": new mongo.ObjectID(done_process._id)}, function (err, res) {
             if (err) throw err;
             // response.send({status: "Success"});
             db.close();
           })
-        }catch (e){console.log(e)}
+        } catch (e) {
+          console.log(e)
+        }
       });
-    }else {
+    } else {
       response.send(401, JSON.stringify({'status': 'wrong Partners!!'}));
     }
     response.send({status: "Success"});
@@ -228,8 +234,8 @@ const getExpressApplication = (application) => {
   application.post('/done_process', function (req, response) {
     response.setHeader('Content-Type', 'application/json');
     let done_process = req.body['done_pr'];
-    console.log('done_process:',done_process);
-    if(done_process){
+    console.log('done_process:', done_process);
+    if (done_process) {
       MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         console.log('Connected to process collection established!');
@@ -240,9 +246,11 @@ const getExpressApplication = (application) => {
             // response.send({status: "Success"});
             db.close();
           })
-        }catch (e){console.log(e)}
+        } catch (e) {
+          console.log(e)
+        }
       });
-    }else {
+    } else {
       response.send(401, JSON.stringify({'status': 'wrong Partners!!'}));
     }
     response.send({status: "Success"});
@@ -253,13 +261,15 @@ const getExpressApplication = (application) => {
         if (err) throw err;
         console.log('Connected to process collection established!');
         var collection = db.collection('process');
-        try{
+        try {
           collection.find().toArray(function (err, res) {
             if (err) throw err;
             response.json(res);
             db.close();
           })
-        }catch (e){console.log(e)}
+        } catch (e) {
+          console.log(e)
+        }
       });
     }
     else {
@@ -272,13 +282,15 @@ const getExpressApplication = (application) => {
         if (err) throw err;
         console.log('Connected to collection done established!');
         var collection = db.collection('done_process');
-        try{
+        try {
           collection.find().toArray(function (err, res) {
             if (err) throw err;
             response.json(res);
             db.close();
           })
-        }catch (e){console.log(e)}
+        } catch (e) {
+          console.log(e)
+        }
       });
     }
     else {
@@ -291,13 +303,15 @@ const getExpressApplication = (application) => {
         if (err) throw err;
         console.log('Connected to collection categories established!');
         var collection = db.collection('categories');
-        try{
+        try {
           collection.find().toArray(function (err, res) {
             if (err) throw err;
             response.json(res);
             db.close();
           })
-        }catch (e){console.log(e)}
+        } catch (e) {
+          console.log(e)
+        }
       });
     }
     else {

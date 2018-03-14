@@ -297,7 +297,7 @@ class TelegramApi {
 
   callback_query(query) {
     console.log('query', query);
-    const {message: {chat, message_id, text },from:{id}} = query;
+    const {message: {chat, message_id, text}, from: {id}} = query;
 
     switch (query.data) {
       case COMMAND_FORWARD:
@@ -321,87 +321,102 @@ class TelegramApi {
       case COMMAND_FINISH:
         botApi.deleteMessage(chat.id, message_id);
         let file = fs.readFileSync('./ApiBot/sss.jpg');
-        console.log('idProcess:::',idProcess);
-        console.log('chat.id::::',chat.id);
+        console.log('idProcess:::', idProcess);
+        console.log('chat.id::::', chat.id);
         idProcess.map(process => {
-        if (chat.id === process.id) {
-          console.log('******************');
-          let findedProcess = null;
-          MongoClient.connect(DATABASE_URL, function (err, db) {
-            if (err) throw err;
-            console.log('Connected to process collection established!');
-            var collection = db.collection('process');
-            try {
-              collection.findOne({"partner.chatId": process.id}).then((res, err) => {
-                if (err) throw err;
-                findedProcess = res;
-                console.log('findOne', res);
-                console.log('process::::::::', process.messageFormClientToPartner);
-                console.log('problem::::::::', res.problem);
-                if (process.messageFormClientToPartner.includes(res.problem)) {
-                  console.log('INCLUDE PROBLEM !!!!!!!!!!!!!!!!');
-                  MongoClient.connect(DATABASE_URL, function (err, db) {
-                    if (err) throw err;
-                    console.log('Connected to process collection established!');
-                    let collection = db.collection('done_process');
-                    try {
-                      collection.insertOne(res, function (err, r) {
-                        if (err) throw err;
-                        // response.send({status: "Success"});
-                        db.close();
-                      })
-                    } catch (e) {
-                      console.log('ERROR:::',e)
-                    }
-                  });
-                }
-                else {
-                  console.log('WTF');}
-              });
-              collection.deleteOne({"partner.chatId": process.id}, function (err, res) {
-                if (err) throw err;
-                db.close();
-              })
-            } catch (e) {
-              console.log(e)
-            }
-            console.log('findedProcess', findedProcess);
-          });
+          if (chat.id === process.id) {
+            console.log('******************');
+            let findedProcess = null;
+            MongoClient.connect(DATABASE_URL, function (err, db) {
+              if (err) throw err;
+              console.log('Connected to process collection established!');
+              var collection = db.collection('process');
+              try {
+                collection.findOne({"partner.chatId": process.id}).then((res, err) => {
+                  if (err) throw err;
+                  findedProcess = res;
+                  console.log('findOne', res);
+                  console.log('process::::::::', process.messageFormClientToPartner);
+                  console.log('problem::::::::', res.problem);
+                  if (process.messageFormClientToPartner.includes(res.problem)) {
+                    console.log('INCLUDE PROBLEM !!!!!!!!!!!!!!!!');
+                    MongoClient.connect(DATABASE_URL, function (err, db) {
+                      if (err) throw err;
+                      console.log('Connected to process collection established!');
+                      let collection = db.collection('done_process');
+                      try {
+                        collection.insertOne(res, function (err, r) {
+                          if (err) throw err;
+                          // response.send({status: "Success"});
+                          db.close();
+                        })
+                      } catch (e) {
+                        console.log('ERROR:::', e)
+                      }
+                    });
+                  }
+                  else {
+                    console.log('WTF');
+                  }
+                });
+                collection.deleteOne({"partner.chatId": process.id}, function (err, res) {
+                  if (err) throw err;
+                  db.close();
+                })
+              } catch (e) {
+                console.log(e)
+              }
+              console.log('findedProcess', findedProcess);
+            });
 
-        } else {
-          botApi.editMessageText('develop mode', {
-            chat_id: chat.id,
-            message_id: message_id,
-            reply_markup: {inline_keyboard: process_step}
-          });
-        }
-        const fileOpts = {
-          filename: 'sss',
-          contentType: 'image/jpeg'
-        };
-        // botApi.sendPhoto(chat.id, file, {}, fileOpts);
-        botApi.sendMessage(chat.id, 'Good job !!! ');
+          } else {
+            botApi.editMessageText('develop mode', {
+              chat_id: chat.id,
+              message_id: message_id,
+              reply_markup: {inline_keyboard: process_step}
+            });
+          }
+          const fileOpts = {
+            filename: 'sss',
+            contentType: 'image/jpeg'
+          };
+          // botApi.sendPhoto(chat.id, file, {}, fileOpts);
+          botApi.sendMessage(chat.id, 'Good job !!! ');
         });
         break;
       case COMMAND_YES:
         console.log('YES:::');
         if (messageFormClientToPartnerFull) {
           console.log('idProcess::::', idProcess);
-          console.log('message_id',id);
+          console.log('message_id', id);
           idProcess.map(idProc => {
-            console.log('idProc.messageFormClientToPartner:::',idProc.messageFormClientToPartner);
-            console.log('TEXT:::',text);
-            if( idProc.id === id && idProc.messageFormClientToPartner.includes(text)){
+            console.log('idProc.messageFormClientToPartner:::', idProc.messageFormClientToPartner);
+            console.log('TEXT:::', text);
+            if (idProc.id === id && idProc.messageFormClientToPartner.includes(text)) {
               console.log('COOOOOL!');
+              MongoClient.connect(DATABASE_URL, function (err, db) {
+                if (err) throw err;
+                try {
+                  db.collection('partners').findOneAndUpdate({
+                      chatId:id
+                    }, {$set: {'work_process_id': text}},
+                    {
+                      returnNewDocument: true,
+                    });
+                  db.close();
+                } catch (e) {
+                  console.log('ERROR:::', e);
+                }
+              });
               botApi.editMessageText(messageFormClientToPartnerFull, {
                 chat_id: chat.id,
                 message_id: message_id,
                 reply_markup: {inline_keyboard: process_step}
               });
-            }else {
+            } else {
               //TODO  need delete message from another user
-              if(idProc.messageFormClientToPartner.includes(text)){
-                botApi.sendMessage(idProc.id, 'Someone took  first. Process are closed you are miss!! next time' );
+              if (idProc.messageFormClientToPartner.includes(text)) {
+                botApi.sendMessage(idProc.id, 'Someone took  first. Process are closed you are miss!! next time');
                 botApi.deleteMessage(chat.id, message_id);
 
               }
