@@ -389,8 +389,9 @@ class TelegramApi {
           console.log('idProcess::::', idProcess);
           console.log('message_id',id);
           idProcess.map(idProc => {
-            console.log('if:::',idProc.id , id );
-            if( idProc.id === id){
+            console.log('idProc.messageFormClientToPartner:::',idProc.messageFormClientToPartner);
+            console.log('TEXT:::',text);
+            if( idProc.id === id && idProc.messageFormClientToPartner.includes(text)){
               console.log('COOOOOL!');
               botApi.editMessageText(messageFormClientToPartnerFull, {
                 chat_id: chat.id,
@@ -400,7 +401,8 @@ class TelegramApi {
             }else {
               // botApi.deleteMessage(chat.id, message_id);
               //TODO  need delete message from another user
-              botApi.sendMessage(idProc.id, 'Someone took  first. Process are closed you are miss!! next time' );
+              if(idProc.messageFormClientToPartner.includes(text))
+                botApi.sendMessage(idProc.id, 'Someone took  first. Process are closed you are miss!! next time' );
             }
           });
 
