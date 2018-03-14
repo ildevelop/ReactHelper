@@ -213,7 +213,7 @@ const getExpressApplication = (application) => {
         console.log('Connected to Done process collection established!');
         var collection = db.collection('done_process');
         try {
-          collection.deleteOne( { "_id" : done_process._id } , function (err, res) {
+          collection.deleteOne( { "_id" :   new mongo.ObjectID(done_process._id) } , function (err, res) {
             if (err) throw err;
             // response.send({status: "Success"});
             db.close();

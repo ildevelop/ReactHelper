@@ -399,10 +399,13 @@ class TelegramApi {
                 reply_markup: {inline_keyboard: process_step}
               });
             }else {
-              // botApi.deleteMessage(chat.id, message_id);
               //TODO  need delete message from another user
-              if(idProc.messageFormClientToPartner.includes(text))
+              if(idProc.messageFormClientToPartner.includes(text)){
                 botApi.sendMessage(idProc.id, 'Someone took  first. Process are closed you are miss!! next time' );
+                botApi.deleteMessage(chat.id, message_id);
+
+              }
+
             }
           });
 
