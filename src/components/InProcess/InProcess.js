@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import Done from 'material-ui/svg-icons/action/done';
 import Delete from 'material-ui/svg-icons/action/delete';
 import './InProcess.scss'
-import { bindActionCreators } from 'redux';
+import {bindActionCreators} from 'redux';
 import * as mainActions from '../../Actions/MainActions';
 
 const style = {
@@ -13,16 +13,18 @@ const style = {
 
 class InProcess extends Component {
 
-  deleteOneProcess(pr){
+  deleteOneProcess(pr) {
     this.props.deleteProcess(pr);
   }
+
   addZero = (i) => {
     if (i < 10) {
       i = "0" + i;
     }
     return i;
   };
-  DoneOneProcess(pr){
+
+  DoneOneProcess(pr) {
     let today = new Date();
     let h = this.addZero(today.getHours());
     let m = this.addZero(today.getMinutes());
@@ -50,8 +52,14 @@ class InProcess extends Component {
           </div>
           <div className="partners">
             <h4>PARTNER:</h4>
-            {process.partner.map((partner,key) =>
-                  <div key ={partner._id} style={partner.work_process_id ? {color: '#388E3C'} : {color: '#000'}}>{key+1} - Full Name: {partner.fname} {partner.sname}</div>
+            {process.partner.map((partner, key) => {
+              console.log('partner.work_process_id',partner.work_process_id);
+              console.log('process._id',process._id);
+              return <div key={partner._id}
+                            style={partner.chatId === process.partnerStarted ? {color: '#388E3C'} : {color: '#000'}}>{key + 1}
+                  - Full Name: {partner.fname} {partner.sname}</div>
+
+              }
             )
             }
           </div>
@@ -64,15 +72,15 @@ class InProcess extends Component {
             backgroundColor="#E53935"
             labelColor="#fff"
             style={style}
-            onClick={this.deleteOneProcess.bind(this,process)}
+            onClick={this.deleteOneProcess.bind(this, process)}
           />
           {/*<RaisedButton*/}
-            {/*label="DONE"*/}
-            {/*backgroundColor="#388E3C"*/}
-            {/*labelColor="#fff"*/}
-            {/*icon={<Done/>}*/}
-            {/*style={style}*/}
-            {/*onClick={this.DoneOneProcess.bind(this,process)}*/}
+          {/*label="DONE"*/}
+          {/*backgroundColor="#388E3C"*/}
+          {/*labelColor="#fff"*/}
+          {/*icon={<Done/>}*/}
+          {/*style={style}*/}
+          {/*onClick={this.DoneOneProcess.bind(this,process)}*/}
           {/*/>*/}
         </div>]
 

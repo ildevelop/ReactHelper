@@ -120,11 +120,11 @@ class TelegramApi {
     }
   }
 
-  messageToPartners(id, msg, msg2) {
+  messageToPartners(id, msg, msg2,workProcessId) {
     messageFormClientToPartner = msg;
     console.log('messageFormClientToPartner', messageFormClientToPartner);
     messageFormClientToPartnerFull = msg2;
-    idProcess.push({"id": id, "messageFormClientToPartner": messageFormClientToPartner});
+    idProcess.push({"id": id, "messageFormClientToPartner": messageFormClientToPartner ,"workProcessId":workProcessId});
     botApi.sendMessage(id, msg, {
       reply_markup: {
         inline_keyboard
@@ -391,7 +391,7 @@ class TelegramApi {
           console.log('message_id', id);
           idProcess.map(idProc => {
             console.log('idProc.messageFormClientToPartner:::', idProc.messageFormClientToPartner);
-            console.log('TEXT:::', text);
+            console.log('workProcessId:::', idProc.workProcessId);
             if (idProc.id === id && idProc.messageFormClientToPartner.includes(text)) {
               console.log('COOOOOL!');
               MongoClient.connect(DATABASE_URL, function (err, db) {
@@ -399,7 +399,13 @@ class TelegramApi {
                 try {
                   db.collection('partners').findOneAndUpdate({
                       chatId:id
-                    }, {$set: {'work_process_id': text}},
+                    }, {$set: {'work_process_id':  idProc.workProcessId}},
+                    {
+                      returnNewDocument: true,
+                    });
+                  db.collection('process').findOneAndUpdate({
+                      _id:idProc.workProcessId
+                    }, {$set: {'partnerStarted':  id}},
                     {
                       returnNewDocument: true,
                     });

@@ -154,7 +154,6 @@ const getExpressApplication = (application) => {
             if (processId) {
               let msg2 = '';
               let fields2 = [
-                'id:' + processId,
                 'CLIENT: ' + message.client.fname + ' ' + message.client.sname,
                 '  city:' + message.client.city,
                 '  zip:' + message.client.zipp,
@@ -167,7 +166,7 @@ const getExpressApplication = (application) => {
               });
               for (let i in message.partner) {
                 if (message.partner[i].chatId) {
-                  telegramApi.messageToPartners(message.partner[i].chatId, msg, msg2);
+                  telegramApi.messageToPartners(message.partner[i].chatId, msg, msg2,processId);
                 }
               }
             }
