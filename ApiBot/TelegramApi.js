@@ -120,11 +120,15 @@ class TelegramApi {
     }
   }
 
-  messageToPartners(id, msg, msg2,workProcessId) {
+  messageToPartners(id, msg, msg2, workProcessId) {
     messageFormClientToPartner = msg;
     console.log('messageFormClientToPartner', messageFormClientToPartner);
     messageFormClientToPartnerFull = msg2;
-    idProcess.push({"id": id, "messageFormClientToPartner": messageFormClientToPartner ,"workProcessId":workProcessId});
+    idProcess.push({
+      "id": id,
+      "messageFormClientToPartner": messageFormClientToPartner,
+      "workProcessId": workProcessId
+    });
     botApi.sendMessage(id, msg, {
       reply_markup: {
         inline_keyboard
@@ -354,6 +358,21 @@ class TelegramApi {
                         console.log('ERROR:::', e)
                       }
                     });
+                    //TODO need  remove from partner.work_process_id the id of process
+                    // MongoClient.connect(DATABASE_URL, function (err, db) {
+                    //   if (err) throw err;
+                    //   try {
+                    //     db.collection("partners").findOneAndUpdate({
+                    //         work_process_id: process.messageFormClientToPartner,
+                    //       }, {$pull: {"work_process_id": process.messageFormClientToPartner}},
+                    //       {
+                    //         returnNewDocument: true,
+                    //       });
+                    //     db.close();
+                    //   } catch (e) {
+                    //     console.log('DB error', e);
+                    //   }
+                    // });
                   }
                   else {
                     console.log('WTF');
@@ -383,6 +402,7 @@ class TelegramApi {
           // botApi.sendPhoto(chat.id, file, {}, fileOpts);
           botApi.sendMessage(chat.id, 'Good job !!! ');
         });
+        idProcess = idProcess.filter(proc => text.search(proc.workProcessId) !== -1);
         break;
       case COMMAND_YES:
         console.log('YES:::');
@@ -398,14 +418,14 @@ class TelegramApi {
                 if (err) throw err;
                 try {
                   db.collection('partners').findOneAndUpdate({
-                      chatId:id
-                    }, {$set: {'work_process_id':  idProc.workProcessId}},
+                    chatId:id
+                    }, {$addToSet: {'work_process_id': idProc.workProcessId}},
                     {
                       returnNewDocument: true,
                     });
                   db.collection('process').findOneAndUpdate({
-                      _id:idProc.workProcessId
-                    }, {$set: {'partnerStarted':  id}},
+                      _id: idProc.workProcessId
+                    }, {$set: {'partnerStarted': id}},
                     {
                       returnNewDocument: true,
                     });

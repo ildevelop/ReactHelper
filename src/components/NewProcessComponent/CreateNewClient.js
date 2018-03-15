@@ -33,6 +33,7 @@ class CreateNewClient extends React.Component {
       }
       else {
         formData["category"] = this.state.value;
+        formData["work_process_id"] = [];
         this.props.addPartner(formData);
         this.props.handleDialog(false);
       }

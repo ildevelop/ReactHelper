@@ -143,6 +143,7 @@ const getExpressApplication = (application) => {
             db.close();
             let msg = '';
             let fields = [
+              'id: ' + processId,
               'CLIENT: ' + message.client.fname + ' ' + message.client.sname,
               '  city:' + message.client.city,
               'PROBLEM:' + message.problem,
