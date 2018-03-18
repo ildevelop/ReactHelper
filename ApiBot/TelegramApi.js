@@ -40,6 +40,8 @@ const process_step = [
     }
   ]
 ];
+const FILTER_PROBLEM =  /PROBLEM:[a-zA-Z 1-9]*/;
+
 let mongo = require('mongodb');
 let MongoClient = mongo.MongoClient;
 let botApi = null;
@@ -326,21 +328,23 @@ class TelegramApi {
         botApi.deleteMessage(chat.id, message_id);
         let file = fs.readFileSync('./ApiBot/sss.jpg');
         console.log('idProcess:::', idProcess);
-        console.log('chat.id::::', chat.id);
         idProcess.map(process => {
-          if (chat.id === process.id) {
+          if (chat.id === process.id  && process.messageFormClientToPartner.includes(text)) {
             console.log('******************');
             let findedProcess = null;
             MongoClient.connect(DATABASE_URL, function (err, db) {
               if (err) throw err;
               console.log('Connected to process collection established!');
+              let problemS = process.messageFormClientToPartner.match(FILTER_PROBLEM);
+              console.log('findOne', problemS);
+              let cleanProblem = problemS[0].replace(/PROBLEM:/g,'');
+              console.log('findOne2', cleanProblem);
+
               var collection = db.collection('process');
               try {
-                collection.findOne({"partner.chatId": process.id}).then((res, err) => {
+                collection.findOne({"problem": cleanProblem}).then((res, err) => {
                   if (err) throw err;
                   findedProcess = res;
-                  console.log('findOne', res);
-                  console.log('process::::::::', process.messageFormClientToPartner);
                   console.log('problem::::::::', res.problem);
                   if (process.messageFormClientToPartner.includes(res.problem)) {
                     console.log('INCLUDE PROBLEM !!!!!!!!!!!!!!!!');
@@ -378,7 +382,7 @@ class TelegramApi {
                     console.log('WTF');
                   }
                 });
-                collection.deleteOne({"partner.chatId": process.id}, function (err, res) {
+                collection.deleteOne({"problem": cleanProblem}, function (err, res) {
                   if (err) throw err;
                   db.close();
                 })
@@ -387,7 +391,8 @@ class TelegramApi {
               }
               console.log('findedProcess', findedProcess);
             });
-
+            idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId );
+            botApi.sendMessage(chat.id, 'Good job !!! ');
           } else {
             botApi.editMessageText('develop mode', {
               chat_id: chat.id,
@@ -400,9 +405,8 @@ class TelegramApi {
             contentType: 'image/jpeg'
           };
           // botApi.sendPhoto(chat.id, file, {}, fileOpts);
-          botApi.sendMessage(chat.id, 'Good job !!! ');
         });
-        idProcess = idProcess.filter(proc => text.search(proc.workProcessId) !== -1);
+
         break;
       case COMMAND_YES:
         console.log('YES:::');
@@ -439,6 +443,7 @@ class TelegramApi {
                 message_id: message_id,
                 reply_markup: {inline_keyboard: process_step}
               });
+              idProc.messageFormClientToPartner = messageFormClientToPartnerFull;
             } else {
               //TODO  need delete message from another user
               if (idProc.messageFormClientToPartner.includes(text)) {
