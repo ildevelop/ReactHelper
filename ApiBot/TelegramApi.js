@@ -129,6 +129,7 @@ class TelegramApi {
     idProcess.push({
       "id": id,
       "messageFormClientToPartner": messageFormClientToPartner,
+      "messageFormClientToPartnerFull": messageFormClientToPartnerFull,
       "workProcessId": workProcessId
     });
     botApi.sendMessage(id, msg, {
@@ -418,6 +419,7 @@ class TelegramApi {
             console.log('workProcessId:::', idProc.workProcessId);
             if (idProc.id === id && idProc.messageFormClientToPartner.includes(text)) {
               console.log('COOOOOL!');
+              messageFormClientToPartnerFull = idProc.messageFormClientToPartnerFull;
               MongoClient.connect(DATABASE_URL, function (err, db) {
                 if (err) throw err;
                 try {
