@@ -52,14 +52,10 @@ class InProcess extends Component {
           </div>
           <div className="partners">
             <h4>PARTNER:</h4>
-            {process.partner.map((partner, key) => {
-              console.log('partner.work_process_id',partner.work_process_id);
-              console.log('process._id',process._id);
-              return <div key={partner._id}
+            {process.partner.map((partner, key) =>
+              <div key={partner._id}
                             style={partner.chatId === process.partnerStarted ? {color: '#388E3C'} : {color: '#000'}}>{key + 1}
                   - Full Name: {partner.fname} {partner.sname}</div>
-
-              }
             )
             }
           </div>

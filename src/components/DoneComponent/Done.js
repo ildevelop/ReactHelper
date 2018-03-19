@@ -32,7 +32,7 @@ class Done extends Component {
           <div className="partners">
             <h4>PARTNER:</h4>
             {process.partner.map((partner,key) =>
-              <div key ={partner._id}>{key+1} - Full Name: {partner.fname} {partner.sname}</div>
+              <div key ={partner._id}  style={partner.chatId === process.partnerStarted ? {color: '#388E3C'} : {color: '#000'}}>{key+1} - Full Name: {partner.fname} {partner.sname}</div>
             )
             }
           </div>
