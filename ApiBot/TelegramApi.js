@@ -268,8 +268,8 @@ class TelegramApi {
             MongoClient.connect( DATABASE_URL, function (err, db) {
               if (err) throw err;
               console.log('Connected to process collection established!');
-              let problemS = process.messageFormClientToPartner.match( FILTER_PROBLEM);
-              let cleanProblem = problemS[0].replace(/PROBLEM:/g,'');
+              let problemS = process.messageFormClientToPartner.match(FILTER_PROBLEM);
+              let cleanProblem = problemS[0].replace(/PROBLEM:/g, '');
 
               var collection = db.collection('process');
               try {
@@ -277,7 +277,7 @@ class TelegramApi {
                   if (err) throw err;
                   if (process.messageFormClientToPartner.includes(res.problem)) {
                     console.log('INCLUDE PROBLEM !!!!!!!!!!!!!!!!');
-                    MongoClient.connect( DATABASE_URL, function (err, db) {
+                    MongoClient.connect(DATABASE_URL, function (err, db) {
                       if (err) throw err;
                       console.log('Connected to process collection established!');
                       let collection = db.collection('done_process');
@@ -290,21 +290,6 @@ class TelegramApi {
                         console.log('ERROR:::', e)
                       }
                     });
-                    //TODO need  remove from partner.work_process_id the id of process
-                    // MongoClient.connect(DATABASE_URL, function (err, db) {
-                    //   if (err) throw err;
-                    //   try {
-                    //     db.collection("partners").findOneAndUpdate({
-                    //         work_process_id: process.messageFormClientToPartner,
-                    //       }, {$pull: {"work_process_id": process.messageFormClientToPartner}},
-                    //       {
-                    //         returnNewDocument: true,
-                    //       });
-                    //     db.close();
-                    //   } catch (e) {
-                    //     console.log('DB error', e);
-                    //   }
-                    // });
                   }
                   else {
                     console.log('WTF');
@@ -313,11 +298,25 @@ class TelegramApi {
                 collection.deleteOne({"problem": cleanProblem}, function (err, res) {
                   if (err) throw err;
                   db.close();
-                })
+                });
               } catch (e) {
                 console.log(e)
               }
+              collection = db.collection('partners');
+              try {
+                console.log('ID process in idProcess::::::::', process.workProcessId);
+                collection.update({
+                    work_process_id: process.workProcessId,
+                  }, {$pull: {work_process_id: process.workProcessId}},
+                  {
+                    returnNewDocument: true,
+                  });
+                db.close();
+              } catch (e) {
+                console.log('DB error', e);
+              }
             });
+            // botApi.sendPhoto(chat.id, file, {}, fileOpts);
             idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId );
             botApi.sendMessage(chat.id, 'Good job !!! ');
           } else {
@@ -331,7 +330,6 @@ class TelegramApi {
             filename: 'sss',
             contentType: 'image/jpeg'
           };
-          // botApi.sendPhoto(chat.id, file, {}, fileOpts);
         });
 
         break;
