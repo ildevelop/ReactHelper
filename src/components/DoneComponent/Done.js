@@ -14,15 +14,6 @@ class Done extends Component {
   deleteOneProcess(pr){
     console.log('deleteOneProcess',pr);
     this.props.deleteDone(pr)
-    // this.props.deleteOneDone(pr._id);
-    // axios.post('/delete_done_process', {done_process: pr})
-    //   .then(function (response) {
-    //     let body = response.data['status'];
-    //     console.log('delete ===>', body);
-    //   })
-    //   .catch(function (error) {
-    //     console.log(error);
-    //   });
   }
   oneProcess = (process) => {
     return (
@@ -38,13 +29,12 @@ class Done extends Component {
             <div>City: {process.client.city} </div>
             <div>Street: {process.client.address} </div>
           </div>
-          <div>
+          <div className="partners">
             <h4>PARTNER:</h4>
-            <div>Full Name: {process.partner.fname} {process.partner.sname}</div>
-            <div>Email: {process.partner.email} </div>
-            <div>Phone: {process.partner.phone_number} </div>
-            <div>City: {process.partner.city} </div>
-            <div>Street: {process.partner.address} </div>
+            {process.partner.map((partner,key) =>
+              <div key ={partner._id}  style={partner.chatId === process.partnerStarted ? {color: '#388E3C'} : {color: '#000'}}>{key+1} - Full Name: {partner.fname} {partner.sname}</div>
+            )
+            }
           </div>
           <div><h4>PROBLEM: </h4>{process.problem} </div>
         </div>

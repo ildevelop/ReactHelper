@@ -4,7 +4,8 @@ import {
   ADD_CLIENT_CLIENTS, ADD_PARTNER_PARTNERS,
   DELETE_DONE,
   DELETE_PROCESS,
-  HANDLE_DIALOG, SET_CATEGORIES, SET_CLIENTS, SET_DONE_PROCESS, SET_NEW_PROCESS, SET_ONE_CLIENTS, SET_ONE_DONE_PROCESS,
+  HANDLE_DIALOG, REMOVE_ONE_PARTNER, SET_CATEGORIES, SET_CLIENTS, SET_DONE_PROCESS, SET_NEW_PROCESS, SET_ONE_CLIENTS,
+  SET_ONE_DONE_PROCESS,
   SET_ONE_PARTNER,
   SET_PARTNERS,
   SET_PROBLEM, SET_PROCESS,
@@ -16,7 +17,7 @@ const initState = {
   client: {},
   clients: [],
   partners: [],
-  partner: {},
+  partner: [],
   openIntervention: false,
   problem:'',
   process: [],
@@ -86,7 +87,18 @@ const reducerPartners = (state = initState ,action ) => {
       // console.log('add partners to reducer', state);
       break;
     case SET_ONE_PARTNER:
-      state = {...state, partner:action.payload};
+      console.log('partners STORE',action.payload);
+      let arrP = state.partner;
+      arrP.push(action.payload);
+      state = {...state, partner:arrP};
+      console.log('partners',state.partner);
+
+      break;
+    case REMOVE_ONE_PARTNER:
+      console.log('REMOVE_ONE_PARTNER STORE',action.payload);
+      let filterArrey = state.partner.filter( e => e!== action.payload);
+      console.log('filterArrey',filterArrey);
+      state = {...state, partner:filterArrey};
       break;
     case ADD_PARTNER_PARTNERS:
       let arrPr = state.partners;

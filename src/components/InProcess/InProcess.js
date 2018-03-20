@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import Done from 'material-ui/svg-icons/action/done';
 import Delete from 'material-ui/svg-icons/action/delete';
 import './InProcess.scss'
-import { bindActionCreators } from 'redux';
+import {bindActionCreators} from 'redux';
 import * as mainActions from '../../Actions/MainActions';
 
 const style = {
@@ -13,16 +13,18 @@ const style = {
 
 class InProcess extends Component {
 
-  deleteOneProcess(pr){
+  deleteOneProcess(pr) {
     this.props.deleteProcess(pr);
   }
+
   addZero = (i) => {
     if (i < 10) {
       i = "0" + i;
     }
     return i;
   };
-  DoneOneProcess(pr){
+
+  DoneOneProcess(pr) {
     let today = new Date();
     let h = this.addZero(today.getHours());
     let m = this.addZero(today.getMinutes());
@@ -37,9 +39,8 @@ class InProcess extends Component {
   }
 
   oneProcess = (process) => {
-    return (
-      <div>
-        <div>
+    return ([
+        <div key="1">
           <div>
             <div className="dateD">{process.data}</div>
             <h4>CLIENT:</h4>
@@ -49,35 +50,36 @@ class InProcess extends Component {
             <div>City: {process.client.city} </div>
             <div>Street: {process.client.address} </div>
           </div>
-          <div>
+          <div className="partners">
             <h4>PARTNER:</h4>
-            <div>Full Name: {process.partner.fname} {process.partner.sname}</div>
-            <div>Email: {process.partner.email} </div>
-            <div>Phone: {process.partner.phone_number} </div>
-            <div>City: {process.partner.city} </div>
-            <div>Street: {process.partner.address} </div>
+            {process.partner.map((partner, key) =>
+              <div key={partner._id}
+                            style={partner.chatId === process.partnerStarted ? {color: '#388E3C'} : {color: '#000'}}>{key + 1}
+                  - Full Name: {partner.fname} {partner.sname}</div>
+            )
+            }
           </div>
           <div><h4>PROBLEM: </h4>{process.problem} </div>
-        </div>
-        <div className="oneProcessButton">
+        </div>,
+        <div className="oneProcessButton" key="2">
           <RaisedButton
             label="DELETE"
             icon={<Delete/>}
             backgroundColor="#E53935"
             labelColor="#fff"
             style={style}
-            onClick={this.deleteOneProcess.bind(this,process)}
+            onClick={this.deleteOneProcess.bind(this, process)}
           />
-          <RaisedButton
-            label="DONE"
-            backgroundColor="#388E3C"
-            labelColor="#fff"
-            icon={<Done/>}
-            style={style}
-            onClick={this.DoneOneProcess.bind(this,process)}
-          />
-        </div>
-      </div>
+          {/*<RaisedButton*/}
+          {/*label="DONE"*/}
+          {/*backgroundColor="#388E3C"*/}
+          {/*labelColor="#fff"*/}
+          {/*icon={<Done/>}*/}
+          {/*style={style}*/}
+          {/*onClick={this.DoneOneProcess.bind(this,process)}*/}
+          {/*/>*/}
+        </div>]
+
     )
   };
 

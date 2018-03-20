@@ -23,16 +23,17 @@ class CreateNewClient extends React.Component {
 
   handleOnSubmitClose() {
     let formData = {};
-    Object.keys(this.refs).forEach((key) => formData[key] = this.refs[key].getValue());
+    Object.keys(this.refs).forEach((key) => formData[key] = this.refs[key].getValue().toLowerCase());
     console.log('Object formData:',formData);
     if(this.state.fname && this.state.sname && this.state.phone_number && this.state.email && this.state.city && this.state.address && this.state.zipp ) {
       console.log("good");
-      if (this.props.popUpLabel === "Add new Client") {
+      if (this.props.popUpLabel === "Add new clients") {
         this.props.addClient(formData);
         this.props.handleDialog(false);
       }
       else {
         formData["category"] = this.state.value;
+        formData["work_process_id"] = [];
         this.props.addPartner(formData);
         this.props.handleDialog(false);
       }

@@ -1,8 +1,9 @@
 {
-  "presets": ["es2015", "stage-0", "react"],
+  "presets": ["es2015", "stage-0", "react","env"],
   "env": {
       "development": {
           "plugins": [
+            "transform-class-properties",
             "transform-runtime",
             ["react-transform", {
               "transforms": [{

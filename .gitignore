@@ -3,6 +3,7 @@ logs
 *.log
 lib
 .idea
+photos
 node_module
 package.config.js
 package-lock.json
@@ -38,4 +39,3 @@ node_modules
 # App packaged
 dist
 
-.idea
