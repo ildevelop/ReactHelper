@@ -127,31 +127,26 @@ class TelegramApi {
     const {from: {id}} = msg;
     const resp = match[1]; // the captured "whatever"
     let arr = resp.split(' ');
-    console.log('arr', arr);
-    if (arr.length === 2) {
+    if (arr.length === 1 && (!isNaN(resp)) && (13 > resp.length || resp.length>3 )) {
       let foundAccount;
       MongoClient.connect( DATABASE_URL, function (err, db) {
         if (err) throw err;
         console.log("id", id);
         try {
           foundAccount = db.collection("partners").findOneAndUpdate({
-              fname: arr[0].toLowerCase(),
-              sname: arr[1].toLowerCase()
-            }, {$set: {"chatId": id}},
-            {
-              returnNewDocument: true,
-            });
+              phone_number: resp,
+            }, {$set: {"chatId": id}});
           db.close();
-          botApi.sendMessage(id, 'good! we added ' + arr[0] + ' ' + arr[1]);
+          botApi.sendMessage(id, 'good! we added ' +resp);
         } catch (e) {
           console.log('DB error', e);
-          botApi.sendMessage(id, 'wrong name, please resent the full name of partner ! first name & second name');
+          botApi.sendMessage(id, 'wrong name, please resent the full phone number of partner! only Integer');
         }
 
       });
     }
     else {
-      botApi.sendMessage(id, 'wrong name, please resent the full name of partner ! first name & second name');
+      botApi.sendMessage(id, 'wrong name, please resent the full phone number of partner !');
     }
   }
 
