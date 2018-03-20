@@ -1,5 +1,37 @@
 'use strict';
-const constAPI =  require('./constantAPI');
+// const constAPI =  require('./constantAPI');
+const DATABASE_URL = 'mongodb://localhost:27017/test12';
+const TelegramBot = require('node-telegram-bot-api');
+const configApi = require('./conf.json');
+const COMMAND_FORWARD = 'forward';
+const COMMAND_REPLAY = 'reply';
+const COMMAND_EDIT = 'edit';
+const COMMAND_DELETE = 'delete';
+const COMMAND_YES = 'yes';
+const COMMAND_FINISH = 'finish';
+
+const inline_keyboard = [
+  [
+    {
+      text: 'YES I Take it!!',
+      callback_data: COMMAND_YES
+    },
+    {
+      text: 'NOT!  I`m busy now',
+      callback_data: COMMAND_DELETE
+    },
+  ]
+];
+
+const process_step = [
+  [
+    {
+      text: 'FINISH Please send photo invoice!',
+      callback_data: COMMAND_FINISH
+    }
+  ]
+];
+const FILTER_PROBLEM =  /PROBLEM:[a-zA-Z 1-9]*/;
 let fs = require('fs');
 let http = require('https');
 let mongo = require('mongodb');
@@ -17,7 +49,7 @@ class TelegramApi {
   init() {
     console.log('init bot');
     try {
-      this.api = new constAPI.TelegramBot(constAPI.configApi.telegram.token, {polling: true});
+      this.api = new  TelegramBot( configApi.telegram.token, {polling: true});
       botApi = this.api;
       this.api.on('callback_query', this.callback_query);
       this.api.on('message', this.message);
@@ -86,7 +118,7 @@ class TelegramApi {
     });
     botApi.sendMessage(id, msg, {
       reply_markup: {
-        inline_keyboard:constAPI.inline_keyboard
+        inline_keyboard: inline_keyboard
       }
     });
   }
@@ -98,7 +130,7 @@ class TelegramApi {
     console.log('arr', arr);
     if (arr.length === 2) {
       let foundAccount;
-      MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+      MongoClient.connect( DATABASE_URL, function (err, db) {
         if (err) throw err;
         console.log("id", id);
         try {
@@ -132,7 +164,7 @@ class TelegramApi {
     console.log('deleted partner: ', arr);
     if (arr.length === 2) {
       let foundAccount;
-      MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+      MongoClient.connect( DATABASE_URL, function (err, db) {
         if (err) throw err;
         console.log("id", id);
         try {
@@ -162,7 +194,7 @@ class TelegramApi {
     console.log('add categories: ', categories[0].toLowerCase());
     if (categories.length === 1 && !message.from.is_bot) {
       let foundAccount = null;
-      MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+      MongoClient.connect( DATABASE_URL, function (err, db) {
         if (err) throw err;
         console.log("id", id);
         try {
@@ -208,35 +240,35 @@ class TelegramApi {
     console.log('query', query);
     const {message: {chat, message_id, text}, from: {id}} = query;
     switch (query.data) {
-      case constAPI.COMMAND_FORWARD:
+      case  COMMAND_FORWARD:
         botApi.forwardMessage(chat.id, chat.id, message_id);
         break;
-      case constAPI.COMMAND_REPLAY:
+      case  COMMAND_REPLAY:
         botApi.sendMessage(chat.id, 'Reply to message', {
           reply_to_message_id: message_id
         });
         break;
-      case constAPI.COMMAND_EDIT:
+      case  COMMAND_EDIT:
         botApi.editMessageText(`${text}(edited)`, {
           chat_id: chat.id,
           message_id: message_id,
-          reply_markup: {inline_keyboard: constAPI.inline_keyboard}
+          reply_markup: {inline_keyboard:  inline_keyboard}
         });
         break;
-      case constAPI.COMMAND_DELETE:
+      case  COMMAND_DELETE:
         botApi.deleteMessage(chat.id, message_id);
         break;
-      case constAPI.COMMAND_FINISH:
+      case  COMMAND_FINISH:
         botApi.deleteMessage(chat.id, message_id);
         // let file = fs.readFileSync('./ApiBot/sss.jpg');
         console.log('idProcess:::', idProcess);
         idProcess.map(process => {
           if (chat.id === process.id  && process.messageFormClientToPartnerFull.includes(text)) {
             console.log('******************');
-            MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+            MongoClient.connect( DATABASE_URL, function (err, db) {
               if (err) throw err;
               console.log('Connected to process collection established!');
-              let problemS = process.messageFormClientToPartner.match(constAPI.FILTER_PROBLEM);
+              let problemS = process.messageFormClientToPartner.match( FILTER_PROBLEM);
               let cleanProblem = problemS[0].replace(/PROBLEM:/g,'');
 
               var collection = db.collection('process');
@@ -245,7 +277,7 @@ class TelegramApi {
                   if (err) throw err;
                   if (process.messageFormClientToPartner.includes(res.problem)) {
                     console.log('INCLUDE PROBLEM !!!!!!!!!!!!!!!!');
-                    MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+                    MongoClient.connect( DATABASE_URL, function (err, db) {
                       if (err) throw err;
                       console.log('Connected to process collection established!');
                       let collection = db.collection('done_process');
@@ -292,7 +324,7 @@ class TelegramApi {
             botApi.editMessageText('develop mode', {
               chat_id: chat.id,
               message_id: message_id,
-              reply_markup: {inline_keyboard: constAPI.process_step}
+              reply_markup: {inline_keyboard:  process_step}
             });
           }
           const fileOpts = {
@@ -303,7 +335,7 @@ class TelegramApi {
         });
 
         break;
-      case constAPI.COMMAND_YES:
+      case  COMMAND_YES:
         console.log('YES:::');
         if (messageFormClientToPartnerFull) {
           console.log('idProcess::::', idProcess);
@@ -313,9 +345,9 @@ class TelegramApi {
               botApi.editMessageText(idProc.messageFormClientToPartnerFull, {
                 chat_id: id,
                 message_id: message_id,
-                reply_markup: {inline_keyboard: constAPI.process_step}
+                reply_markup: {inline_keyboard:  process_step}
               });
-              MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+              MongoClient.connect( DATABASE_URL, function (err, db) {
                 if (err) throw err;
                 try {
                   db.collection('partners').findOneAndUpdate({

@@ -3,6 +3,7 @@
   "env": {
       "development": {
           "plugins": [
+            "transform-class-properties",
             "transform-runtime",
             ["react-transform", {
               "transforms": [{
