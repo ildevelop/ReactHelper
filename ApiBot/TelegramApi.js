@@ -246,6 +246,8 @@ class TelegramApi {
         break;
       case  constAPI.COMMAND_DELETE:
         botApi.deleteMessage(chat.id, message_id);
+        idProcess.map(process => {
+          idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId);});
         break;
       case  constAPI.COMMAND_FINISH:
         botApi.deleteMessage(chat.id, message_id);
