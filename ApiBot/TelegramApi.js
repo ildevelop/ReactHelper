@@ -1,7 +1,5 @@
 'use strict';
 const constAPI = require('./constantAPI');
-// const constAPI =  require('./constantAPI');
-
 let fs = require('fs');
 let http = require('https');
 let mongo = require('mongodb');
@@ -194,13 +192,32 @@ class TelegramApi {
         // console.log('request:::::::>', request);
 
       });
-      botApi.sendMessage(msg.chat.id,"Hello",
-        {
-        reply_to_message_id: msg.message_id,
-          reply_markup: {
-          inline_keyboard
+      console.log('PHOTO::idProcess::', idProcess);
+      console.log('PHOTO::id::', id);
+      console.log('PHOTO::msg.message_id::', msg.message_id);
+      let inline_keyboard_new = [];
+      let count = 1;
+      idProcess.map(process => {
+          if (process.id === id) {
+            let messageClient = process.messageFormClientToPartnerFull.split(' ');
+            let fullNameClient = count + ': '+messageClient[1] +' '+ messageClient [2];
+            inline_keyboard_new.push([{
+              text: fullNameClient,
+              callback_data: constAPI.COMMAND_FINISH
+            }]);
+            count++
           }
-      });
+        }
+      );
+      console.log('inline_keyboard_new', inline_keyboard_new);
+      if (inline_keyboard_new) {
+        botApi.sendMessage(msg.chat.id, "Choose the client with whom you have finished",
+          {
+            reply_to_message_id: msg.message_id,
+            reply_markup: {inline_keyboard: inline_keyboard_new}
+          });
+      }
+
 
     }
     if (msg.text === '/add' || msg.text === '/add ') {
