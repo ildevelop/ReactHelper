@@ -7,6 +7,7 @@ const COMMAND_EDIT = 'edit';
 const COMMAND_DELETE = 'delete';
 const COMMAND_YES = 'yes';
 const COMMAND_FINISH = 'finish';
+const COMMAND_ADD_PHOTO = ['first_add_photo','second_add_photo','third_add_photo'];
 
 const inline_keyboard = [
   [
@@ -42,6 +43,7 @@ const constAPI = {
   COMMAND_YES: COMMAND_YES,
   inline_keyboard: inline_keyboard,
   process_step: process_step,
-  FILTER_PROBLEM: FILTER_PROBLEM
+  FILTER_PROBLEM: FILTER_PROBLEM,
+  COMMAND_ADD_PHOTO:COMMAND_ADD_PHOTO
 };
 module.exports = constAPI;

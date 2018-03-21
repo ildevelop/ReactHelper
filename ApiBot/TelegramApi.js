@@ -183,38 +183,38 @@ class TelegramApi {
     if (msg.photo) {
       let photoFormUser = '';
       console.log("PHOTO");
-      botApi.getFile(msg.photo[3].file_id).then((res) => {
-        photoFormUser = res.file_path;
-        let file = fs.createWriteStream(`./${res.file_path}`);
-        let request = http.get(`https://api.telegram.org/file/bot${constAPI.configApi.telegram.token}/${photoFormUser}`, function (response) {
-          response.pipe(file);
-        });
-        // console.log('request:::::::>', request);
-
-      });
-      console.log('PHOTO::idProcess::', idProcess);
-      console.log('PHOTO::id::', id);
-      console.log('PHOTO::msg.message_id::', msg.message_id);
       let inline_keyboard_new = [];
-      let count = 1;
-      idProcess.map(process => {
+      idProcess.map((process, i) => {
           if (process.id === id) {
+            i++;
             let messageClient = process.messageFormClientToPartnerFull.split(' ');
-            let fullNameClient = count + ': '+messageClient[1] +' '+ messageClient [2];
+            let fullNameClient = i + ': ' + messageClient[1] + ' ' + messageClient [2];
             inline_keyboard_new.push([{
               text: fullNameClient,
-              callback_data: constAPI.COMMAND_FINISH
+              callback_data: constAPI.COMMAND_ADD_PHOTO[i-1]
             }]);
-            count++
           }
         }
       );
       console.log('inline_keyboard_new', inline_keyboard_new);
-      if (inline_keyboard_new) {
+      if (inline_keyboard_new.length > 0) {
+        botApi.getFile(msg.photo[2].file_id).then((res) => {
+          photoFormUser = res.file_path;
+          let file = fs.createWriteStream(`./${res.file_path}`);
+          let request = http.get(`https://api.telegram.org/file/bot${constAPI.configApi.telegram.token}/${photoFormUser}`, function (response) {
+            response.pipe(file);
+          });
+          // console.log('request:::::::>', request);
+        });
         botApi.sendMessage(msg.chat.id, "Choose the client with whom you have finished",
           {
             reply_to_message_id: msg.message_id,
             reply_markup: {inline_keyboard: inline_keyboard_new}
+          });
+      } else {
+        botApi.sendMessage(msg.chat.id, "unfortunately you don't have open processes",
+          {
+            reply_to_message_id: msg.message_id
           });
       }
 
@@ -247,7 +247,8 @@ class TelegramApi {
       case  constAPI.COMMAND_DELETE:
         botApi.deleteMessage(chat.id, message_id);
         idProcess.map(process => {
-          idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId);});
+          idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId);
+        });
         break;
       case  constAPI.COMMAND_FINISH:
         botApi.deleteMessage(chat.id, message_id);
@@ -370,6 +371,20 @@ class TelegramApi {
           botApi.deleteMessage(id, message_id);
         }
         break;
+      case  constAPI.COMMAND_ADD_PHOTO[0]:
+        botApi.deleteMessage(chat.id, message_id);
+        console.log('query.reply_to_message****',query.message.reply_to_message);
+        let pathImg = query.message.reply_to_message.photo[2].file_path;
+        console.log('query.reply_to_message.photo***',pathImg);
+        //TODO add path to done process and before need check if process done
+        break;
+      case  constAPI.COMMAND_ADD_PHOTO[1]:
+        botApi.deleteMessage(chat.id, message_id);
+        break;
+      case  constAPI.COMMAND_ADD_PHOTO[2]:
+        botApi.deleteMessage(chat.id, message_id);
+        break;
+
       default:
         botApi.sendMessage(chat.id, 'Wrong tipe')
 
