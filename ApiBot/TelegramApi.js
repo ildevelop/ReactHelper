@@ -176,6 +176,9 @@ class TelegramApi {
     }
   }
 
+  checkIsProcessDone(partnerId){
+
+  }
   message(msg) {
     const {from: {id}} = msg;
     // bot.sendMessage(id, msg.text);
@@ -273,6 +276,21 @@ class TelegramApi {
                       if (err) throw err;
                       console.log('Connected to process collection established!');
                       let collection = db.collection('done_process');
+                      console.log('res:::::::::::::::::',res);
+
+                      let today = new Date();
+                      let h = today.getHours();
+                      h = h<10?"0" + h: h;
+                      let m = today.getMinutes();
+                      m = m<10?"0" + m: m;
+                      let date = today.getFullYear() + '-'
+                        + (today.getMonth() + 1) + '-'
+                        + today.getDate() + ' '
+                        + h + ':'
+                        + m;
+                      res['finish_data'] = date;
+                      res['finish_partnerID'] = id;
+                      console.log('res1:::::::::::::::::',res);
                       try {
                         collection.insertOne(res, function (err, r) {
                           if (err) throw err;
