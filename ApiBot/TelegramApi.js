@@ -7,6 +7,7 @@ let MongoClient = mongo.MongoClient;
 let botApi = null;
 let messageFormClientToPartner = '';
 let messageFormClientToPartnerFull = '';
+let writer = constAPI.csvWriter();
 let idProcess = [];
 
 class TelegramApi {
@@ -176,19 +177,24 @@ class TelegramApi {
     }
   }
 
-  checkIsProcessDone(partnerId){
 
-  }
   message(msg) {
     const {from: {id}} = msg;
     // bot.sendMessage(id, msg.text);
     console.log("msg here::::", msg);
+    console.log("idProcess here::::", idProcess);
+    //TODO need fix problem with adding idProcess to csv
+    writer.pipe(fs.createWriteStream('out.csv'));
+    console.log('created');
+    writer.write(idProcess[0]);
+    console.log('added');
+    writer.end();
     if (msg.photo) {
       let photoFormUser = '';
-      console.log("PHOTO");
       let inline_keyboard_new = [];
       idProcess.map((process, i) => {
-          if (process.id === id) {
+          if (process.id === id && process.heSayYes) {
+            console.log('PHOTO AFTER YES:');
             i++;
             let messageClient = process.messageFormClientToPartnerFull.split(' ');
             let fullNameClient = i + ': ' + messageClient[1] + ' ' + messageClient [2];
@@ -276,8 +282,6 @@ class TelegramApi {
                       if (err) throw err;
                       console.log('Connected to process collection established!');
                       let collection = db.collection('done_process');
-                      console.log('res:::::::::::::::::',res);
-
                       let today = new Date();
                       let h = today.getHours();
                       h = h<10?"0" + h: h;
@@ -290,7 +294,6 @@ class TelegramApi {
                         + m;
                       res['finish_data'] = date;
                       res['finish_partnerID'] = id;
-                      console.log('res1:::::::::::::::::',res);
                       try {
                         collection.insertOne(res, function (err, r) {
                           if (err) throw err;
@@ -350,6 +353,7 @@ class TelegramApi {
           idProcess.map(idProc => {
             if (idProc.id === id && idProc.messageFormClientToPartner.includes(text)) {
               console.log('COOOOOL NEW PROCESS!');
+              idProc['heSayYes']= true;
               botApi.editMessageText(idProc.messageFormClientToPartnerFull, {
                 chat_id: id,
                 message_id: message_id,
@@ -380,7 +384,7 @@ class TelegramApi {
               console.log('NOT YOU');
               if (idProc.messageFormClientToPartner.includes(text)) {
                 messageFormClientToPartnerFull = null;
-                botApi.sendMessage(idProc.id, 'Someone took  first. Process are closed you are miss!! next time');
+                botApi.sendMessage(idProc.id, 'Someone took  first process.');
               }
             }
           });
