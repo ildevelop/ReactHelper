@@ -76,6 +76,7 @@ class TelegramApi {
   }
 
   messageToPartners(id, msg, msg2, workProcessId) {
+    //TODO need set filter topush to idProcess same process
     messageFormClientToPartner = msg;
     console.log('messageFormClientToPartner', messageFormClientToPartner);
     messageFormClientToPartnerFull = msg2;
@@ -184,11 +185,11 @@ class TelegramApi {
     console.log("msg here::::", msg);
     console.log("idProcess here::::", idProcess);
     //TODO need fix problem with adding idProcess to csv
-    writer.pipe(fs.createWriteStream('out.csv'));
-    console.log('created');
-    writer.write(idProcess[0]);
-    console.log('added');
-    writer.end();
+    // writer.pipe(fs.createWriteStream('out.csv'));
+    // console.log('created');
+    // writer.write(idProcess[0]);
+    // console.log('added');
+    // writer.end();
     if (msg.photo) {
       let photoFormUser = '';
       let inline_keyboard_new = [];
@@ -200,7 +201,7 @@ class TelegramApi {
             let fullNameClient = i + ': ' + messageClient[1] + ' ' + messageClient [2];
             inline_keyboard_new.push([{
               text: fullNameClient,
-              callback_data: constAPI.COMMAND_ADD_PHOTO[i-1]
+              callback_data: constAPI.COMMAND_ADD_PHOTO[i - 1]
             }]);
           }
         }
@@ -237,6 +238,19 @@ class TelegramApi {
   callback_query(query) {
     console.log('query', query);
     const {message: {chat, message_id, text}, from: {id}} = query;
+    let workProcessID = [];
+    for(let process in idProcess){
+      console.log('process',process);
+      if (idProcess[process].id === id && idProcess[process].heSayYes) {
+        console.log('FINDING PHOTO ');
+        let messageClient = idProcess[process].messageFormClientToPartnerFull.split(' ');
+        let fullNameClient =  messageClient[1] + ' ' + messageClient [2];
+        workProcessID.push({
+          text: fullNameClient,
+          workProcessId:idProcess[process].workProcessId
+        });
+      }
+    }
     switch (query.data) {
       case  constAPI.COMMAND_FORWARD:
         botApi.forwardMessage(chat.id, chat.id, message_id);
@@ -284,9 +298,9 @@ class TelegramApi {
                       let collection = db.collection('done_process');
                       let today = new Date();
                       let h = today.getHours();
-                      h = h<10?"0" + h: h;
+                      h = h < 10 ? "0" + h : h;
                       let m = today.getMinutes();
-                      m = m<10?"0" + m: m;
+                      m = m < 10 ? "0" + m : m;
                       let date = today.getFullYear() + '-'
                         + (today.getMonth() + 1) + '-'
                         + today.getDate() + ' '
@@ -353,7 +367,7 @@ class TelegramApi {
           idProcess.map(idProc => {
             if (idProc.id === id && idProc.messageFormClientToPartner.includes(text)) {
               console.log('COOOOOL NEW PROCESS!');
-              idProc['heSayYes']= true;
+              idProc['heSayYes'] = true;
               botApi.editMessageText(idProc.messageFormClientToPartnerFull, {
                 chat_id: id,
                 message_id: message_id,
@@ -395,16 +409,69 @@ class TelegramApi {
         break;
       case  constAPI.COMMAND_ADD_PHOTO[0]:
         botApi.deleteMessage(chat.id, message_id);
-        console.log('query.reply_to_message****',query.message.reply_to_message);
+        console.log('query.reply_to_message****', query.message.reply_to_message);
         let pathImg = query.message.reply_to_message.photo[2].file_path;
-        console.log('query.reply_to_message.photo***',pathImg);
+        console.log('query.reply_to_message.photo***', pathImg);
         //TODO add path to done process and before need check if process done
+
+        MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+          if (err) throw err;
+          try {
+            db.collection("process").findOneAndUpdate({
+              _id:  new mongo.ObjectID(workProcessID[0].workProcessId),
+            }, {$set: {"imgPath": pathImg}});
+            db.close();
+            botApi.sendMessage(id, 'good! we added img to process');
+          } catch (e) {
+            console.log('DB error', e);
+            botApi.sendMessage(id, 'wrong image , please resent, image must be jpeg');
+          }
+
+        });
+        //TODO add finish process here
         break;
       case  constAPI.COMMAND_ADD_PHOTO[1]:
         botApi.deleteMessage(chat.id, message_id);
+        console.log('query.reply_to_message****', query.message.reply_to_message);
+        let pathImg2 = query.message.reply_to_message.photo[2].file_path;
+        console.log('query.reply_to_message.photo***', pathImg);
+        MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+          if (err) throw err;
+          try {
+            db.collection("process").findOneAndUpdate({
+              _id:  new mongo.ObjectID(workProcessID[1].workProcessId),
+            }, {$set: {"imgPath": pathImg2}});
+            db.close();
+            botApi.sendMessage(id, 'good! we added img to process');
+          } catch (e) {
+            console.log('DB error', e);
+            botApi.sendMessage(id, 'wrong image , please resent, image must be jpeg');
+          }
+
+        });
+        //TODO add finish process here
+
         break;
       case  constAPI.COMMAND_ADD_PHOTO[2]:
         botApi.deleteMessage(chat.id, message_id);
+        console.log('query.reply_to_message****', query.message.reply_to_message);
+        let pathImg3 = query.message.reply_to_message.photo[2].file_path;
+        console.log('query.reply_to_message.photo***', pathImg);
+        MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+          if (err) throw err;
+          try {
+            db.collection("process").findOneAndUpdate({
+              _id:  new mongo.ObjectID(workProcessID[2].workProcessId),
+            }, {$set: {"imgPath": pathImg3}});
+            db.close();
+            botApi.sendMessage(id, 'good! we added img to process');
+          } catch (e) {
+            console.log('DB error', e);
+            botApi.sendMessage(id, 'wrong image , please resent, image must be jpeg');
+          }
+        });
+        //TODO add finish process here
+
         break;
 
       default:

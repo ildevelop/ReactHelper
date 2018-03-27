@@ -26,7 +26,7 @@ const inline_keyboard = [
 const process_step = [
   [
     {
-      text: 'FINISH Please send photo invoice!',
+      text: 'Please send photo invoice before FINISH!',
       callback_data: COMMAND_FINISH
     }
   ]
