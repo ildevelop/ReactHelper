@@ -5,7 +5,6 @@ let http = require('https');
 let mongo = require('mongodb');
 let MongoClient = mongo.MongoClient;
 let botApi = null;
-let messageFormClientToPartner = '';
 let messageFormClientToPartnerFull = '';
 let writer = constAPI.csvWriter();
 let idProcess = [];
@@ -76,21 +75,13 @@ class TelegramApi {
   }
 
   messageToPartners(id, msg, msg2, workProcessId) {
-    //TODO need set filter topush to idProcess same process
-    for(let i in idProcess){
-      if(idProcess[i].messageFormClientToPartnerFull !==msg2 && idProcess[i].messageFormClientToPartner !==msg){
-        messageFormClientToPartner = msg;
-        console.log('messageFormClientToPartner', messageFormClientToPartner);
-        messageFormClientToPartnerFull = msg2;
-        idProcess.push({
-          'id': id,
-          'messageFormClientToPartner': messageFormClientToPartner,
-          'messageFormClientToPartnerFull': messageFormClientToPartnerFull,
-          'workProcessId': workProcessId
-        });
-      }
-    }
-
+    messageFormClientToPartnerFull = msg2;
+    idProcess.push({
+      'id': id,
+      'messageFormClientToPartner': msg,
+      'messageFormClientToPartnerFull': msg2,
+      'workProcessId': workProcessId
+    });
     botApi.sendMessage(id, msg, {
       reply_markup: {
         inline_keyboard: constAPI.inline_keyboard
@@ -203,6 +194,7 @@ class TelegramApi {
             console.log('PHOTO AFTER YES:');
             i++;
             let messageClient = process.messageFormClientToPartnerFull.split(' ');
+            //TODO fix problem with i ( 1 ,3 )
             let fullNameClient = i + ': ' + messageClient[1] + ' ' + messageClient [2];
             inline_keyboard_new.push([{
               text: fullNameClient,
@@ -244,15 +236,15 @@ class TelegramApi {
     console.log('query', query);
     const {message: {chat, message_id, text}, from: {id}} = query;
     let workProcessID = [];
-    for(let process in idProcess){
-      console.log('process',process);
+    for (let process in idProcess) {
+      console.log('process', process);
       if (idProcess[process].id === id && idProcess[process].heSayYes) {
         console.log('FINDING PHOTO ');
         let messageClient = idProcess[process].messageFormClientToPartnerFull.split(' ');
-        let fullNameClient =  messageClient[1] + ' ' + messageClient [2];
+        let fullNameClient = messageClient[1] + ' ' + messageClient [2];
         workProcessID.push({
           text: fullNameClient,
-          workProcessId:idProcess[process].workProcessId
+          workProcessId: idProcess[process].workProcessId
         });
       }
     }
@@ -423,7 +415,8 @@ class TelegramApi {
           if (err) throw err;
           try {
             db.collection("process").findOneAndUpdate({
-              _id:  new mongo.ObjectID(workProcessID[0].workProcessId),
+              _id: new mongo.ObjectID(workProcessID[0].workProcessId),
+              partnerStarted:id
             }, {$set: {"imgPath": pathImg}});
             db.close();
             botApi.sendMessage(id, 'good! we added img to process');
@@ -444,7 +437,8 @@ class TelegramApi {
           if (err) throw err;
           try {
             db.collection("process").findOneAndUpdate({
-              _id:  new mongo.ObjectID(workProcessID[1].workProcessId),
+              _id: new mongo.ObjectID(workProcessID[1].workProcessId),
+              partnerStarted:id
             }, {$set: {"imgPath": pathImg2}});
             db.close();
             botApi.sendMessage(id, 'good! we added img to process');
@@ -466,7 +460,8 @@ class TelegramApi {
           if (err) throw err;
           try {
             db.collection("process").findOneAndUpdate({
-              _id:  new mongo.ObjectID(workProcessID[2].workProcessId),
+              _id: new mongo.ObjectID(workProcessID[2].workProcessId),
+              partnerStarted:id
             }, {$set: {"imgPath": pathImg3}});
             db.close();
             botApi.sendMessage(id, 'good! we added img to process');
