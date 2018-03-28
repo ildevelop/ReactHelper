@@ -189,12 +189,12 @@ class TelegramApi {
     if (msg.photo) {
       let photoFormUser = '';
       let inline_keyboard_new = [];
-      idProcess.map((process, i) => {
+      let i =0;
+      idProcess.map((process) => {
           if (process.id === id && process.heSayYes) {
             console.log('PHOTO AFTER YES:');
             i++;
             let messageClient = process.messageFormClientToPartnerFull.split(' ');
-            //TODO fix problem with i ( 1 ,3 )
             let fullNameClient = i + ': ' + messageClient[1] + ' ' + messageClient [2];
             inline_keyboard_new.push([{
               text: fullNameClient,
