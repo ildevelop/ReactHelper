@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import './Done.scss'
 import {Paper, RaisedButton} from "material-ui";
 import Delete from 'material-ui/svg-icons/action/delete';
+import ActionDownload from 'material-ui/svg-icons/file/file-download';
 import {connect} from 'react-redux'
 import { bindActionCreators } from 'redux';
 import * as mainActions from '../../Actions/MainActions';
@@ -48,6 +49,14 @@ class Done extends Component {
             onClick={this.deleteOneProcess.bind(this,process)}
           />
 
+          {process.imgPath?   <RaisedButton
+            label="INVOICE"
+            backgroundColor="#a4c639"
+            icon={<ActionDownload color="#388E3C" />}
+            style={style}
+            href={process.imgPath}
+            download
+          />: <div/>}
         </div>
       </div>
     )

@@ -409,8 +409,6 @@ class TelegramApi {
         console.log('query.reply_to_message****', query.message.reply_to_message);
         let pathImg = query.message.reply_to_message.photo[2].file_path;
         console.log('query.reply_to_message.photo***', pathImg);
-        //TODO add path to done process and before need check if process done
-
         MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
           if (err) throw err;
           try {
