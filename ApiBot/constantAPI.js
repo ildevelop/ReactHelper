@@ -1,14 +1,16 @@
-export const DATABASE_URL = 'mongodb://localhost:27017/test12';
-export const TelegramBot = require('node-telegram-bot-api');
-export const configApi = require('./conf.json');
-export const COMMAND_FORWARD = 'forward';
-export const COMMAND_REPLAY = 'reply';
-export const COMMAND_EDIT = 'edit';
-export const COMMAND_DELETE = 'delete';
-export const COMMAND_YES = 'yes';
-export const COMMAND_FINISH = 'finish';
+const DATABASE_URL = 'mongodb://localhost:27017/test12';
+const TelegramBot = require('node-telegram-bot-api');
+const configApi = require('./conf.json');
+const COMMAND_FORWARD = 'forward';
+const COMMAND_REPLAY = 'reply';
+const COMMAND_EDIT = 'edit';
+const COMMAND_DELETE = 'delete';
+const COMMAND_YES = 'yes';
+const COMMAND_FINISH = 'finish';
+const COMMAND_ADD_PHOTO = ['first_add_photo','second_add_photo','third_add_photo'];
+const csvWriter = require('csv-write-stream');
 
-export const inline_keyboard = [
+const inline_keyboard = [
   [
     {
       text: 'YES I Take it!!',
@@ -21,12 +23,29 @@ export const inline_keyboard = [
   ]
 ];
 
-export const process_step = [
+const process_step = [
   [
     {
-      text: 'FINISH Please send photo invoice!',
+      text: 'Please send photo invoice before FINISH!',
       callback_data: COMMAND_FINISH
     }
   ]
 ];
-export const FILTER_PROBLEM =  /PROBLEM:[a-zA-Z 1-9]*/;
+const FILTER_PROBLEM =  /PROBLEM:[a-zA-Z 1-9]*/;
+const constAPI = {
+  DATABASE_URL: DATABASE_URL,
+  TelegramBot: TelegramBot,
+  configApi: configApi,
+  COMMAND_DELETE: COMMAND_DELETE,
+  COMMAND_FINISH: COMMAND_FINISH,
+  COMMAND_EDIT: COMMAND_EDIT,
+  COMMAND_REPLAY: COMMAND_REPLAY,
+  COMMAND_FORWARD: COMMAND_FORWARD,
+  COMMAND_YES: COMMAND_YES,
+  inline_keyboard: inline_keyboard,
+  process_step: process_step,
+  FILTER_PROBLEM: FILTER_PROBLEM,
+  COMMAND_ADD_PHOTO:COMMAND_ADD_PHOTO,
+  csvWriter:csvWriter
+};
+module.exports = constAPI;

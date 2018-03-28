@@ -155,7 +155,7 @@ const getExpressApplication = (application) => {
             if (processId) {
               let msg2 = '';
               let fields2 = [
-                'CLIENT: ' + message.client.fname + ' ' + message.client.sname,
+                'CLIENT: ' + message.client.fname + ' ' + message.client.sname + ' ',
                 '  city:' + message.client.city,
                 '  zip:' + message.client.zipp,
                 '  address:' + message.client.address,

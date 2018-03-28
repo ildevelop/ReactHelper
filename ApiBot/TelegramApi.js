@@ -1,44 +1,12 @@
 'use strict';
-// const constAPI =  require('./constantAPI');
-const DATABASE_URL = 'mongodb://localhost:27017/test12';
-const TelegramBot = require('node-telegram-bot-api');
-const configApi = require('./conf.json');
-const COMMAND_FORWARD = 'forward';
-const COMMAND_REPLAY = 'reply';
-const COMMAND_EDIT = 'edit';
-const COMMAND_DELETE = 'delete';
-const COMMAND_YES = 'yes';
-const COMMAND_FINISH = 'finish';
-
-const inline_keyboard = [
-  [
-    {
-      text: 'YES I Take it!!',
-      callback_data: COMMAND_YES
-    },
-    {
-      text: 'NOT!  I`m busy now',
-      callback_data: COMMAND_DELETE
-    },
-  ]
-];
-
-const process_step = [
-  [
-    {
-      text: 'FINISH Please send photo invoice!',
-      callback_data: COMMAND_FINISH
-    }
-  ]
-];
-const FILTER_PROBLEM =  /PROBLEM:[a-zA-Z 1-9]*/;
+const constAPI = require('./constantAPI');
 let fs = require('fs');
 let http = require('https');
 let mongo = require('mongodb');
 let MongoClient = mongo.MongoClient;
 let botApi = null;
-let messageFormClientToPartner = '';
 let messageFormClientToPartnerFull = '';
+let writer = constAPI.csvWriter();
 let idProcess = [];
 
 class TelegramApi {
@@ -49,7 +17,7 @@ class TelegramApi {
   init() {
     console.log('init bot');
     try {
-      this.api = new  TelegramBot( configApi.telegram.token, {polling: true});
+      this.api = new constAPI.TelegramBot(constAPI.configApi.telegram.token, {polling: true});
       botApi = this.api;
       this.api.on('callback_query', this.callback_query);
       this.api.on('message', this.message);
@@ -107,18 +75,16 @@ class TelegramApi {
   }
 
   messageToPartners(id, msg, msg2, workProcessId) {
-    messageFormClientToPartner = msg;
-    console.log('messageFormClientToPartner', messageFormClientToPartner);
     messageFormClientToPartnerFull = msg2;
     idProcess.push({
       'id': id,
-      'messageFormClientToPartner': messageFormClientToPartner,
-      'messageFormClientToPartnerFull': messageFormClientToPartnerFull,
+      'messageFormClientToPartner': msg,
+      'messageFormClientToPartnerFull': msg2,
       'workProcessId': workProcessId
     });
     botApi.sendMessage(id, msg, {
       reply_markup: {
-        inline_keyboard: inline_keyboard
+        inline_keyboard: constAPI.inline_keyboard
       }
     });
   }
@@ -127,31 +93,26 @@ class TelegramApi {
     const {from: {id}} = msg;
     const resp = match[1]; // the captured "whatever"
     let arr = resp.split(' ');
-    console.log('arr', arr);
-    if (arr.length === 2) {
+    if (arr.length === 1 && (!isNaN(resp)) && (13 > resp.length || resp.length > 5 )) {
       let foundAccount;
-      MongoClient.connect( DATABASE_URL, function (err, db) {
+      MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
         if (err) throw err;
         console.log("id", id);
         try {
           foundAccount = db.collection("partners").findOneAndUpdate({
-              fname: arr[0].toLowerCase(),
-              sname: arr[1].toLowerCase()
-            }, {$set: {"chatId": id}},
-            {
-              returnNewDocument: true,
-            });
+            phone_number: resp,
+          }, {$set: {"chatId": id}});
           db.close();
-          botApi.sendMessage(id, 'good! we added ' + arr[0] + ' ' + arr[1]);
+          botApi.sendMessage(id, 'good! we added ' + resp);
         } catch (e) {
           console.log('DB error', e);
-          botApi.sendMessage(id, 'wrong name, please resent the full name of partner ! first name & second name');
+          botApi.sendMessage(id, 'wrong name, please resent the full phone number of partner! only Integer');
         }
 
       });
     }
     else {
-      botApi.sendMessage(id, 'wrong name, please resent the full name of partner ! first name & second name');
+      botApi.sendMessage(id, 'wrong name, please resent the full phone number of partner !');
     }
   }
 
@@ -164,7 +125,7 @@ class TelegramApi {
     console.log('deleted partner: ', arr);
     if (arr.length === 2) {
       let foundAccount;
-      MongoClient.connect( DATABASE_URL, function (err, db) {
+      MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
         if (err) throw err;
         console.log("id", id);
         try {
@@ -194,7 +155,7 @@ class TelegramApi {
     console.log('add categories: ', categories[0].toLowerCase());
     if (categories.length === 1 && !message.from.is_bot) {
       let foundAccount = null;
-      MongoClient.connect( DATABASE_URL, function (err, db) {
+      MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
         if (err) throw err;
         console.log("id", id);
         try {
@@ -213,23 +174,58 @@ class TelegramApi {
     }
   }
 
+
   message(msg) {
     const {from: {id}} = msg;
     // bot.sendMessage(id, msg.text);
     console.log("msg here::::", msg);
+    console.log("idProcess here::::", idProcess);
+    //TODO need fix problem with adding idProcess to csv
+    // writer.pipe(fs.createWriteStream('out.csv'));
+    // console.log('created');
+    // writer.write(idProcess[0]);
+    // console.log('added');
+    // writer.end();
     if (msg.photo) {
       let photoFormUser = '';
-
-      console.log("PHOTO");
-      botApi.getFile(msg.photo[3].file_id).then((res) => {
-        photoFormUser = res.file_path;
-        let file = fs.createWriteStream(`./${res.file_path}`);
-        let request = http.get(`https://api.telegram.org/file/bot${configApi.telegram.token}/${photoFormUser}`, function (response) {
-          response.pipe(file);
+      let inline_keyboard_new = [];
+      let i =0;
+      idProcess.map((process) => {
+          if (process.id === id && process.heSayYes) {
+            console.log('PHOTO AFTER YES:');
+            i++;
+            let messageClient = process.messageFormClientToPartnerFull.split(' ');
+            let fullNameClient = i + ': ' + messageClient[1] + ' ' + messageClient [2];
+            inline_keyboard_new.push([{
+              text: fullNameClient,
+              callback_data: constAPI.COMMAND_ADD_PHOTO[i - 1]
+            }]);
+          }
+        }
+      );
+      console.log('inline_keyboard_new', inline_keyboard_new);
+      if (inline_keyboard_new.length > 0) {
+        botApi.getFile(msg.photo[2].file_id).then((res) => {
+          photoFormUser = res.file_path;
+          let file = fs.createWriteStream(`./${res.file_path}`);
+          let request = http.get(`https://api.telegram.org/file/bot${constAPI.configApi.telegram.token}/${photoFormUser}`, function (response) {
+            response.pipe(file);
+          });
+          // console.log('request:::::::>', request);
         });
-        console.log('request:::::::>', request);
+        botApi.sendMessage(msg.chat.id, "Choose the client with whom you have finished",
+          {
+            reply_to_message_id: msg.message_id,
+            reply_markup: {inline_keyboard: inline_keyboard_new}
+          });
+      } else {
+        botApi.sendMessage(msg.chat.id, "unfortunately you don't have open processes",
+          {
+            reply_to_message_id: msg.message_id
+          });
+      }
 
-      });
+
     }
     if (msg.text === '/add' || msg.text === '/add ') {
       botApi.sendMessage(id, 'wrong name, please resent the full name of partner !');
@@ -239,36 +235,52 @@ class TelegramApi {
   callback_query(query) {
     console.log('query', query);
     const {message: {chat, message_id, text}, from: {id}} = query;
+    let workProcessID = [];
+    for (let process in idProcess) {
+      console.log('process', process);
+      if (idProcess[process].id === id && idProcess[process].heSayYes) {
+        console.log('FINDING PHOTO ');
+        let messageClient = idProcess[process].messageFormClientToPartnerFull.split(' ');
+        let fullNameClient = messageClient[1] + ' ' + messageClient [2];
+        workProcessID.push({
+          text: fullNameClient,
+          workProcessId: idProcess[process].workProcessId
+        });
+      }
+    }
     switch (query.data) {
-      case  COMMAND_FORWARD:
+      case  constAPI.COMMAND_FORWARD:
         botApi.forwardMessage(chat.id, chat.id, message_id);
         break;
-      case  COMMAND_REPLAY:
+      case  constAPI.COMMAND_REPLAY:
         botApi.sendMessage(chat.id, 'Reply to message', {
           reply_to_message_id: message_id
         });
         break;
-      case  COMMAND_EDIT:
+      case  constAPI.COMMAND_EDIT:
         botApi.editMessageText(`${text}(edited)`, {
           chat_id: chat.id,
           message_id: message_id,
-          reply_markup: {inline_keyboard:  inline_keyboard}
+          reply_markup: {inline_keyboard: constAPI.inline_keyboard}
         });
         break;
-      case  COMMAND_DELETE:
+      case  constAPI.COMMAND_DELETE:
         botApi.deleteMessage(chat.id, message_id);
+        idProcess.map(process => {
+          idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId);
+        });
         break;
-      case  COMMAND_FINISH:
+      case  constAPI.COMMAND_FINISH:
         botApi.deleteMessage(chat.id, message_id);
         // let file = fs.readFileSync('./ApiBot/sss.jpg');
         console.log('idProcess:::', idProcess);
         idProcess.map(process => {
-          if (chat.id === process.id  && process.messageFormClientToPartnerFull.includes(text)) {
+          if (chat.id === process.id && process.messageFormClientToPartnerFull.includes(text)) {
             console.log('******************');
-            MongoClient.connect( DATABASE_URL, function (err, db) {
+            MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
               if (err) throw err;
               console.log('Connected to process collection established!');
-              let problemS = process.messageFormClientToPartner.match(FILTER_PROBLEM);
+              let problemS = process.messageFormClientToPartner.match(constAPI.FILTER_PROBLEM);
               let cleanProblem = problemS[0].replace(/PROBLEM:/g, '');
 
               var collection = db.collection('process');
@@ -277,10 +289,22 @@ class TelegramApi {
                   if (err) throw err;
                   if (process.messageFormClientToPartner.includes(res.problem)) {
                     console.log('INCLUDE PROBLEM !!!!!!!!!!!!!!!!');
-                    MongoClient.connect(DATABASE_URL, function (err, db) {
+                    MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
                       if (err) throw err;
                       console.log('Connected to process collection established!');
                       let collection = db.collection('done_process');
+                      let today = new Date();
+                      let h = today.getHours();
+                      h = h < 10 ? "0" + h : h;
+                      let m = today.getMinutes();
+                      m = m < 10 ? "0" + m : m;
+                      let date = today.getFullYear() + '-'
+                        + (today.getMonth() + 1) + '-'
+                        + today.getDate() + ' '
+                        + h + ':'
+                        + m;
+                      res['finish_data'] = date;
+                      res['finish_partnerID'] = id;
                       try {
                         collection.insertOne(res, function (err, r) {
                           if (err) throw err;
@@ -317,13 +341,13 @@ class TelegramApi {
               }
             });
             // botApi.sendPhoto(chat.id, file, {}, fileOpts);
-            idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId );
+            idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId);
             botApi.sendMessage(chat.id, 'Good job !!! ');
           } else {
             botApi.editMessageText('develop mode', {
               chat_id: chat.id,
               message_id: message_id,
-              reply_markup: {inline_keyboard:  process_step}
+              reply_markup: {inline_keyboard: constAPI.process_step}
             });
           }
           const fileOpts = {
@@ -333,23 +357,24 @@ class TelegramApi {
         });
 
         break;
-      case  COMMAND_YES:
+      case  constAPI.COMMAND_YES:
         console.log('YES:::');
         if (messageFormClientToPartnerFull) {
           console.log('idProcess::::', idProcess);
           idProcess.map(idProc => {
             if (idProc.id === id && idProc.messageFormClientToPartner.includes(text)) {
               console.log('COOOOOL NEW PROCESS!');
+              idProc['heSayYes'] = true;
               botApi.editMessageText(idProc.messageFormClientToPartnerFull, {
                 chat_id: id,
                 message_id: message_id,
-                reply_markup: {inline_keyboard:  process_step}
+                reply_markup: {inline_keyboard: constAPI.process_step}
               });
-              MongoClient.connect( DATABASE_URL, function (err, db) {
+              MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
                 if (err) throw err;
                 try {
                   db.collection('partners').findOneAndUpdate({
-                    chatId:id
+                      chatId: id
                     }, {$addToSet: {'work_process_id': idProc.workProcessId}},
                     {
                       returnNewDocument: true,
@@ -370,14 +395,83 @@ class TelegramApi {
               console.log('NOT YOU');
               if (idProc.messageFormClientToPartner.includes(text)) {
                 messageFormClientToPartnerFull = null;
-                botApi.sendMessage(idProc.id, 'Someone took  first. Process are closed you are miss!! next time');
+                botApi.sendMessage(idProc.id, 'Someone took  first process.');
               }
             }
           });
-        }else{
+        } else {
           console.log('Someone took  first');
-          botApi.deleteMessage(id, message_id);}
+          botApi.deleteMessage(id, message_id);
+        }
         break;
+      case  constAPI.COMMAND_ADD_PHOTO[0]:
+        botApi.deleteMessage(chat.id, message_id);
+        console.log('query.reply_to_message****', query.message.reply_to_message);
+        let pathImg = query.message.reply_to_message.photo[2].file_path;
+        console.log('query.reply_to_message.photo***', pathImg);
+        MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+          if (err) throw err;
+          try {
+            db.collection("process").findOneAndUpdate({
+              _id: new mongo.ObjectID(workProcessID[0].workProcessId),
+              partnerStarted:id
+            }, {$set: {"imgPath": pathImg}});
+            db.close();
+            botApi.sendMessage(id, 'good! we added img to process');
+          } catch (e) {
+            console.log('DB error', e);
+            botApi.sendMessage(id, 'wrong image , please resent, image must be jpeg');
+          }
+
+        });
+        //TODO add finish process here
+        break;
+      case  constAPI.COMMAND_ADD_PHOTO[1]:
+        botApi.deleteMessage(chat.id, message_id);
+        console.log('query.reply_to_message****', query.message.reply_to_message);
+        let pathImg2 = query.message.reply_to_message.photo[2].file_path;
+        console.log('query.reply_to_message.photo***', pathImg);
+        MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+          if (err) throw err;
+          try {
+            db.collection("process").findOneAndUpdate({
+              _id: new mongo.ObjectID(workProcessID[1].workProcessId),
+              partnerStarted:id
+            }, {$set: {"imgPath": pathImg2}});
+            db.close();
+            botApi.sendMessage(id, 'good! we added img to process');
+          } catch (e) {
+            console.log('DB error', e);
+            botApi.sendMessage(id, 'wrong image , please resent, image must be jpeg');
+          }
+
+        });
+        //TODO add finish process here
+
+        break;
+      case  constAPI.COMMAND_ADD_PHOTO[2]:
+        botApi.deleteMessage(chat.id, message_id);
+        console.log('query.reply_to_message****', query.message.reply_to_message);
+        let pathImg3 = query.message.reply_to_message.photo[2].file_path;
+        console.log('query.reply_to_message.photo***', pathImg);
+        MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+          if (err) throw err;
+          try {
+            db.collection("process").findOneAndUpdate({
+              _id: new mongo.ObjectID(workProcessID[2].workProcessId),
+              partnerStarted:id
+            }, {$set: {"imgPath": pathImg3}});
+            db.close();
+            botApi.sendMessage(id, 'good! we added img to process');
+          } catch (e) {
+            console.log('DB error', e);
+            botApi.sendMessage(id, 'wrong image , please resent, image must be jpeg');
+          }
+        });
+        //TODO add finish process here
+
+        break;
+
       default:
         botApi.sendMessage(chat.id, 'Wrong tipe')
 

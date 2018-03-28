@@ -73,7 +73,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './index.html'),
-      favicon: path.resolve(__dirname, './favicon.ico')
+      favicon: path.resolve(__dirname, './helper.ico')
     })
   ],
   module: {
