@@ -77,15 +77,20 @@ class TelegramApi {
 
   messageToPartners(id, msg, msg2, workProcessId) {
     //TODO need set filter topush to idProcess same process
-    messageFormClientToPartner = msg;
-    console.log('messageFormClientToPartner', messageFormClientToPartner);
-    messageFormClientToPartnerFull = msg2;
-    idProcess.push({
-      'id': id,
-      'messageFormClientToPartner': messageFormClientToPartner,
-      'messageFormClientToPartnerFull': messageFormClientToPartnerFull,
-      'workProcessId': workProcessId
-    });
+    for(let i in idProcess){
+      if(idProcess[i].messageFormClientToPartnerFull !==msg2 && idProcess[i].messageFormClientToPartner !==msg){
+        messageFormClientToPartner = msg;
+        console.log('messageFormClientToPartner', messageFormClientToPartner);
+        messageFormClientToPartnerFull = msg2;
+        idProcess.push({
+          'id': id,
+          'messageFormClientToPartner': messageFormClientToPartner,
+          'messageFormClientToPartnerFull': messageFormClientToPartnerFull,
+          'workProcessId': workProcessId
+        });
+      }
+    }
+
     botApi.sendMessage(id, msg, {
       reply_markup: {
         inline_keyboard: constAPI.inline_keyboard
