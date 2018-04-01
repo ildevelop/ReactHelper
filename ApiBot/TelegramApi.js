@@ -10,10 +10,13 @@ let writer = constAPI.csvWriter();
 let idProcess = [];
 
 class TelegramApi {
+
   constructor() {
     this.api = null;
   }
-
+  static testIlya(){
+    return 'ilya';
+  }
   init() {
     console.log('init bot');
     try {
@@ -375,7 +378,8 @@ class TelegramApi {
         break;
       case  constAPI.COMMAND_YES:
         console.log('YES:::');
-        if (messageFormClientToPartnerFull) {
+        console.log('THIS::::', TelegramApi.testIlya());
+          if (messageFormClientToPartnerFull) {
           console.log('idProcess::::', idProcess);
           idProcess.map(idProc => {
             if (idProc.id === id && idProc.messageFormClientToPartner.includes(text)) {
