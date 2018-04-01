@@ -208,8 +208,24 @@ class TelegramApi {
         botApi.getFile(msg.photo[2].file_id).then((res) => {
           photoFormUser = res.file_path;
           let file = fs.createWriteStream(`./${res.file_path}`);
-          let request = http.get(`https://api.telegram.org/file/bot${constAPI.configApi.telegram.token}/${photoFormUser}`, function (response) {
+          http.get(`https://api.telegram.org/file/bot${constAPI.configApi.telegram.token}/${photoFormUser}`, function (response, err) {
             response.pipe(file);
+            MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+              if (err) throw err;
+              // let collection = db.collection('process_images');
+              let bucket = new mongo.GridFSBucket(db, {
+                bucketName: 'process_images',
+                chunkSizeBytes: 10240 * 1024
+              });
+
+              fs.createReadStream(photoFormUser).pipe(
+                bucket.openUploadStream(photoFormUser)).on('error', function(error) {
+                console.log('Error:-', error);
+              }).on('finish', function() {
+                console.log('File Inserted!!');
+              });
+            });
+
           });
           // console.log('request:::::::>', request);
         });

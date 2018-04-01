@@ -76,7 +76,25 @@ const getExpressApplication = (application) => {
       response.json({'2': 2})
     }
   });
-
+  application.get('/get_process_image/*', function (request, response) {
+    let imageId = request.params[0];
+    MongoClient.connect(url, function (err, db) {
+      db.collection('process_images.chunks').find(
+        {'files_id': new mongo.ObjectID(imageId)}).toArray(function (err, results) {
+          response.setHeader('content-type', results[0].data._bsontype);
+          let chunks = null;
+          for(let result of results){
+            if (chunks === null) {
+              chunks= result.data.buffer;
+            }
+            else{
+              chunks+= result.data.buffer
+            }
+          }
+          response.send(chunks);
+        });
+    });
+  });
   application.post('/add_client', function (req, response) {
     response.setHeader('Content-Type', 'application/json');
     let client = req.body['clients'];
