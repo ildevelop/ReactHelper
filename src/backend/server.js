@@ -78,22 +78,26 @@ const getExpressApplication = (application) => {
   });
   application.get('/get_process_image/*', function (request, response) {
     let imageId = request.params[0];
-    MongoClient.connect(url, function (err, db) {
-      db.collection('process_images.chunks').find(
-        {'files_id': new mongo.ObjectID(imageId)}).toArray(function (err, results) {
-          response.setHeader('content-type', results[0].data._bsontype);
-          let chunks = null;
-          for(let result of results){
-            if (chunks === null) {
-              chunks= result.data.buffer;
+    if (imageId.length === 24) {
+      MongoClient.connect(url, function (err, db) {
+        db.collection('process_images.chunks').find(
+          {'files_id': new mongo.ObjectID(imageId)}).toArray(function (err, results) {
+          if(results.length>0){
+            response.setHeader('content-type', results[0].data._bsontype);
+            let chunks = null;
+            for (let result of results) {
+              if (chunks === null) {
+                chunks = result.data.buffer;
+              }
+              else {
+                chunks += result.data.buffer
+              }
             }
-            else{
-              chunks+= result.data.buffer
-            }
-          }
-          response.send(chunks);
+            response.send(chunks);
+          }else  response.send(null);
         });
-    });
+      });
+    } else response.send(null);
   });
   application.post('/add_client', function (req, response) {
     response.setHeader('Content-Type', 'application/json');
@@ -185,7 +189,7 @@ const getExpressApplication = (application) => {
               });
               for (let i in message.partner) {
                 if (message.partner[i].chatId) {
-                  telegramApi.messageToPartners(message.partner[i].chatId, msg, msg2,processId);
+                  telegramApi.messageToPartners(message.partner[i].chatId, msg, msg2, processId);
                 }
               }
             }
