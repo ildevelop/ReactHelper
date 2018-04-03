@@ -54,7 +54,7 @@ class Done extends Component {
             backgroundColor="#a4c639"
             icon={<ActionDownload color="#388E3C" />}
             style={style}
-            href={process.imgPath}
+            href={"localhost/"+process.imgPath}
             download
           />: <div/>}
         </div>
