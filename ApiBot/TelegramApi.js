@@ -443,34 +443,28 @@ class TelegramApi {
     console.log('workProcessID::::::', workProcessID);
     console.log('pathImg*-*-*-*', workProcessID.pathImg);
     console.log('pathImg*-*-*-*', pathImg);
-    ////////////////////////////////////////////
-    //TODO add _id from process_images.files to process
-    let idProcess_imagess_files = null;
+    //TODO NEED CHANGE PATH IMG IN FIRST UPLOAD
     if (pathImg){
       try {
         MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
-          db.collection('process_images.files').find(
-            {'filename': pathImg}).toArray(function (err, results) {
-            console.log('results::::::::', results);
-            idProcess_imagess_files = results[0]._id;
-            try {
-              db.collection("process").findOneAndUpdate({
-                _id: new mongo.ObjectID(workProcessID.workProcessId),
-                partnerStarted: id
-              }, {$set: {"imgPath": idProcess_imagess_files}});
-              db.close();
-              botApi.sendMessage(id, 'good! we added img to process');
-            } catch (e) {
-              console.log('DB error', e);
-              botApi.sendMessage(id, 'wrong image , please resent, image must be jpeg');
-            }
+          if (err) throw err;
+          try {
+            db.collection("process").findOneAndUpdate({
+              _id: new mongo.ObjectID(workProcessID.workProcessId),
+              partnerStarted:id
+            }, {$set: {"imgPath": pathImg}});
             db.close();
-          })
+            botApi.sendMessage(id, 'good! we added img to process');
+          } catch (e) {
+            console.log('DB error', e);
+            botApi.sendMessage(id, 'wrong image , please resent, image must be jpeg');
+          }
         })
       } catch (e) {
         console.log('EEEEE', e);
       }
     }else {
+      botApi.sendMessage(id, 'try again!');
       console.log('>>>>SOMETHING WRONG !!!!!!!!!!!!!!!!!!!!!pathImg:',pathImg)
     }
 
