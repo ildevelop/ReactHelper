@@ -302,7 +302,7 @@ class TelegramApi {
                 chat_id: id,
                 message_id: message_id
               });
-              botApi.sendMessage(id,'Please send photo invoice');
+              botApi.sendMessage(id, 'Please send photo invoice');
               MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
                 if (err) throw err;
                 try {
@@ -328,13 +328,13 @@ class TelegramApi {
               console.log('NOT YOU');
               if (idProc.messageFormClientToPartner.includes(text)) {
                 messageFormClientToPartnerFull = null;
-                botApi.sendMessage(idProc.id, 'Someone took  first process.');
+                if (idProc.id ===id) {botApi.sendMessage(id, 'Someone took  first process.');}
               }
             }
           });
         } else {
-          console.log('Someone took  first');
           botApi.deleteMessage(id, message_id);
+          botApi.sendMessage(id, 'Someone took  first process.');
         }
         break;
       case  constAPI.COMMAND_ADD_PHOTO[0]:
@@ -403,7 +403,8 @@ class TelegramApi {
             try {
               collection.findOne({"problem": cleanProblem}).then((res, err) => {
                 if (err) throw err;
-                if (process.messageFormClientToPartner.includes(res.problem)) {
+                console.log('RESSSSS!!: ', res);
+                if (res.partnerStarted === id) {
                   console.log('INCLUDE PROBLEM !!!!!!!!!!!!!!!!');
                   MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
                     if (err) throw err;
@@ -425,8 +426,9 @@ class TelegramApi {
                   console.log('WTF');
                 }
               });
-              collection.deleteOne({"problem": cleanProblem}, function (err, res) {
+              db.collection('process').deleteOne({"partnerStarted": id}, function (err, res) {
                 if (err) throw err;
+                console.log('deleted from process' ,res);
                 db.close();
               });
             } catch (e) {
@@ -452,9 +454,9 @@ class TelegramApi {
           contentType: 'image/jpeg'
         };
       });
-    }else {
+    } else {
       botApi.sendMessage(id, 'try again!');
-      console.log('>>>>SOMETHING WRONG !!!!!!!!!!!!!!!!!!!!!pathImg:',pathImg)
+      console.log('>>>>SOMETHING WRONG !!!!!!!!!!!!!!!!!!!!!pathImg:', pathImg)
     }
   }
 }
