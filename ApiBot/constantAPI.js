@@ -24,14 +24,6 @@ const inline_keyboard = [
   ]
 ];
 
-const process_step = [
-  [
-    {
-      text: 'Please send photo invoice before FINISH!',
-      callback_data: COMMAND_FINISH
-    }
-  ]
-];
 const FILTER_PROBLEM =  /PROBLEM:[a-zA-Z 1-9]*/;
 const constAPI = {
   DATABASE_URL: DATABASE_URL,
@@ -44,7 +36,6 @@ const constAPI = {
   COMMAND_FORWARD: COMMAND_FORWARD,
   COMMAND_YES: COMMAND_YES,
   inline_keyboard: inline_keyboard,
-  process_step: process_step,
   FILTER_PROBLEM: FILTER_PROBLEM,
   COMMAND_ADD_PHOTO:COMMAND_ADD_PHOTO,
   csvWriter:csvWriter,

@@ -288,83 +288,8 @@ class TelegramApi {
           idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId);
         });
         break;
-      case  constAPI.COMMAND_FINISH:
-        botApi.deleteMessage(chat.id, message_id);
-        // let file = fs.readFileSync('./ApiBot/sss.jpg');
-        console.log('idProcess:::', idProcess);
-        idProcess.map(process => {
-          if (chat.id === process.id && process.messageFormClientToPartnerFull.includes(text)) {
-            console.log('******************');
-            MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
-              if (err) throw err;
-              console.log('Connected to process collection established!');
-              let problemS = process.messageFormClientToPartner.match(constAPI.FILTER_PROBLEM);
-              let cleanProblem = problemS[0].replace(/PROBLEM:/g, '');
+      //case  constAPI.COMMAND_FINISH:
 
-              let collection = db.collection('process');
-              try {
-                collection.findOne({"problem": cleanProblem}).then((res, err) => {
-                  if (err) throw err;
-                  if (process.messageFormClientToPartner.includes(res.problem)) {
-                    console.log('INCLUDE PROBLEM !!!!!!!!!!!!!!!!');
-                    MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
-                      if (err) throw err;
-                      console.log('Connected to process collection established!');
-                      let collection = db.collection('done_process');
-                      res['finish_data'] = constAPI.staticFunction.getDateNow();
-                      res['finish_partnerID'] = id;
-                      try {
-                        collection.insertOne(res, function (err, r) {
-                          if (err) throw err;
-                          db.close();
-                        })
-                      } catch (e) {
-                        console.log('ERROR:::', e)
-                      }
-                    });
-                  }
-                  else {
-                    console.log('WTF');
-                  }
-                });
-                collection.deleteOne({"problem": cleanProblem}, function (err, res) {
-                  if (err) throw err;
-                  db.close();
-                });
-              } catch (e) {
-                console.log(e)
-              }
-              collection = db.collection('partners');
-              try {
-                console.log('ID process in idProcess::::::::', process.workProcessId);
-                collection.update({
-                    work_process_id: process.workProcessId,
-                  }, {$pull: {work_process_id: process.workProcessId}},
-                  {
-                    returnNewDocument: true,
-                  });
-                db.close();
-              } catch (e) {
-                console.log('DB error', e);
-              }
-            });
-            // botApi.sendPhoto(chat.id, file, {}, fileOpts);
-            idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId);
-            botApi.sendMessage(chat.id, 'Good job !!! ');
-          } else {
-            botApi.editMessageText('develop mode', {
-              chat_id: chat.id,
-              message_id: message_id,
-              reply_markup: {inline_keyboard: constAPI.process_step}
-            });
-          }
-          const fileOpts = {
-            filename: 'sss',
-            contentType: 'image/jpeg'
-          };
-        });
-
-        break;
       case  constAPI.COMMAND_YES:
         console.log('YES:::');
         if (messageFormClientToPartnerFull) {
@@ -375,9 +300,9 @@ class TelegramApi {
               idProc['heSayYes'] = true;
               botApi.editMessageText(idProc.messageFormClientToPartnerFull, {
                 chat_id: id,
-                message_id: message_id,
-                reply_markup: {inline_keyboard: constAPI.process_step}
+                message_id: message_id
               });
+              botApi.sendMessage(id,'Please send photo invoice');
               MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
                 if (err) throw err;
                 try {
@@ -473,6 +398,69 @@ class TelegramApi {
     ////////////////////////////////////
 
     //TODO add finish process here
+    // let file = fs.readFileSync('./ApiBot/sss.jpg');
+    idProcess.map(process => {
+      if ( process.workProcessId === workProcessID.workProcessId) {
+        console.log('******************');
+        MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+          if (err) throw err;
+          console.log('Connected to process collection established!');
+          let problemS = process.messageFormClientToPartner.match(constAPI.FILTER_PROBLEM);
+          let cleanProblem = problemS[0].replace(/PROBLEM:/g, '');
+
+          let collection = db.collection('process');
+          try {
+            collection.findOne({"problem": cleanProblem}).then((res, err) => {
+              if (err) throw err;
+              if (process.messageFormClientToPartner.includes(res.problem)) {
+                console.log('INCLUDE PROBLEM !!!!!!!!!!!!!!!!');
+                MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+                  if (err) throw err;
+                  console.log('Connected to process collection established!');
+                  let collection = db.collection('done_process');
+                  res['finish_data'] = constAPI.staticFunction.getDateNow();
+                  res['finish_partnerID'] = id;
+                  try {
+                    collection.insertOne(res, function (err, r) {
+                      if (err) throw err;
+                      db.close();
+                    })
+                  } catch (e) {
+                    console.log('ERROR:::', e)
+                  }
+                });
+              }
+              else {
+                console.log('WTF');
+              }
+            });
+            collection.deleteOne({"problem": cleanProblem}, function (err, res) {
+              if (err) throw err;
+              db.close();
+            });
+          } catch (e) {
+            console.log(e)
+          }
+          collection = db.collection('partners');
+          try {
+            console.log('ID process in idProcess::::::::', process.workProcessId);
+            collection.update({
+                work_process_id: process.workProcessId,
+              }, {$pull: {work_process_id: process.workProcessId}});
+            db.close();
+          } catch (e) {
+            console.log('DB error', e);
+          }
+        });
+        // botApi.sendPhoto(chat.id, file, {}, fileOpts);
+        idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId);
+        botApi.sendMessage(id, 'Good job !!! ');
+      }
+      const fileOpts = {
+        filename: 'sss',
+        contentType: 'image/jpeg'
+      };
+    });
 
   }
 }
