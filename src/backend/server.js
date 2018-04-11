@@ -11,7 +11,7 @@ let MongoClient = mongo.MongoClient;
 const config = require('../../webpack.config');
 let url = 'mongodb://localhost:27017/test12';
 const port = 3000;
-const hostname = 'localhost';
+const hostname = '192.168.0.102';
 const telagramBotApi = require('../../ApiBot/TelegramApi');
 
 /*

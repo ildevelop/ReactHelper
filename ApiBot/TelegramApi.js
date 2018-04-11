@@ -380,9 +380,10 @@ class TelegramApi {
 
               MongoClient.connect(constAPI.DATABASE_URL, function (err, dbb) {
                 try {
-                  console.log('workProcessID.workProcessId:::::::',workProcessID.workProcessId);
+                  console.log('workProcessID.workProcessId:::::::', workProcessID.workProcessId);
                   dbb.collection("process").findOneAndUpdate({
-                    _id: workProcessID.workProcessId}, {$set: {"imgPath": pathIMGlocal}});
+                    _id: workProcessID.workProcessId
+                  }, {$set: {"imgPath": pathIMGlocal}});
                   dbb.close();
                   botApi.sendMessage(id, 'good! we added img to process');
                 } catch (e) {
@@ -402,12 +403,13 @@ class TelegramApi {
       );
       // botApi.sendMessage(id, 'try again!');
       console.log('>>>>SOMETHING WRONG !!!!!!!!!!!!!!!!!!!!!pathIMGlocal:', pathIMGlocal)
-    }else {
+    } else {
       MongoClient.connect(constAPI.DATABASE_URL, function (err, dbb) {
         try {
-          console.log('workProcessID.workProcessId:::::::',workProcessID.workProcessId);
+          console.log('workProcessID.workProcessId:::::::', workProcessID.workProcessId);
           dbb.collection("process").findOneAndUpdate({
-            _id: workProcessID.workProcessId}, {$set: {"imgPath": pathIMGlocal}});
+            _id: workProcessID.workProcessId
+          }, {$set: {"imgPath": pathIMGlocal}});
           dbb.close();
           botApi.sendMessage(id, 'good! we added img to process');
         } catch (e) {
@@ -421,7 +423,7 @@ class TelegramApi {
     // let file = fs.readFileSync('./ApiBot/sss.jpg');
     setTimeout(() => {
       idProcess.map(process => {
-        if (process.workProcessId === workProcessID.workProcessId) {
+        if (process.workProcessId === workProcessID.workProcessId && process.id ===id) {
           console.log('******************');
           MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
             if (err) throw err;
@@ -436,21 +438,22 @@ class TelegramApi {
                 // console.log('RESSSSS!!: ', res);
                 if (res.partnerStarted === id) {
                   console.log('INCLUDE PROBLEM !!!!!!!!!!!!!!!!');
-                  MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
-                    if (err) throw err;
-                    console.log('Connected to process collection established!');
-                    let collection = db.collection('done_process');
-                    res['finish_data'] = constAPI.staticFunction.getDateNow();
-                    res['finish_partnerID'] = id;
-                    try {
+                  try {
+                    MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+                      if (err) throw err;
+                      console.log('Connected to process collection established!');
+                      let collection = db.collection('done_process');
+                      res['finish_data'] = constAPI.staticFunction.getDateNow();
+                      res['finish_partnerID'] = id;
                       collection.insertOne(res, function (err, r) {
                         if (err) throw err;
                         db.close();
                       })
-                    } catch (e) {
-                      console.log('ERROR:::', e)
-                    }
-                  });
+                    });
+
+                  } catch (e) {
+                    console.log('ERROR:::', e)
+                  }
                 }
                 else {
                   console.log('WTF');
