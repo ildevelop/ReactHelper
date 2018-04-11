@@ -328,7 +328,9 @@ class TelegramApi {
               console.log('NOT YOU');
               if (idProc.messageFormClientToPartner.includes(text)) {
                 messageFormClientToPartnerFull = null;
-                if (idProc.id ===id) {botApi.sendMessage(id, 'Someone took  first process.');}
+                if (idProc.id === id) {
+                  botApi.sendMessage(id, 'Someone took  first process.');
+                }
               }
             }
           });
@@ -339,15 +341,11 @@ class TelegramApi {
         break;
       case  constAPI.COMMAND_ADD_PHOTO[0]:
         botApi.deleteMessage(chat.id, message_id);
-        console.log('query.reply_to_message****', query.message.reply_to_message);
         let pathImg = query.message.reply_to_message.photo[2].file_path;
-        console.log('pathImg::::', pathImg);
-        console.log('query.message.reply_to_message.photo', query.message.reply_to_message.photo);
         TelegramApi.addImageToProcess(pathImg, id, workProcessID[0]);
         break;
       case  constAPI.COMMAND_ADD_PHOTO[1]:
         botApi.deleteMessage(chat.id, message_id);
-        console.log('query.reply_to_message****', query.message.reply_to_message);
         let pathImg2 = query.message.reply_to_message.photo[2].file_path;
         TelegramApi.addImageToProcess(pathImg2, id, workProcessID[1]);
         break;
@@ -368,30 +366,62 @@ class TelegramApi {
     console.log('workProcessID::::::', workProcessID);
     console.log('pathImg*-*-*-*', workProcessID.pathImg);
     console.log('pathImg*-*-*-*', pathImg);
-    //TODO NEED CHANGE PATH IMG IN FIRST UPLOAD
-    if (pathImg){
-      try {
-        MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
-          if (err) throw err;
+    let pathIMGlocal = pathImg;
+    /////////////////////////////////////////
+    if (!pathIMGlocal) {
+      MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
           try {
-            db.collection("process").findOneAndUpdate({
-              _id: new mongo.ObjectID(workProcessID.workProcessId),
-              partnerStarted:id
-            }, {$set: {"imgPath": pathImg}});
-            db.close();
-            botApi.sendMessage(id, 'good! we added img to process');
-          } catch (e) {
-            console.log('DB error', e);
-            botApi.sendMessage(id, 'wrong image , please resent, image must be jpeg');
+            db.collection("process_images.files").find({
+              UserId: id
+            }).toArray(function (err, res) {
+              console.log("resresres:", res[res.length - 1].filename);
+              pathIMGlocal = res[res.length - 1].filename;
+              console.log('LOCAL_PATH1', pathIMGlocal);
+
+              MongoClient.connect(constAPI.DATABASE_URL, function (err, dbb) {
+                try {
+                  console.log('workProcessID.workProcessId:::::::',workProcessID.workProcessId);
+                  dbb.collection("process").findOneAndUpdate({
+                    _id: workProcessID.workProcessId}, {$set: {"imgPath": pathIMGlocal}});
+                  dbb.close();
+                  botApi.sendMessage(id, 'good! we added img to process');
+                } catch (e) {
+                  console.log('DB error', e);
+                  botApi.sendMessage(id, 'wrong image , please resent, image must be jpeg');
+                }
+              });
+              db.close();
+              console.log('LOCAL_PATH2', pathIMGlocal);
+            });
+          } catch
+            (e) {
+            console.log('DB error:*-', e);
+
           }
-        })
-      } catch (e) {
-        console.log('EEEEE', e);
-      }
-      //******FINISH PROCESS
-      // let file = fs.readFileSync('./ApiBot/sss.jpg');
+        }
+      );
+      // botApi.sendMessage(id, 'try again!');
+      console.log('>>>>SOMETHING WRONG !!!!!!!!!!!!!!!!!!!!!pathIMGlocal:', pathIMGlocal)
+    }else {
+      MongoClient.connect(constAPI.DATABASE_URL, function (err, dbb) {
+        try {
+          console.log('workProcessID.workProcessId:::::::',workProcessID.workProcessId);
+          dbb.collection("process").findOneAndUpdate({
+            _id: workProcessID.workProcessId}, {$set: {"imgPath": pathIMGlocal}});
+          dbb.close();
+          botApi.sendMessage(id, 'good! we added img to process');
+        } catch (e) {
+          console.log('DB error', e);
+          botApi.sendMessage(id, 'wrong image , please resent, image must be jpeg');
+        }
+      });
+    }
+
+    //******FINISH PROCESS
+    // let file = fs.readFileSync('./ApiBot/sss.jpg');
+    setTimeout(() => {
       idProcess.map(process => {
-        if ( process.workProcessId === workProcessID.workProcessId) {
+        if (process.workProcessId === workProcessID.workProcessId) {
           console.log('******************');
           MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
             if (err) throw err;
@@ -403,7 +433,7 @@ class TelegramApi {
             try {
               collection.findOne({"problem": cleanProblem}).then((res, err) => {
                 if (err) throw err;
-                console.log('RESSSSS!!: ', res);
+                // console.log('RESSSSS!!: ', res);
                 if (res.partnerStarted === id) {
                   console.log('INCLUDE PROBLEM !!!!!!!!!!!!!!!!');
                   MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
@@ -428,7 +458,6 @@ class TelegramApi {
               });
               db.collection('process').deleteOne({"partnerStarted": id}, function (err, res) {
                 if (err) throw err;
-                console.log('deleted from process' ,res);
                 db.close();
               });
             } catch (e) {
@@ -445,19 +474,11 @@ class TelegramApi {
               console.log('DB error', e);
             }
           });
-          // botApi.sendPhoto(chat.id, file, {}, fileOpts);
           idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId);
           botApi.sendMessage(id, 'Good job !!! ');
         }
-        const fileOpts = {
-          filename: 'sss',
-          contentType: 'image/jpeg'
-        };
       });
-    } else {
-      botApi.sendMessage(id, 'try again!');
-      console.log('>>>>SOMETHING WRONG !!!!!!!!!!!!!!!!!!!!!pathImg:', pathImg)
-    }
+    }, 1000);
   }
 }
 
