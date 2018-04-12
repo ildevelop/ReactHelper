@@ -337,7 +337,6 @@ class TelegramApi {
             idProc['heSayYes'] = true;
             MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
               if (err) throw err;
-              console.log('idProc._id', idProc._id);
               try {
                 db.collection('idProcess').findOneAndUpdate({
                   id: id, workProcessId: idProc.workProcessId
@@ -524,9 +523,11 @@ class TelegramApi {
               console.log('ERROR Remove:::', e);
             }
           });
+          let idProcessLocal = [];
           idProcess.map(process => {
-            idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId);
+            idProcessLocal = idProcess.filter(proc => proc.workProcessId !== process.workProcessId);
           });
+          idProcess = idProcessLocal;
           MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
             if (err) throw err;
             try {
