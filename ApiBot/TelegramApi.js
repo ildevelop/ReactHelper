@@ -322,14 +322,9 @@ class TelegramApi {
             console.log('ERROR Remove:::', e);
           }
         });
-        console.log('<<<<<<idprocess before', idProcess);
-        console.log('DONEREMOVE');
         idProcess.map(process => {
           idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId);
         });
-
-        console.log('>>>>>>>idprocess after', idProcess);
-        console.log('start INSERTMANY to IDPROCESS');
         MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
           if (err) throw err;
           try {
@@ -339,7 +334,6 @@ class TelegramApi {
             console.log('ERROR INSERTMANY to IDPROCESS:::', e);
           }
         });
-        console.log('finish INSERTMANY to IDPROCESS');
         break;
       //case  constAPI.COMMAND_FINISH:
 
@@ -429,8 +423,6 @@ class TelegramApi {
 
   static addImageToProcess(pathImg, id, workProcessID) {
     console.log('workProcessID::::::', workProcessID);
-    console.log('pathImg*-*-*-*', workProcessID.pathImg);
-    console.log('pathImg*-*-*-*', pathImg);
     let pathIMGlocal = pathImg;
     /////////////////////////////////////////
     if (!pathIMGlocal) {
@@ -441,8 +433,6 @@ class TelegramApi {
             }).toArray(function (err, res) {
               console.log("resresres:", res[res.length - 1].filename);
               pathIMGlocal = res[res.length - 1].filename;
-              console.log('LOCAL_PATH1', pathIMGlocal);
-
               MongoClient.connect(constAPI.DATABASE_URL, function (err, dbb) {
                 try {
                   console.log('workProcessID.workProcessId:::::::', workProcessID.workProcessId);
@@ -457,7 +447,6 @@ class TelegramApi {
                 }
               });
               db.close();
-              console.log('LOCAL_PATH2', pathIMGlocal);
             });
           } catch
             (e) {
@@ -542,7 +531,27 @@ class TelegramApi {
               console.log('DB error', e);
             }
           });
-          idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId);
+          MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+            if (err) throw err;
+            try {
+              db.collection('idProcess').removeMany();
+              db.close();
+            } catch (e) {
+              console.log('ERROR Remove:::', e);
+            }
+          });
+          idProcess.map(process => {
+            idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId);
+          });
+          MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+            if (err) throw err;
+            try {
+              db.collection('idProcess').insertMany(idProcess);
+              db.close();
+            } catch (e) {
+              console.log('ERROR INSERTMANY to IDPROCESS:::', e);
+            }
+          });
           botApi.sendMessage(id, 'Good job !!! ');
         }
       });
