@@ -29,6 +29,20 @@ class TelegramApi {
       console.error(ex);
       return false;
     }
+    MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+      if (err) throw err;
+      try {
+        db.collection('idProcess').find({}).toArray((err, result) => {
+          if (err) throw err;
+          console.log('resssss:', result);
+          idProcess= result;
+        });
+        console.log('idProcess************** INIT:',idProcess);
+        db.close();
+      } catch (e) {
+        console.log('ERROR Remove:::', e);
+      }
+    });
     console.log('Initiated telegram bot api successfully!');
     return true;
   }
@@ -80,6 +94,20 @@ class TelegramApi {
       'messageFormClientToPartner': msg,
       'messageFormClientToPartnerFull': msg2,
       'workProcessId': workProcessId
+    });
+    MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+      if (err) throw err;
+      try {
+        db.collection('idProcess').insertOne({
+            'id': id,
+            'messageFormClientToPartner': msg,
+            'messageFormClientToPartnerFull': msg2,
+            'workProcessId': workProcessId
+          });
+        db.close();
+      } catch (e) {
+        console.log('ERROR Insert idProcess:', e);
+      }
     });
     botApi.sendMessage(id, msg, {
       reply_markup: {
@@ -284,9 +312,34 @@ class TelegramApi {
         break;
       case  constAPI.COMMAND_DELETE:
         botApi.deleteMessage(chat.id, message_id);
+        console.log('REMOVE idProcess');
+        MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+          if (err) throw err;
+          try {
+            db.collection('idProcess').removeMany();
+            db.close();
+          } catch (e) {
+            console.log('ERROR Remove:::', e);
+          }
+        });
+        console.log('<<<<<<idprocess before', idProcess);
+        console.log('DONEREMOVE');
         idProcess.map(process => {
           idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId);
         });
+
+        console.log('>>>>>>>idprocess after', idProcess);
+        console.log('start INSERTMANY to IDPROCESS');
+        MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+          if (err) throw err;
+          try {
+            db.collection('idProcess').insertMany(idProcess);
+            db.close();
+          } catch (e) {
+            console.log('ERROR INSERTMANY to IDPROCESS:::', e);
+          }
+        });
+        console.log('finish INSERTMANY to IDPROCESS');
         break;
       //case  constAPI.COMMAND_FINISH:
 
@@ -298,6 +351,18 @@ class TelegramApi {
             if (idProc.id === id && idProc.messageFormClientToPartner.includes(text)) {
               console.log('COOOOOL NEW PROCESS!');
               idProc['heSayYes'] = true;
+              MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+                if (err) throw err;
+                console.log('idProc._id',idProc._id);
+                try {
+                  db.collection('idProcess').findOneAndUpdate({
+                    id: id,workProcessId:idProc.workProcessId
+                  },{$set: {'heSayYes': true}});
+                  db.close();
+                } catch (e) {
+                  console.log('ERROR INSERTMANY to IDPROCESS:::', e);
+                }
+              });
               botApi.editMessageText(idProc.messageFormClientToPartnerFull, {
                 chat_id: id,
                 message_id: message_id
@@ -408,7 +473,7 @@ class TelegramApi {
         try {
           console.log('workProcessID.workProcessId:::::::', workProcessID.workProcessId);
           dbb.collection("process").findOneAndUpdate({
-            _id: workProcessID.workProcessId
+            _id: new mongo.ObjectID(workProcessID.workProcessId)
           }, {$set: {"imgPath": pathIMGlocal}});
           dbb.close();
           botApi.sendMessage(id, 'good! we added img to process');
