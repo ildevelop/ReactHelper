@@ -163,7 +163,6 @@ class TelegramApi {
         }
 
       });
-      // setTimeout(console.log('finded',foundAccount ),2000)
     }
     else {
       botApi.sendMessage(id, 'wrong name, please resent the full name of partner ! first name & second name');
@@ -313,9 +312,11 @@ class TelegramApi {
             console.log('ERROR Remove:::', e);
           }
         });
+        let idProcessLocal = [];
         idProcess.map(process => {
-          idProcess = idProcess.filter(proc => proc.workProcessId !== process.workProcessId);
+          idProcessLocal = idProcess.filter(proc => proc.workProcessId !== process.workProcessId);
         });
+        idProcess = idProcessLocal;
         MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
           if (err) throw err;
           try {
@@ -325,6 +326,7 @@ class TelegramApi {
             console.log('ERROR INSERTMANY to IDPROCESS:::', e);
           }
         });
+        //TODO need delete work_process_id from partner
         break;
       //case  constAPI.COMMAND_FINISH:
 
