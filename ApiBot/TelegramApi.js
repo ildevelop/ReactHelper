@@ -5,7 +5,6 @@ let http = require('https');
 let mongo = require('mongodb');
 let MongoClient = mongo.MongoClient;
 let botApi = null;
-let messageFormClientToPartnerFull = '';
 let idProcess = [];
 
 class TelegramApi {
@@ -35,9 +34,8 @@ class TelegramApi {
         db.collection('idProcess').find({}).toArray((err, result) => {
           if (err) throw err;
           console.log('resssss:', result);
-          idProcess= result;
+          idProcess = result;
         });
-        console.log('idProcess************** INIT:',idProcess);
         db.close();
       } catch (e) {
         console.log('ERROR Remove:::', e);
@@ -88,7 +86,6 @@ class TelegramApi {
   }
 
   messageToPartners(id, msg, msg2, workProcessId) {
-    messageFormClientToPartnerFull = msg2;
     idProcess.push({
       'id': id,
       'messageFormClientToPartner': msg,
@@ -99,11 +96,11 @@ class TelegramApi {
       if (err) throw err;
       try {
         db.collection('idProcess').insertOne({
-            'id': id,
-            'messageFormClientToPartner': msg,
-            'messageFormClientToPartnerFull': msg2,
-            'workProcessId': workProcessId
-          });
+          'id': id,
+          'messageFormClientToPartner': msg,
+          'messageFormClientToPartnerFull': msg2,
+          'workProcessId': workProcessId
+        });
         db.close();
       } catch (e) {
         console.log('ERROR Insert idProcess:', e);
@@ -203,12 +200,6 @@ class TelegramApi {
     const {from: {id}} = msg;
     console.log("msg here::::", msg);
     console.log("idProcess here::::", idProcess);
-    //TODO need fix problem with adding idProcess to csv
-    // writer.pipe(fs.createWriteStream('out.csv'));
-    // console.log('created');
-    // writer.write(idProcess[0]);
-    // console.log('added');
-    // writer.end();
     if (msg.photo) {
       let photoFormUser = '';
       let inline_keyboard_new = [];
@@ -339,64 +330,57 @@ class TelegramApi {
 
       case  constAPI.COMMAND_YES:
         console.log('YES:::');
-        if (messageFormClientToPartnerFull) {
-          console.log('idProcess::::', idProcess);
-          idProcess.map(idProc => {
-            if (idProc.id === id && idProc.messageFormClientToPartner.includes(text)) {
-              console.log('COOOOOL NEW PROCESS!');
-              idProc['heSayYes'] = true;
-              MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
-                if (err) throw err;
-                console.log('idProc._id',idProc._id);
-                try {
-                  db.collection('idProcess').findOneAndUpdate({
-                    id: id,workProcessId:idProc.workProcessId
-                  },{$set: {'heSayYes': true}});
-                  db.close();
-                } catch (e) {
-                  console.log('ERROR INSERTMANY to IDPROCESS:::', e);
-                }
-              });
-              botApi.editMessageText(idProc.messageFormClientToPartnerFull, {
-                chat_id: id,
-                message_id: message_id
-              });
-              botApi.sendMessage(id, 'Please send photo invoice');
-              MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
-                if (err) throw err;
-                try {
-                  db.collection('partners').findOneAndUpdate({
-                      chatId: id
-                    }, {$addToSet: {'work_process_id': idProc.workProcessId}},
-                    {
-                      returnNewDocument: true,
-                    });
-                  db.collection('process').findOneAndUpdate({
-                      _id: idProc.workProcessId
-                    }, {$set: {'partnerStarted': id}},
-                    {
-                      returnNewDocument: true,
-                    });
-                  db.close();
-                } catch (e) {
-                  console.log('ERROR:::', e);
-                }
-              });
-
-            } else {
-              console.log('NOT YOU');
-              if (idProc.messageFormClientToPartner.includes(text)) {
-                messageFormClientToPartnerFull = null;
-                if (idProc.id === id) {
-                  botApi.sendMessage(id, 'Someone took  first process.');
-                }
+        console.log('idProcess::::', idProcess);
+        idProcess.map(idProc => {
+          if (idProc.id === id && idProc.messageFormClientToPartner.includes(text)) {
+            console.log('COOOOOL NEW PROCESS!');
+            idProc['heSayYes'] = true;
+            MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+              if (err) throw err;
+              console.log('idProc._id', idProc._id);
+              try {
+                db.collection('idProcess').findOneAndUpdate({
+                  id: id, workProcessId: idProc.workProcessId
+                }, {$set: {'heSayYes': true}});
+                db.close();
+              } catch (e) {
+                console.log('ERROR INSERTMANY to IDPROCESS:::', e);
               }
+            });
+            botApi.editMessageText(idProc.messageFormClientToPartnerFull, {
+              chat_id: id,
+              message_id: message_id
+            });
+            botApi.sendMessage(id, 'Please send photo invoice');
+            MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+              if (err) throw err;
+              try {
+                db.collection('partners').findOneAndUpdate({
+                    chatId: id
+                  }, {$addToSet: {'work_process_id': idProc.workProcessId}},
+                  {
+                    returnNewDocument: true,
+                  });
+                db.collection('process').findOneAndUpdate({
+                    _id: idProc.workProcessId
+                  }, {$set: {'partnerStarted': id}},
+                  {
+                    returnNewDocument: true,
+                  });
+                db.close();
+              } catch (e) {
+                console.log('ERROR:::', e);
+              }
+            });
+
+          } else {
+            console.log('NOT YOU');
+            if (idProc.messageFormClientToPartner.includes(text) && idProc.id === id) {
+              botApi.deleteMessage(id, message_id);
+              botApi.sendMessage(id, 'Someone took  first process.');
             }
-          });
-        } else {
-          botApi.deleteMessage(id, message_id);
-          botApi.sendMessage(id, 'Someone took  first process.');
-        }
+          }
+        });
         break;
       case  constAPI.COMMAND_ADD_PHOTO[0]:
         botApi.deleteMessage(chat.id, message_id);
@@ -477,7 +461,7 @@ class TelegramApi {
     // let file = fs.readFileSync('./ApiBot/sss.jpg');
     setTimeout(() => {
       idProcess.map(process => {
-        if (process.workProcessId === workProcessID.workProcessId && process.id ===id) {
+        if (process.workProcessId === workProcessID.workProcessId && process.id === id) {
           console.log('******************');
           MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
             if (err) throw err;
