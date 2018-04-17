@@ -333,50 +333,71 @@ class TelegramApi {
       case  constAPI.COMMAND_YES:
         console.log('YES:::');
         console.log('idProcess::::', idProcess);
+        let weHaveYes = 0;
+        idProcess.map(idProcF => {
+          if (idProcF.messageFormClientToPartner.includes(text)) {
+            if (idProcF.heSayYes) weHaveYes++
+
+          }
+        });
+        console.log('weHaveYes', weHaveYes);
         idProcess.map(idProc => {
           if (idProc.id === id && idProc.messageFormClientToPartner.includes(text)) {
-            console.log('COOOOOL NEW PROCESS!');
-            idProc['heSayYes'] = true;
-            MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
-              if (err) throw err;
-              try {
-                db.collection('idProcess').findOneAndUpdate({
-                  id: id, workProcessId: idProc.workProcessId
-                }, {$set: {'heSayYes': true}});
-                db.close();
-              } catch (e) {
-                console.log('ERROR INSERTMANY to IDPROCESS:::', e);
+            if (weHaveYes === 0) {
+              idProc['heSayYes'] = true;
+              console.log('COOOOOL NEW PROCESS!');
+              MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+                if (err) throw err;
+                try {
+                  db.collection('idProcess').findOneAndUpdate({
+                    id: id, workProcessId: idProc.workProcessId
+                  }, {$set: {'heSayYes': true}});
+                  db.close();
+                } catch (e) {
+                  console.log('ERROR INSERTMANY to IDPROCESS:::', e);
+                }
+              });
+              botApi.editMessageText(idProc.messageFormClientToPartnerFull, {
+                chat_id: id,
+                message_id: message_id
+              });
+              botApi.sendMessage(id, 'Please send photo invoice');
+              MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
+                if (err) throw err;
+                try {
+                  db.collection('partners').findOneAndUpdate({
+                      chatId: id
+                    }, {$addToSet: {'work_process_id': idProc.workProcessId}},
+                    {
+                      returnNewDocument: true,
+                    });
+                  db.collection('process').findOneAndUpdate({
+                      _id: idProc.workProcessId
+                    }, {$set: {'partnerStarted': id}},
+                    {
+                      returnNewDocument: true,
+                    });
+                  db.close();
+                } catch (e) {
+                  console.log('ERROR:::', e);
+                }
+              });
+            } else {
+              console.log('NOT YOU');
+              let problemS = idProc.messageFormClientToPartner.match(constAPI.FILTER_PROBLEM);
+              let cleanProblem = problemS[0].replace(/PROBLEM:/g, '');
+              if (idProc.messageFormClientToPartner.includes(cleanProblem) && idProc.id === id) {
+                botApi.deleteMessage(id, message_id);
+                botApi.sendMessage(id, 'Someone took  first process.');
               }
-            });
-            botApi.editMessageText(idProc.messageFormClientToPartnerFull, {
-              chat_id: id,
-              message_id: message_id
-            });
-            botApi.sendMessage(id, 'Please send photo invoice');
-            MongoClient.connect(constAPI.DATABASE_URL, function (err, db) {
-              if (err) throw err;
-              try {
-                db.collection('partners').findOneAndUpdate({
-                    chatId: id
-                  }, {$addToSet: {'work_process_id': idProc.workProcessId}},
-                  {
-                    returnNewDocument: true,
-                  });
-                db.collection('process').findOneAndUpdate({
-                    _id: idProc.workProcessId
-                  }, {$set: {'partnerStarted': id}},
-                  {
-                    returnNewDocument: true,
-                  });
-                db.close();
-              } catch (e) {
-                console.log('ERROR:::', e);
-              }
-            });
+            }
+
 
           } else {
             console.log('NOT YOU');
-            if (idProc.messageFormClientToPartner.includes(text) && idProc.id === id) {
+            let problemS = idProc.messageFormClientToPartner.match(constAPI.FILTER_PROBLEM);
+            let cleanProblem = problemS[0].replace(/PROBLEM:/g, '');
+            if (idProc.messageFormClientToPartner.includes(cleanProblem) && idProc.id === id) {
               botApi.deleteMessage(id, message_id);
               botApi.sendMessage(id, 'Someone took  first process.');
             }
