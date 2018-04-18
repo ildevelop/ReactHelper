@@ -85,7 +85,14 @@ class TelegramApi {
     }
   }
 
-  messageToPartners(id, msg, msg2, workProcessId) {
+  messageToPartners(id, msg, msg2, workProcessId,problemClient,fullName) {
+
+    botApi.sendMessage(id, msg, {
+      reply_markup: {
+        inline_keyboard: constAPI.inline_keyboard
+      }
+    });
+    msg =msg +  fullName + problemClient ;
     idProcess.push({
       'id': id,
       'messageFormClientToPartner': msg,
@@ -104,11 +111,6 @@ class TelegramApi {
         db.close();
       } catch (e) {
         console.log('ERROR Insert idProcess:', e);
-      }
-    });
-    botApi.sendMessage(id, msg, {
-      reply_markup: {
-        inline_keyboard: constAPI.inline_keyboard
       }
     });
   }
@@ -461,8 +463,6 @@ class TelegramApi {
           }
         }
       );
-      // botApi.sendMessage(id, 'try again!');
-      console.log('>>>>SOMETHING WRONG !!!!!!!!!!!!!!!!!!!!!pathIMGlocal:', pathIMGlocal)
     } else {
       MongoClient.connect(constAPI.DATABASE_URL, function (err, dbb) {
         try {
@@ -481,7 +481,7 @@ class TelegramApi {
 
     //******FINISH PROCESS
     // let file = fs.readFileSync('./ApiBot/sss.jpg');
-    setTimeout(() => {
+    setTimeout(() => { //need it because we waiting response from mongo before
       idProcess.map(process => {
         if (process.workProcessId === workProcessID.workProcessId && process.id === id) {
           console.log('******************');
@@ -490,12 +490,12 @@ class TelegramApi {
             console.log('Connected to process collection established!');
             let problemS = process.messageFormClientToPartner.match(constAPI.FILTER_PROBLEM);
             let cleanProblem = problemS[0].replace(/PROBLEM:/g, '');
-
+            console.log('cleanProblem::::',cleanProblem);
             let collection = db.collection('process');
             try {
               collection.findOne({"problem": cleanProblem}).then((res, err) => {
                 if (err) throw err;
-                // console.log('RESSSSS!!: ', res);
+                console.log('RESSSSS!!: ', res);
                 if (res.partnerStarted === id) {
                   console.log('INCLUDE PROBLEM !!!!!!!!!!!!!!!!');
                   try {

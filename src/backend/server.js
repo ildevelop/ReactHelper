@@ -153,6 +153,7 @@ const getExpressApplication = (application) => {
     response.setHeader('Content-Type', 'application/json');
     let message = req.body['message'];
     if (message) {
+      console.log("MSG::::::::::",message);
       let processId = null;
       MongoClient.connect(url, function (err, db) {
         if (err) throw err;
@@ -164,11 +165,13 @@ const getExpressApplication = (application) => {
             processId = res.ops[0]._id;
             db.close();
             let msg = '';
+            let ClientFullName ='CLIENT: ' + message.client.fname + ' ' + message.client.sname + ' ';
+            let problemCient =  'PROBLEM:' + message.problem;
             let fields = [
               'id: ' + processId,
-              'CLIENT: ' + message.client.fname + ' ' + message.client.sname,
-              '  city:' + message.client.city,
-              'PROBLEM:' + message.problem,
+              ' address:' +message.client.address,
+              ' zip:' +message.client.zipp,
+              ' city:' + message.client.city,
             ];
             //проходимся по массиву и склеиваем все в одну строку
             fields.forEach(field => {
@@ -189,7 +192,7 @@ const getExpressApplication = (application) => {
               });
               for (let i in message.partner) {
                 if (message.partner[i].chatId) {
-                  telegramApi.messageToPartners(message.partner[i].chatId, msg, msg2, processId);
+                  telegramApi.messageToPartners(message.partner[i].chatId, msg, msg2, processId ,problemCient,ClientFullName);
                 }
               }
             }
