@@ -67,6 +67,9 @@ class NewProcessComponent extends React.Component {
       messageObj['client'] = this.props.mainC.client;
       messageObj['problem'] = this.props.mainC.problem;
       messageObj['data'] = date;
+      messageObj['address'] = this.props.mainC.address;
+      messageObj['zipp'] = this.props.mainC.zipp;
+      messageObj['city'] = this.props.mainC.city;
       axios.post('/send_message', {message: messageObj})
         .then(function (response) {
           let body = response.data['status'];

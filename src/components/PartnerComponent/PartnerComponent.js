@@ -73,6 +73,7 @@ class PartnerComponent extends Component {
               <TableHeaderColumn>Phone</TableHeaderColumn>
               <TableHeaderColumn>Commission</TableHeaderColumn>
               <TableHeaderColumn>Categories</TableHeaderColumn>
+              <TableHeaderColumn>N-: processes</TableHeaderColumn>
             </TableRow>
           </TableHeader>
           <TableBody displayRowCheckbox={false}>
@@ -94,6 +95,8 @@ class PartnerComponent extends Component {
               <TableRowColumn>{user.phone_number}</TableRowColumn>
               <TableRowColumn>{user.commission}</TableRowColumn>
               <TableRowColumn>{user.category}</TableRowColumn>
+              <TableRowColumn>{user.work_process_id.length}</TableRowColumn>
+
             </TableRow>)}
           </TableBody>
 
